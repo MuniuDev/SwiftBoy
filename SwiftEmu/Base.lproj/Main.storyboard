@@ -672,7 +672,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="584" height="379"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfG-Jt-u9j" customClass="DeviceView" customModule="SwiftEmu">
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfG-Jt-u9j">
                                 <rect key="frame" x="20" y="74" width="188" height="285"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Ig-5m-jjC">

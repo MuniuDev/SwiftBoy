@@ -22,4 +22,18 @@ class GameBoyRAM {
     func read(#address: UInt16) -> UInt8 {
         return memory[Int(address)]
     }
+    
+    func write16(#address: UInt16, value: UInt16) {
+        //little endian
+        memory[Int(address)] = UInt8(value >> 8)
+        memory[Int(address+1)] = UInt8(value & 0xFF)
+    }
+    
+    func read16(#address: UInt16) -> UInt16 {
+        //little endian
+        var ret: UInt16;
+        ret = UInt16(memory[Int(address)] << 8);
+        ret += UInt16(memory[Int(address+1)]);
+        return ret;
+    }
 }
