@@ -10,10 +10,23 @@ import Cocoa
 
 class ViewController: NSViewController {
 
+    // device IO
+    @IBOutlet weak var emuScreen: EmulatorScreen!
+    
+    var device: GameBoyDevice?
+
+    // debug IO
+    @IBOutlet weak var logField: NSTextField!
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        device = GameBoyDevice(screen: emuScreen)
     }
 
     override var representedObject: AnyObject? {
@@ -22,6 +35,8 @@ class ViewController: NSViewController {
         }
     }
 
-
+    @IBAction func press(sender: AnyObject) {
+        emuScreen.paintBG();
+    }
 }
 
