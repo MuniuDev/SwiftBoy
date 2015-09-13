@@ -34,6 +34,7 @@ class GameBoyRAM {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
         self.bios = bios
         //memory[0..<256] = bios[0..<256] //load bios into memory
+        memory[0..<rom.count] = rom[0..<rom.count]
         self.rom = rom
         biosMode = true
     }
@@ -48,7 +49,7 @@ class GameBoyRAM {
     func write(#address: UInt16, value: UInt8) {
         if biosMode && address > 0x00FF { biosMode = false }
         
-        switch address {
+        switch Int(address) {
         case 0x0000...0x00FF where biosMode:
             bios[Int(address)] = value;
         case 0x0000...0xDFFF:
@@ -65,7 +66,7 @@ class GameBoyRAM {
     func read(#address: UInt16) -> UInt8 {
         if biosMode && address > 0x00FF { biosMode = false }
         
-        switch address {
+        switch Int(address) {
         case 0x0000...0x00FF where biosMode:
                 return bios[Int(address)];
         case 0x0000...0xDFFF:
@@ -82,15 +83,15 @@ class GameBoyRAM {
     
     func write16(#address: UInt16, value: UInt16) {
         //little endian
-        write(address: address, value: UInt8(value >> 8))
-        write(address: address+1, value: UInt8(value & 0xFF))
+        write(address: address+1, value: UInt8(value >> 8))
+        write(address: address, value: UInt8(value & 0xFF))
     }
     
     func read16(#address: UInt16) -> UInt16 {
         //little endian
         var ret: UInt16;
-        ret = UInt16(read(address: address) << 8);
-        ret += UInt16(read(address: address+1));
+        ret = UInt16(read(address: address+1)) << 8;
+        ret += UInt16(read(address: address));
         return ret;
     }
 }

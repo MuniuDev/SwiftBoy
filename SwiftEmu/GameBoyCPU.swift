@@ -9,7 +9,7 @@
 import Foundation
 
 class GameBoyCPU {
-    struct GameBoyRegistes {
+    struct GameBoyRegisters {
         //pair AF
         var A : UInt8 = 0
         var F : UInt8 = 0
@@ -27,14 +27,16 @@ class GameBoyCPU {
         var SP : UInt16 = 0
     }
     
-    var registers: GameBoyRegistes
+    var registers: GameBoyRegisters
     var memory: GameBoyRAM
     var opcodes: [OpCode]
+    var clock: Int
     
     init(memory mem: GameBoyRAM) {
-        registers = GameBoyRegistes()
+        registers = GameBoyRegisters()
         memory = mem;
         opcodes = generateOpCodeTable()
+        clock = 0;
     }
     
     func tic() {
@@ -43,9 +45,8 @@ class GameBoyCPU {
         
         if opCode.instruction != nil {
             opCode.instruction!(cpu: self)
-            registers.PC++
         } else {
-            println("ERROR: Unimplemented function \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal)
+            println("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal)
                 + " and operand size: " + String(opCode.operandSize) + ".")
             exit(-1)
         }
@@ -53,6 +54,7 @@ class GameBoyCPU {
     }
     
     func reset() {
+        clock = 0;
         registers.A = UInt8(0)
         registers.F = UInt8(0)
         registers.B = UInt8(0)
