@@ -10,4 +10,13 @@ import Foundation
 
 class GameBoyPPU {
     
+    var memory: GameBoyRAM
+    
+    init(memory mem: GameBoyRAM) {
+        memory = mem;
+    }
+    
+    func reset() {
+        
+    }
 }

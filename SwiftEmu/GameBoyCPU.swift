@@ -27,9 +27,44 @@ class GameBoyCPU {
         var SP : UInt16 = 0
     }
     
-    let registers : GameBoyRegistes
+    var registers: GameBoyRegistes
+    var memory: GameBoyRAM
+    var opcodes: [OpCode]
     
-    init() {
+    init(memory mem: GameBoyRAM) {
         registers = GameBoyRegistes()
+        memory = mem;
+        opcodes = generateOpCodeTable()
     }
+    
+    func tic() {
+        let opCodeVal = memory.read(address: registers.PC)
+        var opCode = opcodes[Int(opCodeVal)]
+        
+        if opCode.instruction != nil {
+            opCode.instruction!(cpu: self)
+            registers.PC++
+        } else {
+            println("ERROR: Unimplemented function \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal)
+                + " and operand size: " + String(opCode.operandSize) + ".")
+            exit(-1)
+        }
+        
+    }
+    
+    func reset() {
+        registers.A = UInt8(0)
+        registers.F = UInt8(0)
+        registers.B = UInt8(0)
+        registers.C = UInt8(0)
+        registers.D = UInt8(0)
+        registers.E = UInt8(0)
+        registers.H = UInt8(0)
+        registers.L = UInt8(0)
+        registers.PC = UInt16(0)
+        registers.SP = UInt16(0)
+    }
+    
 }
+
+//optcodes

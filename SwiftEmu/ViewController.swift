@@ -38,5 +38,17 @@ class ViewController: NSViewController {
     @IBAction func press(sender: AnyObject) {
         emuScreen.paintBG();
     }
+    
+    @IBAction func step(sender: AnyObject) {
+        device?.tic()
+    }
+
+    @IBAction func run(sender: AnyObject) {
+        if device?.running == false {
+            device?.start()
+        } else {
+            device?.running = false
+        }
+    }
 }
 
