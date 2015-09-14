@@ -24,7 +24,7 @@ func generateOpCodeTable() -> [OpCode] {
     var table = [
         //0x0n
         OpCode("NOP",0,NOP),
-        OpCode("LD BC,nn",16,nil),
+        OpCode("LD BC,nn",16,LD_BC_nn),
         OpCode("LD (BC),A",0,nil),
         OpCode("INC BC",0,nil),
         OpCode("INC B",0,nil),
@@ -34,7 +34,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD (nn),SP",0,nil),
         OpCode("ADD HL,BC",0,nil),
         OpCode("LD A,(BC)",0,nil),
-        OpCode("DEC BC",0,nil),
+        OpCode("DEC BC",0,DEC_BC),
         OpCode("INC C",0,INC_C),
         OpCode("DEC C",0,DEC_C),
         OpCode("LD C,n",0,LD_C_n),
@@ -150,7 +150,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD (HL),L",0,nil),
         OpCode("HALT",0,nil),
         OpCode("LD (HL),A",0,nil),
-        OpCode("LD A,B",0,nil),
+        OpCode("LD A,B",0,LD_A_B),
         OpCode("LD A,C",0,nil),
         OpCode("LD A,D",0,nil),
         OpCode("LD A,E",0,nil),
@@ -211,7 +211,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("XOR A",0,XOR_A),
         //0xBn
         OpCode("OR B",0,nil),
-        OpCode("OR C",0,nil),
+        OpCode("OR C",0,OR_C),
         OpCode("OR D",0,nil),
         OpCode("OR E",0,nil),
         OpCode("OR H",0,nil),
@@ -236,11 +236,11 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("ADD A,n",0,nil),
         OpCode("RST 0",0,nil),
         OpCode("RET Z",0,nil),
-        OpCode("RET",0,nil),
+        OpCode("RET",0,RET),
         OpCode("JP Z,nn",0,nil),
         OpCode("Two byte instruction set: Ext ops",0,nil),
         OpCode("CALL Z,nn",0,nil),
-        OpCode("CALL nn",0,nil),
+        OpCode("CALL nn",0,CALL_nn),
         OpCode("ADC A,n",0,nil),
         OpCode("RST 8",0,nil),
         //0xDn
@@ -322,6 +322,11 @@ func DI(cpu: GameBoyCPU) { //disable interrupts
 }
 
 // loading
+func LD_A_B(cpu: GameBoyCPU) {
+    cpu.registers.A = cpu.registers.B
+    cpu.registers.PC++
+    cpu.clock++
+}
 func LD_A_n(cpu: GameBoyCPU) {
     cpu.registers.A = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
@@ -343,8 +348,14 @@ func LD_SP_nn(cpu: GameBoyCPU) {
     cpu.clock+=3
 }
 func LD_HL_nn(cpu: GameBoyCPU) {
-    cpu.registers.H = cpu.memory.read(address: cpu.registers.PC+1)
-    cpu.registers.L = cpu.memory.read(address: cpu.registers.PC+2)
+    cpu.registers.L = cpu.memory.read(address: cpu.registers.PC+1)
+    cpu.registers.H = cpu.memory.read(address: cpu.registers.PC+2)
+    cpu.registers.PC+=3
+    cpu.clock+=3
+}
+func LD_BC_nn(cpu: GameBoyCPU) {
+    cpu.registers.C = cpu.memory.read(address: cpu.registers.PC+1)
+    cpu.registers.B = cpu.memory.read(address: cpu.registers.PC+2)
     cpu.registers.PC+=3
     cpu.clock+=3
 }
@@ -418,6 +429,18 @@ func JR_NZ_n(cpu: GameBoyCPU) {
         cpu.clock += 2
     }
 }
+func CALL_nn(cpu: GameBoyCPU) {
+    let jump = cpu.memory.read16(address: cpu.registers.PC+1)
+    cpu.memory.write16(address: cpu.registers.SP-2, value: cpu.registers.PC)
+    cpu.registers.PC = jump
+    cpu.registers.SP -= 2;
+    cpu.clock += 6
+}
+func RET(cpu: GameBoyCPU) {
+    cpu.registers.PC = cpu.memory.read16(address: cpu.registers.SP)
+    cpu.registers.SP += 2
+    cpu.clock += 4
+}
 
 
 // arithmetic
@@ -451,6 +474,20 @@ func DEC_C(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.clock++
 }
+func DEC_BC(cpu: GameBoyCPU) {
+    var value = UInt16(cpu.registers.B) << 8 + UInt16(cpu.registers.C)
+    
+    if value == 0 {
+        value = 65535
+    } else {
+        --value
+    }
+    cpu.registers.B = UInt8(value >> 8)
+    cpu.registers.C = UInt8(value % 0xFF)
+    
+    cpu.registers.PC++
+    cpu.clock+=2
+}
 func INC_C(cpu: GameBoyCPU) {
     //flags
     cpu.registers.F = 0
@@ -478,8 +515,15 @@ func CP_n(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.clock+=2
 }
+func OR_C(cpu: GameBoyCPU) {
+    cpu.registers.A |= cpu.registers.C
+    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.PC++
+    cpu.clock++
+}
 func XOR_A(cpu: GameBoyCPU) {
     cpu.registers.A ^= cpu.registers.A
+    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
     cpu.clock++
 }

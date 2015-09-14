@@ -83,15 +83,15 @@ class GameBoyRAM {
     
     func write16(#address: UInt16, value: UInt16) {
         //little endian
-        write(address: address+1, value: UInt8(value >> 8))
-        write(address: address, value: UInt8(value & 0xFF))
+        write(address: address, value: UInt8(value & 0xFF)) // write lower byte
+        write(address: address+1, value: UInt8(value >> 8)) // write higher byte
     }
     
     func read16(#address: UInt16) -> UInt16 {
         //little endian
         var ret: UInt16;
-        ret = UInt16(read(address: address+1)) << 8;
-        ret += UInt16(read(address: address));
+        ret = UInt16(read(address: address));   // write lower byte
+        ret += UInt16(read(address: address+1)) << 8; // write higher byte
         return ret;
     }
 }
