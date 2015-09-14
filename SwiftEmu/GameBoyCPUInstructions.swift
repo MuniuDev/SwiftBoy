@@ -72,7 +72,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("INC L",0,nil),
         OpCode("DEC L",0,nil),
         OpCode("LD L,n",0,nil),
-        OpCode("CPL",0,nil),
+        OpCode("CPL",0,CPL),
         //0x3n
         OpCode("JR NC,n",0,nil),
         OpCode("LD SP,nn",0,LD_SP_nn),
@@ -270,7 +270,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("AND n",0,nil),
         OpCode("RST 20",0,nil),
         OpCode("ADD SP,d",0,nil),
-        OpCode("JP (HL)",0,nil),
+        OpCode("JP (HL)",0,JP_aHL),
         OpCode("LD (nn),A",0,LD_ann_A),
         OpCode("XX",0,nil),
         OpCode("XX",0,nil),
@@ -412,13 +412,19 @@ func JP_nn(cpu: GameBoyCPU) {
     cpu.clock+=4
 }
 func JP_aHL(cpu: GameBoyCPU) {
-    cpu.registers.PC = cpu.memory.read16(address: cpu.registers.getHL())
-    cpu.clock+=4
+    cpu.registers.PC = cpu.registers.getHL()
+    cpu.clock+=1
 }
 
 func JR_NZ_n(cpu: GameBoyCPU) {
-    if(cpu.registers.F & F_ZERO > 0) {
-        var jump = Int(cpu.memory.read(address: cpu.registers.PC+1)) - 127
+    if(cpu.registers.F & F_ZERO == 0) {
+        var num = cpu.memory.read(address: cpu.registers.PC+1)
+        var jump = Int(num)
+        if(num & 0x80 > 0) {
+            jump = -Int(num^0xFF)
+        }
+        jump++
+        //var jump = Int(cpu.memory.read(address: cpu.registers.PC+1)) - 127
         if Int(cpu.registers.PC) + jump >= 0 {
             cpu.registers.PC = UInt16(Int(cpu.registers.PC) + jump)
         } else if Int(cpu.registers.PC) + jump < 65536 {
@@ -496,12 +502,18 @@ func INC_C(cpu: GameBoyCPU) {
     if cpu.registers.C == 0xFF { cpu.registers.F |= F_ZERO }
     if cpu.registers.C & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
     
-    if cpu.registers.C == 255 {
+    if cpu.registers.C == 0xFF {
         cpu.registers.C = 0
     } else {
         ++cpu.registers.C
     }
     
+    cpu.registers.PC++
+    cpu.clock++
+}
+func CPL(cpu: GameBoyCPU) {
+    cpu.registers.A = 0xFF - cpu.registers.A
+    cpu.registers.F = F_HALF_CARRY | F_NEGATIVE
     cpu.registers.PC++
     cpu.clock++
 }

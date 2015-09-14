@@ -66,8 +66,8 @@ class GameBoyCPU {
         var opCode = opcodes[Int(opCodeVal)]
         
         if opCode.instruction != nil {
+            println("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ". PC=" + String(format:"%4X",registers.PC))
             opCode.instruction!(cpu: self)
-            println("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ".")
         } else {
             println("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal)
                 + " and operand size: " + String(opCode.operandSize) + ".")
