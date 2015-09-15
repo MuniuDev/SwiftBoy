@@ -51,14 +51,16 @@ class GameBoyCPU {
     
     var registers: GameBoyRegisters
     var memory: GameBoyRAM
+    var timer: GameBoyTimer
     var opcodes: [OpCode]
-    var clock: Int
+    var interruptsEnabled: Bool
     
     init(memory mem: GameBoyRAM) {
         registers = GameBoyRegisters()
         memory = mem;
         opcodes = generateOpCodeTable()
-        clock = 0;
+        timer = GameBoyTimer(memory: memory)
+        interruptsEnabled = false
     }
     
     func tic() {
@@ -76,8 +78,11 @@ class GameBoyCPU {
         
     }
     
+    func updateClock(cycles: UInt8) {
+        timer.updateTimer(cycles)
+    }
+    
     func reset() {
-        clock = 0;
         registers.A = UInt8(0)
         registers.F = UInt8(0)
         registers.B = UInt8(0)
@@ -88,6 +93,8 @@ class GameBoyCPU {
         registers.L = UInt8(0)
         registers.PC = UInt16(0)
         registers.SP = UInt16(0)
+        interruptsEnabled = false
+        timer.reset()
     }
     
 }

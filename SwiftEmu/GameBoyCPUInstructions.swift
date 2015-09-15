@@ -313,49 +313,49 @@ let F_CARRY: UInt8 = 0x10
 //instructions
 func NOP(cpu: GameBoyCPU) {
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func DI(cpu: GameBoyCPU) { //disable interrupts
     //TODO implement
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 
 // loading
 func LD_A_B(cpu: GameBoyCPU) {
     cpu.registers.A = cpu.registers.B
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func LD_A_n(cpu: GameBoyCPU) {
     cpu.registers.A = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func LD_B_n(cpu: GameBoyCPU) {
     cpu.registers.B = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func LD_C_n(cpu: GameBoyCPU) {
     cpu.registers.C = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func LD_SP_nn(cpu: GameBoyCPU) {
     cpu.registers.SP = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.registers.PC+=3
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LD_HL_nn(cpu: GameBoyCPU) {
     cpu.registers.setHL(cpu.memory.read16(address: cpu.registers.PC+1))
     cpu.registers.PC+=3
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LD_BC_nn(cpu: GameBoyCPU) {
     cpu.registers.setBC(cpu.memory.read16(address: cpu.registers.PC+1))
     cpu.registers.PC+=3
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LDD_aHL_A(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
@@ -363,7 +363,7 @@ func LDD_aHL_A(cpu: GameBoyCPU) {
     --addr
     cpu.registers.setHL(addr)
     cpu.registers.PC++
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func LDI_A_aHL(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
@@ -373,69 +373,63 @@ func LDI_A_aHL(cpu: GameBoyCPU) {
     //cpu.registers.H = UInt8(addr >> 8)
     //cpu.registers.L = UInt8(addr & 0xFF)
     cpu.registers.PC++
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func LD_aHL_n(cpu: GameBoyCPU) {
     let addr = cpu.registers.getHL()
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.memory.write(address: addr, value: value)
     cpu.registers.PC+=2
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LD_ann_A(cpu: GameBoyCPU) {
     let addr = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.memory.write(address: addr, value: cpu.registers.A)
     cpu.registers.PC+=3
-    cpu.clock+=4
+    cpu.updateClock(4)
 }
 func LDH_an_A(cpu: GameBoyCPU) {
     let addr = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.memory.write(address: UInt16(addr) + 0xFF00, value: cpu.registers.A)
     cpu.registers.PC+=2
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LDH_A_an(cpu: GameBoyCPU) {
     let addr = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.A = cpu.memory.read(address: UInt16(addr) + 0xFF00)
     cpu.registers.PC+=2
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 func LDH_aC_A(cpu: GameBoyCPU) {
     cpu.memory.write(address: UInt16(cpu.registers.C) + 0xFF00, value: cpu.registers.A)
     cpu.registers.PC++
-    cpu.clock+=3
+    cpu.updateClock(3)
 }
 
 // jumps
 func JP_nn(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.memory.read16(address: cpu.registers.PC+1)
-    cpu.clock+=4
+    cpu.updateClock(4)
 }
 func JP_aHL(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.registers.getHL()
-    cpu.clock+=1
+    cpu.updateClock(1)
 }
 
 func JR_NZ_n(cpu: GameBoyCPU) {
     if(cpu.registers.F & F_ZERO == 0) {
         var num = cpu.memory.read(address: cpu.registers.PC+1)
-        var jump = Int(num)
+        //var jump = Int(num)
         if(num & 0x80 > 0) {
-            jump = -Int(num^0xFF)
-        }
-        jump++
-        //var jump = Int(cpu.memory.read(address: cpu.registers.PC+1)) - 127
-        if Int(cpu.registers.PC) + jump >= 0 {
-            cpu.registers.PC = UInt16(Int(cpu.registers.PC) + jump)
-        } else if Int(cpu.registers.PC) + jump < 65536 {
-            cpu.registers.PC = UInt16(Int(cpu.registers.PC) + jump - 65536)
+            cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
         } else {
-            cpu.registers.PC = UInt16(Int(cpu.registers.PC) + jump + 65536)
+            cpu.registers.PC = cpu.registers.PC &+ UInt16(num)
         }
-        cpu.clock += 3
+        cpu.registers.PC++
+        cpu.updateClock(3)
     } else {
         cpu.registers.PC += 2
-        cpu.clock += 2
+        cpu.updateClock(2)
     }
 }
 func CALL_nn(cpu: GameBoyCPU) {
@@ -443,12 +437,12 @@ func CALL_nn(cpu: GameBoyCPU) {
     cpu.memory.write16(address: cpu.registers.SP-2, value: cpu.registers.PC+1)
     cpu.registers.PC = jump
     cpu.registers.SP -= 2;
-    cpu.clock += 6
+    cpu.updateClock(6)
 }
 func RET(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.memory.read16(address: cpu.registers.SP)
     cpu.registers.SP += 2
-    cpu.clock += 4
+    cpu.updateClock(4)
 }
 
 
@@ -458,64 +452,40 @@ func DEC_B(cpu: GameBoyCPU) {
     cpu.registers.F = F_NEGATIVE
     if cpu.registers.B == 0x01 { cpu.registers.F |= F_ZERO }
     if cpu.registers.B & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
-    
-    if cpu.registers.B == 0 {
-        cpu.registers.B = 255
-    } else {
-        --cpu.registers.B
-    }
-    
+    cpu.registers.B = cpu.registers.B &- 1
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func DEC_C(cpu: GameBoyCPU) {
     //flags
     cpu.registers.F = F_NEGATIVE
     if cpu.registers.C == 0x01 { cpu.registers.F |= F_ZERO }
     if cpu.registers.C & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
-    
-    if cpu.registers.C == 0 {
-        cpu.registers.C = 255
-    } else {
-        --cpu.registers.C
-    }
-    
+    cpu.registers.C = cpu.registers.C &- 1
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func DEC_BC(cpu: GameBoyCPU) {
     var value = cpu.registers.getBC()
-    
-    if value == 0 {
-        value = 65535
-    } else {
-        --value
-    }
+    value = value &- 1
     cpu.registers.setBC(value)
-    
     cpu.registers.PC++
-    cpu.clock+=2
+    cpu.updateClock(2)
 }
 func INC_C(cpu: GameBoyCPU) {
     //flags
     cpu.registers.F = 0
     if cpu.registers.C == 0xFF { cpu.registers.F |= F_ZERO }
     if cpu.registers.C & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    
-    if cpu.registers.C == 0xFF {
-        cpu.registers.C = 0
-    } else {
-        ++cpu.registers.C
-    }
-    
+    cpu.registers.C = cpu.registers.C &+ 1
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func CPL(cpu: GameBoyCPU) {
     cpu.registers.A = 0xFF - cpu.registers.A
     cpu.registers.F = F_HALF_CARRY | F_NEGATIVE
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 
 // logical
@@ -527,17 +497,17 @@ func CP_n(cpu: GameBoyCPU) {
     if cpu.registers.A < value { cpu.registers.F |= F_CARRY }
     
     cpu.registers.PC+=2
-    cpu.clock+=2
+    cpu.updateClock(1)
 }
 func OR_C(cpu: GameBoyCPU) {
     cpu.registers.A |= cpu.registers.C
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }
 func XOR_A(cpu: GameBoyCPU) {
     cpu.registers.A ^= cpu.registers.A
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
-    cpu.clock++
+    cpu.updateClock(1)
 }

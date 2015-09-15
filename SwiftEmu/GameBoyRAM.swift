@@ -24,6 +24,31 @@ Memory layout:
 import Foundation
 
 class GameBoyRAM {
+    // I/O registers
+    let P1: UInt16 = 0xFF00     // Ports P15-P10 (keypad)
+    let SB: UInt16 = 0xFF01     // Serial transfer data
+    let SC: UInt16 = 0xFF02     // Serial control
+    let DIV: UInt16 = 0xFF04    // Divider
+    let TIMA: UInt16 = 0xFF05   // Timer
+    let TMA: UInt16 = 0xFF06    // Modulo timer
+    let TAC: UInt16 = 0xFF07    // Timer control
+    let IF: UInt16 = 0xFF0F     // Interrupt request flag
+    let IE: UInt16 = 0xFFFF     // Interrupt enable flag
+    
+    // video registers
+    let LCDC: UInt16 = 0xFF40   // LCDC control
+    let STAT: UInt16 = 0xFF41   // LCDC status
+    let SCY: UInt16 = 0xFF42    // Scroll Y
+    let SCX: UInt16 = 0xFF43    // Scroll X
+    let LY: UInt16 = 0xFF44     // LCDC y coordinate
+    let LYC: UInt16 = 0xFF45    // LCDC y coordinate compare LYC==LY
+    let DMA: UInt16 = 0xFF46    // DMA transfer
+    let BGP: UInt16 = 0xFF47    // BG palette data
+    let OBP0: UInt16 = 0xFF48   // OBJ palette data 0
+    let OBP1: UInt16 = 0xFF49   // OBJ palette data 1
+    let WY: UInt16 = 0xFF4A     // Window Y-coordinate
+    let WX: UInt16 = 0xFF4B     // Window X-coordinate
+    
     var memory : [UInt8]
     var bios : [UInt8]
     var rom : [UInt8]

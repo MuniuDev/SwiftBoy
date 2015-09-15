@@ -47,8 +47,10 @@ class GameBoyDevice {
     }
     
     func tic() {
-        println("tic")
-        cpu.tic();
+        var delta = cpu.timer.getMTimer()
+        cpu.tic()
+        delta = cpu.timer.getMTimer() - delta
+        ppu.tic(delta)
     }
     
     func loadBios() {
