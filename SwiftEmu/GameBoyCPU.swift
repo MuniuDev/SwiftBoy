@@ -26,11 +26,17 @@ class GameBoyCPU {
         var PC : UInt16 = 0
         var SP : UInt16 = 0
         
+    
+        func get16(regH: UInt8, _ regL: UInt8) -> UInt16 { return UInt16(regH) << 8 + UInt16(regL)}
         func getAF() -> UInt16 { return UInt16(A) << 8 + UInt16(F) }
         func getBC() -> UInt16 { return UInt16(B) << 8 + UInt16(C) }
         func getDE() -> UInt16 { return UInt16(D) << 8 + UInt16(E) }
         func getHL() -> UInt16 { return UInt16(H) << 8 + UInt16(L) }
         
+        func set16(inout regH: UInt8, inout _ regL: UInt8, value: UInt16) {
+            regH = UInt8(value >> 8)
+            regL = UInt8(value & 0xFF)
+        }
         func setAF(value: UInt16) {
             A = UInt8(value >> 8)
             F = UInt8(value & 0xFF)

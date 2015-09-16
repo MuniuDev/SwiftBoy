@@ -49,51 +49,42 @@ class GameBoyRAM {
     let WY: UInt16 = 0xFF4A     // Window Y-coordinate
     let WX: UInt16 = 0xFF4B     // Window X-coordinate
     
-    var memory : [UInt8]
-    var bios : [UInt8]
-    var rom : [UInt8]
+    let biosSize = 0x100
     
-    var biosMode: Bool
+    var memory : [UInt8]
     
     init(bios: [UInt8], rom: [UInt8]) {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
-        self.bios = bios
-        //memory[0..<256] = bios[0..<256] //load bios into memory
-        memory[0..<rom.count] = rom[0..<rom.count]
-        self.rom = rom
-        biosMode = true
+        memory[0..<biosSize] = bios[0..<biosSize] //load bios into memory
+        memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
+    }
+    
+    func loadRom(rom: [UInt8]) {
+        clear()
+        memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
     }
     
     func clear() {
-        for var i = 0; i<memory.count; ++i {
+        for var i = biosSize; i<memory.count; ++i {
             memory[i] = UInt8(0)
         }
-        biosMode = true
     }
     
     func write(#address: UInt16, value: UInt8) {
-        if biosMode && address > 0x00FF { biosMode = false }
-        
         switch Int(address) {
-        case 0x0000...0x00FF where biosMode:
-            bios[Int(address)] = value;
-        case 0x0000...0xDFFF:
+        case biosSize...0xDFFF:
             memory[Int(address)] = value;
         case 0xE000...0xFDFF: //ram shadow
             memory[Int(address) - 0x2000] = value;
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:
-            println("Write error of address: " + String(address) + ".")
+            println("Write error to address: " + String(address) + ".")
         }
     }
     
     func read(#address: UInt16) -> UInt8 {
-        if biosMode && address > 0x00FF { biosMode = false }
-        
         switch Int(address) {
-        case 0x0000...0x00FF where biosMode:
-                return bios[Int(address)];
         case 0x0000...0xDFFF:
                 return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
