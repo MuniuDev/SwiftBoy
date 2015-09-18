@@ -70,7 +70,7 @@ class GameBoyRAM {
         }
     }
     
-    func write(#address: UInt16, value: UInt8) {
+    func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
         case biosSize...0xDFFF:
             memory[Int(address)] = value;
@@ -79,11 +79,11 @@ class GameBoyRAM {
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:
-            println("Write error to address: " + String(address) + ".")
+            print("Write error to address: " + String(address) + ".")
         }
     }
     
-    func read(#address: UInt16) -> UInt8 {
+    func read(address address: UInt16) -> UInt8 {
         switch Int(address) {
         case 0x0000...0xDFFF:
                 return memory[Int(address)];
@@ -92,18 +92,18 @@ class GameBoyRAM {
         case 0xFE00...0xFFFF:
                 return memory[Int(address)];
         default:
-            println("Read error of address: " + String(address) + ".")
+            print("Read error of address: " + String(address) + ".")
             return UInt8(0);
         }
     }
     
-    func write16(#address: UInt16, value: UInt16) {
+    func write16(address address: UInt16, value: UInt16) {
         //little endian
         write(address: address, value: UInt8(value & 0xFF)) // write lower byte
         write(address: address+1, value: UInt8(value >> 8)) // write higher byte
     }
     
-    func read16(#address: UInt16) -> UInt16 {
+    func read16(address address: UInt16) -> UInt16 {
         //little endian
         var ret: UInt16;
         ret = UInt16(read(address: address));   // write lower byte

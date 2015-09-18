@@ -71,13 +71,13 @@ class GameBoyCPU {
     
     func tic() {
         let opCodeVal = memory.read(address: registers.PC)
-        var opCode = opcodes[Int(opCodeVal)]
+        let opCode = opcodes[Int(opCodeVal)]
         
         if opCode.instruction != nil {
-            println("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ". PC=" + String(format:"%4X",registers.PC))
+            print("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ". PC=" + String(format:"%4X",registers.PC))
             opCode.instruction!(cpu: self)
         } else {
-            println("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ".")
+            print("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ".")
             exit(-1)
         }
         

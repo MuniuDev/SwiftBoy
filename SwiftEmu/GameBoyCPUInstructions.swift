@@ -321,26 +321,26 @@ func DI(cpu: GameBoyCPU) { //disable interrupts
 
 // loading
 // load from register to register
-func LD_r_r(cpu: GameBoyCPU, inout reg1: UInt8, reg2: UInt8) {
+func LD_r_r(cpu: GameBoyCPU, inout _ reg1: UInt8, _ reg2: UInt8) {
     reg1=reg2
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 // load from imediate to register
-func LD_r_n(cpu: GameBoyCPU, inout reg: UInt8) {
+func LD_r_n(cpu: GameBoyCPU, inout _ reg: UInt8) {
     reg = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 // load from address in HL to register
-func LD_r_aHL(cpu: GameBoyCPU, inout reg: UInt8) {
+func LD_r_aHL(cpu: GameBoyCPU, inout _ reg: UInt8) {
     reg = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 // load from register to address in HL
 func LD_aHL_r(cpu: GameBoyCPU, reg: UInt8) {
-    var addr = cpu.registers.getHL()
+    let addr = cpu.registers.getHL()
     cpu.memory.write(address: addr, value: reg)
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -355,21 +355,21 @@ func LD_aHL_n(cpu: GameBoyCPU) {
 }
 // load from address in register pair to A
 func LD_A_arr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
-    var addr = cpu.registers.get16(regH,regL)
+    let addr = cpu.registers.get16(regH,regL)
     cpu.registers.A = cpu.memory.read(address: addr)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 // load from address in 16bit imediate to A
 func LD_A_ann(cpu: GameBoyCPU) {
-    var addr = cpu.memory.read16(address: cpu.registers.PC+1)
+    let addr = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.registers.A = cpu.memory.read(address: addr)
     cpu.registers.PC+=3
     cpu.updateClock(4)
 }
 
 
-func LD_rr_nn(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
+func LD_rr_nn(cpu: GameBoyCPU, inout _ regH: UInt8, inout _ regL: UInt8) {
     cpu.registers.set16(&regH, &regL, value: cpu.memory.read16(address: cpu.registers.PC+1))
     cpu.registers.PC+=3
     cpu.updateClock(3)
@@ -437,7 +437,7 @@ func JP_aHL(cpu: GameBoyCPU) {
 
 func JR_NZ_n(cpu: GameBoyCPU) {
     if(cpu.registers.F & F_ZERO == 0) {
-        var num = cpu.memory.read(address: cpu.registers.PC+1)
+        let num = cpu.memory.read(address: cpu.registers.PC+1)
         //var jump = Int(num)
         if(num & 0x80 > 0) {
             cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
@@ -466,7 +466,7 @@ func RET(cpu: GameBoyCPU) {
 
 
 // arithmetic
-func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func DEC_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
     //flags
     cpu.registers.F = F_NEGATIVE
     if reg == 0x01 { cpu.registers.F |= F_ZERO }
@@ -476,14 +476,14 @@ func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.updateClock(1)
 }
 
-func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
+func DEC_rr(cpu: GameBoyCPU, inout _ regH: UInt8, inout _ regL: UInt8) {
     var value = cpu.registers.get16(regH, regL)
     value = value &- 1
     cpu.registers.setBC(value)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
-func INC_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func INC_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
     //flags
     cpu.registers.F = 0
     if reg == 0xFF { cpu.registers.F |= F_ZERO }
@@ -510,13 +510,13 @@ func CP_n(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.updateClock(1)
 }
-func OR_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func OR_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
     cpu.registers.A |= reg
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-func XOR_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func XOR_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
     cpu.registers.A ^= reg
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
@@ -526,6 +526,6 @@ func XOR_r(cpu: GameBoyCPU, inout reg: UInt8) {
 // 16 bit opcodes
 func EXT_OPCODE(cpu: GameBoyCPU) {
     let instr = cpu.memory.read(address: cpu.registers.PC+1)
-    println("ERROR: extended instructions not yet implemented!")
+    print("ERROR: extended instructions not yet implemented!")
     exit(-1)
 }
