@@ -22,54 +22,54 @@ func generateOpCodeTable() -> [OpCode] {
     let table = [
         //0x0n
         OpCode("NOP",NOP),
-        OpCode("LD BC,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, &cpu.registers.B, &cpu.registers.C)}),
+        OpCode("LD BC,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, regH: &cpu.registers.B, regL: &cpu.registers.C)}),
         OpCode("LD (BC),A",nil),
         OpCode("INC BC",nil),
-        OpCode("INC B",nil),
-        OpCode("DEC B",{(cpu: GameBoyCPU) in DEC_r(cpu, &cpu.registers.B)}),
-        OpCode("LD B,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, &cpu.registers.B)}),
+        OpCode("INC B",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.B)}),
+        OpCode("DEC B",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.B)}),
+        OpCode("LD B,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.B)}),
         OpCode("RLC A",nil),
         OpCode("LD (nn),SP",nil),
         OpCode("ADD HL,BC",nil),
-        OpCode("LD A,(BC)",nil),
-        OpCode("DEC BC",{(cpu: GameBoyCPU) in DEC_rr(cpu, &cpu.registers.B, &cpu.registers.C)}),
-        OpCode("INC C",{(cpu: GameBoyCPU) in DEC_r(cpu, &cpu.registers.C)}),
-        OpCode("DEC C",{(cpu: GameBoyCPU) in DEC_r(cpu, &cpu.registers.C)}),
-        OpCode("LD C,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, &cpu.registers.C)}),
+        OpCode("LD A,(BC)",{(cpu: GameBoyCPU) in LD_A_arr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
+        OpCode("DEC BC",{(cpu: GameBoyCPU) in DEC_rr(cpu, regH: &cpu.registers.B, regL: &cpu.registers.C)}),
+        OpCode("INC C",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.C)}),
+        OpCode("DEC C",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.C)}),
+        OpCode("LD C,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.C)}),
         OpCode("RRC A",nil),
         //0x1n
         OpCode("STOP",nil),
-        OpCode("LD DE,nn",nil),
+        OpCode("LD DE,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, regH: &cpu.registers.D, regL: &cpu.registers.E) }),
         OpCode("LD (DE),A",nil),
         OpCode("INC DE",nil),
-        OpCode("INC D",nil),
-        OpCode("DEC D",nil),
-        OpCode("LD D,n",nil),
+        OpCode("INC D",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.D)}),
+        OpCode("DEC D",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.D)}),
+        OpCode("LD D,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.D)}),
         OpCode("RL A",nil),
         OpCode("JR n",nil),
         OpCode("ADD HL,DE",nil),
-        OpCode("LD A,(DE)",nil),
+        OpCode("LD A,(DE)",{(cpu: GameBoyCPU) in LD_A_arr(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
         OpCode("DEC DE",nil),
-        OpCode("INC E",nil),
-        OpCode("DEC E",nil),
-        OpCode("LD E,n",nil),
+        OpCode("INC E",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.E)}),
+        OpCode("DEC E",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.E)}),
+        OpCode("LD E,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.E)}),
         OpCode("RR A",nil),
         //0x2n
         OpCode("JR NZ,n",JR_NZ_n),
-        OpCode("LD HL,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, &cpu.registers.H, &cpu.registers.L)}),
+        OpCode("LD HL,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, regH: &cpu.registers.H, regL: &cpu.registers.L)}),
         OpCode("LDI (HL),A",nil),
         OpCode("INC HL",nil),
-        OpCode("INC H",nil),
-        OpCode("DEC H",nil),
-        OpCode("LD H,n",nil),
+        OpCode("INC H",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.H)}),
+        OpCode("DEC H",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.H)}),
+        OpCode("LD H,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.H)}),
         OpCode("DAA",nil),
         OpCode("JR Z,n",nil),
         OpCode("ADD HL,HL",nil),
         OpCode("LDI A,(HL)",LDI_A_aHL),
         OpCode("DEC HL",nil),
-        OpCode("INC L",nil),
-        OpCode("DEC L",nil),
-        OpCode("LD L,n",nil),
+        OpCode("INC L",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.L)}),
+        OpCode("DEC L",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.L)}),
+        OpCode("LD L,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.L)}),
         OpCode("CPL",CPL),
         //0x3n
         OpCode("JR NC,n",nil),
@@ -84,78 +84,78 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("ADD HL,SP",nil),
         OpCode("LDD A,(HL)",nil),
         OpCode("DEC SP",nil),
-        OpCode("INC A",nil),
-        OpCode("DEC A",nil),
-        OpCode("LD A,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, &cpu.registers.A)}),
+        OpCode("INC A",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.A)}),
+        OpCode("DEC A",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.A)}),
+        OpCode("LD A,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.A)}),
         OpCode("CCF",nil),
         //0x4n
-        OpCode("LD B,B",nil),
-        OpCode("LD B,C",nil),
-        OpCode("LD B,D",nil),
-        OpCode("LD B,E",nil),
-        OpCode("LD B,H",nil),
-        OpCode("LD B,L",nil),
-        OpCode("LD B,(HL)",nil),
-        OpCode("LD B,A",nil),
-        OpCode("LD C,B",nil),
-        OpCode("LD C,C",nil),
-        OpCode("LD C,D",nil),
-        OpCode("LD C,E",nil),
-        OpCode("LD C,H",nil),
-        OpCode("LD C,L",nil),
-        OpCode("LD C,(HL)",nil),
-        OpCode("LD C,A",nil),
+        OpCode("LD B,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.B)}),
+        OpCode("LD B,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.C)}),
+        OpCode("LD B,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.D)}),
+        OpCode("LD B,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.E)}),
+        OpCode("LD B,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.H)}),
+        OpCode("LD B,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.L)}),
+        OpCode("LD B,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.B)}),
+        OpCode("LD B,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.A)}),
+        OpCode("LD C,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.B)}),
+        OpCode("LD C,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.C)}),
+        OpCode("LD C,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.D)}),
+        OpCode("LD C,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.E)}),
+        OpCode("LD C,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.H)}),
+        OpCode("LD C,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.L)}),
+        OpCode("LD C,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.C)}),
+        OpCode("LD C,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.C, reg2: cpu.registers.A)}),
         //0x5n
-        OpCode("LD D,B",nil),
-        OpCode("LD D,C",nil),
-        OpCode("LD D,D",nil),
-        OpCode("LD D,E",nil),
-        OpCode("LD D,H",nil),
-        OpCode("LD D,L",nil),
-        OpCode("LD D,(HL)",nil),
-        OpCode("LD D,A",nil),
-        OpCode("LD E,B",nil),
-        OpCode("LD E,C",nil),
-        OpCode("LD E,D",nil),
-        OpCode("LD E,E",nil),
-        OpCode("LD E,H",nil),
-        OpCode("LD E,L",nil),
-        OpCode("LD E,(HL)",nil),
-        OpCode("LD E,A",nil),
+        OpCode("LD D,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.B)}),
+        OpCode("LD D,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.C)}),
+        OpCode("LD D,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.D)}),
+        OpCode("LD D,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.E)}),
+        OpCode("LD D,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.H)}),
+        OpCode("LD D,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.L)}),
+        OpCode("LD D,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.D)}),
+        OpCode("LD D,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.D, reg2: cpu.registers.A)}),
+        OpCode("LD E,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.B)}),
+        OpCode("LD E,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.C)}),
+        OpCode("LD E,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.D)}),
+        OpCode("LD E,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.E)}),
+        OpCode("LD E,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.H)}),
+        OpCode("LD E,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.L)}),
+        OpCode("LD E,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.E)}),
+        OpCode("LD E,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.E, reg2: cpu.registers.A)}),
         //0x6n
-        OpCode("LD H,B",nil),
-        OpCode("LD H,C",nil),
-        OpCode("LD H,D",nil),
-        OpCode("LD H,E",nil),
-        OpCode("LD H,H",nil),
-        OpCode("LD H,L",nil),
-        OpCode("LD H,(HL)",nil),
-        OpCode("LD H,A",nil),
-        OpCode("LD L,B",nil),
-        OpCode("LD L,C",nil),
-        OpCode("LD L,D",nil),
-        OpCode("LD L,E",nil),
-        OpCode("LD L,H",nil),
-        OpCode("LD L,L",nil),
-        OpCode("LD L,(HL)",nil),
-        OpCode("LD L,A",nil),
+        OpCode("LD H,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.B)}),
+        OpCode("LD H,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.C)}),
+        OpCode("LD H,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.D)}),
+        OpCode("LD H,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.E)}),
+        OpCode("LD H,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.H)}),
+        OpCode("LD H,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.L)}),
+        OpCode("LD H,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.H)}),
+        OpCode("LD H,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.H, reg2: cpu.registers.A)}),
+        OpCode("LD L,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.B)}),
+        OpCode("LD L,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.C)}),
+        OpCode("LD L,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.D)}),
+        OpCode("LD L,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.E)}),
+        OpCode("LD L,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.H)}),
+        OpCode("LD L,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.L)}),
+        OpCode("LD L,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.L)}),
+        OpCode("LD L,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.L, reg2: cpu.registers.A)}),
         //0x7n
-        OpCode("LD (HL),B",nil),
-        OpCode("LD (HL),C",nil),
-        OpCode("LD (HL),D",nil),
-        OpCode("LD (HL),E",nil),
-        OpCode("LD (HL),H",nil),
-        OpCode("LD (HL),L",nil),
+        OpCode("LD (HL),B",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.B)}),
+        OpCode("LD (HL),C",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.C)}),
+        OpCode("LD (HL),D",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.D)}),
+        OpCode("LD (HL),E",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.E)}),
+        OpCode("LD (HL),H",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.H)}),
+        OpCode("LD (HL),L",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.L)}),
         OpCode("HALT",nil),
-        OpCode("LD (HL),A",nil),
-        OpCode("LD A,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, &cpu.registers.A, cpu.registers.B)}),
-        OpCode("LD A,C",nil),
-        OpCode("LD A,D",nil),
-        OpCode("LD A,E",nil),
-        OpCode("LD A,H",nil),
-        OpCode("LD A,L",nil),
-        OpCode("LD A,(HL)",nil),
-        OpCode("LD A,A",nil),
+        OpCode("LD (HL),A",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.A)}),
+        OpCode("LD A,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.B)}),
+        OpCode("LD A,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.C)}),
+        OpCode("LD A,D",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.D)}),
+        OpCode("LD A,E",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.E)}),
+        OpCode("LD A,H",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.H)}),
+        OpCode("LD A,L",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.L)}),
+        OpCode("LD A,(HL)",{(cpu: GameBoyCPU) in LD_r_aHL(cpu, reg: &cpu.registers.A)}),
+        OpCode("LD A,A",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.A)}),
         //0x8n
         OpCode("ADD A,B",nil),
         OpCode("ADD A,C",nil),
@@ -199,23 +199,23 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("AND L",nil),
         OpCode("AND (HL)",nil),
         OpCode("AND A",nil),
-        OpCode("XOR B",nil),
-        OpCode("XOR C",nil),
-        OpCode("XOR D",nil),
-        OpCode("XOR E",nil),
-        OpCode("XOR H",nil),
-        OpCode("XOR L",nil),
+        OpCode("XOR B",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.B)}),
+        OpCode("XOR C",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.C)}),
+        OpCode("XOR D",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.D)}),
+        OpCode("XOR E",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.E)}),
+        OpCode("XOR H",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.H)}),
+        OpCode("XOR L",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.L)}),
         OpCode("XOR (HL)",nil),
-        OpCode("XOR A",{(cpu: GameBoyCPU) in XOR_r(cpu, &cpu.registers.A)}),
+        OpCode("XOR A",{(cpu: GameBoyCPU) in XOR_r(cpu, reg: &cpu.registers.A)}),
         //0xBn
-        OpCode("OR B",nil),
-        OpCode("OR C",{(cpu: GameBoyCPU) in OR_r(cpu, &cpu.registers.C)}),
-        OpCode("OR D",nil),
-        OpCode("OR E",nil),
-        OpCode("OR H",nil),
-        OpCode("OR L",nil),
+        OpCode("OR B",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.B)}),
+        OpCode("OR C",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.C)}),
+        OpCode("OR D",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.D)}),
+        OpCode("OR E",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.E)}),
+        OpCode("OR H",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.H)}),
+        OpCode("OR L",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.L)}),
         OpCode("OR (HL)",nil),
-        OpCode("OR A",nil),
+        OpCode("OR A",{(cpu: GameBoyCPU) in OR_r(cpu, reg: &cpu.registers.A)}),
         OpCode("CP B",nil),
         OpCode("CP C",nil),
         OpCode("CP D",nil),
@@ -286,7 +286,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("RST 30",nil),
         OpCode("LDHL SP,d",nil),
         OpCode("LD SP,HL",nil),
-        OpCode("LD A,(NN)",nil),
+        OpCode("LD A,(NN)",LD_A_ann),
         OpCode("EI",nil),
         OpCode("XX",nil),
         OpCode("XX",nil),
@@ -314,26 +314,26 @@ func NOP(cpu: GameBoyCPU) {
     cpu.updateClock(1)
 }
 func DI(cpu: GameBoyCPU) { //disable interrupts
-    //TODO implement
+    //TODO implement interrupts
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 
 // loading
 // load from register to register
-func LD_r_r(cpu: GameBoyCPU, inout _ reg1: UInt8, _ reg2: UInt8) {
-    reg1=reg2
+func LD_r_r(cpu: GameBoyCPU, inout reg1: UInt8, reg2: UInt8) {
+    reg1 = reg2
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 // load from imediate to register
-func LD_r_n(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func LD_r_n(cpu: GameBoyCPU, inout reg: UInt8) {
     reg = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 // load from address in HL to register
-func LD_r_aHL(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func LD_r_aHL(cpu: GameBoyCPU, inout reg: UInt8) {
     reg = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -367,13 +367,13 @@ func LD_A_ann(cpu: GameBoyCPU) {
     cpu.registers.PC+=3
     cpu.updateClock(4)
 }
-
-
-func LD_rr_nn(cpu: GameBoyCPU, inout _ regH: UInt8, inout _ regL: UInt8) {
+// load from 16-bit imediate to register pair
+func LD_rr_nn(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     cpu.registers.set16(&regH, &regL, value: cpu.memory.read16(address: cpu.registers.PC+1))
     cpu.registers.PC+=3
     cpu.updateClock(3)
 }
+// load from 16-bit imediate to stack pointer
 func LD_SP_nn(cpu: GameBoyCPU) {
     cpu.registers.SP = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.registers.PC+=3
@@ -381,6 +381,7 @@ func LD_SP_nn(cpu: GameBoyCPU) {
 }
 
 
+///////// functions below are not redesigned!!!
 
 func LDD_aHL_A(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
@@ -466,7 +467,7 @@ func RET(cpu: GameBoyCPU) {
 
 
 // arithmetic
-func DEC_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     //flags
     cpu.registers.F = F_NEGATIVE
     if reg == 0x01 { cpu.registers.F |= F_ZERO }
@@ -476,14 +477,14 @@ func DEC_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
     cpu.updateClock(1)
 }
 
-func DEC_rr(cpu: GameBoyCPU, inout _ regH: UInt8, inout _ regL: UInt8) {
+func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     var value = cpu.registers.get16(regH, regL)
     value = value &- 1
     cpu.registers.setBC(value)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
-func INC_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func INC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     //flags
     cpu.registers.F = 0
     if reg == 0xFF { cpu.registers.F |= F_ZERO }
@@ -510,13 +511,14 @@ func CP_n(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.updateClock(1)
 }
-func OR_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func OR_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.registers.A |= reg
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-func XOR_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
+func XOR_r(cpu: GameBoyCPU, inout
+    reg: UInt8) {
     cpu.registers.A ^= reg
     cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
     cpu.registers.PC++
