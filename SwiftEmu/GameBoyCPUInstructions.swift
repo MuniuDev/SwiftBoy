@@ -19,7 +19,7 @@ struct OpCode {
 }
 
 func generateOpCodeTable() -> [OpCode] {
-    var table = [
+    let table = [
         //0x0n
         OpCode("NOP",NOP),
         OpCode("LD BC,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, &cpu.registers.B, &cpu.registers.C)}),
@@ -525,7 +525,16 @@ func XOR_r(cpu: GameBoyCPU, inout _ reg: UInt8) {
 
 // 16 bit opcodes
 func EXT_OPCODE(cpu: GameBoyCPU) {
-    let instr = cpu.memory.read(address: cpu.registers.PC+1)
-    print("ERROR: extended instructions not yet implemented!")
-    exit(-1)
+    let extOpCodeVal = cpu.memory.read(address: cpu.registers.PC+1)
+    let extOpCode = cpu.extOpcodes[Int(extOpCodeVal)]
+    
+    if extOpCode.instruction != nil {
+        print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
+        extOpCode.instruction!(cpu: cpu)
+    } else {
+        print("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ".")
+        exit(-1)
+    }
 }
+
+

@@ -59,12 +59,14 @@ class GameBoyCPU {
     var memory: GameBoyRAM
     var timer: GameBoyTimer
     var opcodes: [OpCode]
+    var extOpcodes: [OpCode]
     var interruptsEnabled: Bool
     
     init(memory mem: GameBoyRAM) {
         registers = GameBoyRegisters()
         memory = mem;
         opcodes = generateOpCodeTable()
+        extOpcodes = generateExtOpCodeTable()
         timer = GameBoyTimer(memory: memory)
         interruptsEnabled = false
     }
