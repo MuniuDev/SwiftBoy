@@ -10,55 +10,56 @@ import Foundation
 
 class GameBoyPPU {
     
-    enum PPUMode {
-        case OAM_SCANLINE
-        case VRAM_SCANLINE
-        case HBLANK
-        case VBLANK
-    }
+    let MODE_OAM_SCANLINE: UInt8 = 0x02
+    let MODE_VRAM_SCANLINE: UInt8 = 0x03
+    let MODE_HBLANK: UInt8 = 0x00
+    let MODE_VBLANK: UInt8 = 0x01
+    
     
     var memory: GameBoyRAM
     var clock: UInt
-    var mode: PPUMode
-    var line: UInt8
     
     init(memory mem: GameBoyRAM) {
         memory = mem
         clock = 0
-        mode = PPUMode.HBLANK
-        line = UInt8(0)
+        setMode(MODE_HBLANK)
+        setLine(0)
     }
     
-    func renderScanLine(){
+    func renderLine() {
+        
+    }
+    
+    func copyBuffer() {
         
     }
     
     func tic(deltaClock: UInt) {
         clock = clock &+ deltaClock
         
-        switch mode {
-        case PPUMode.OAM_SCANLINE where clock >= 20:
+        switch getMode() {
+        case MODE_OAM_SCANLINE where clock >= 20:
                 clock %= 20
-                mode = PPUMode.VRAM_SCANLINE
-        case PPUMode.VRAM_SCANLINE where clock >= 43:
+                setMode(MODE_VRAM_SCANLINE)
+        case MODE_VRAM_SCANLINE where clock >= 43:
                 clock %= 43
-                mode = PPUMode.HBLANK
-                renderScanLine()
-        case PPUMode.HBLANK where clock >= 51:
+                setMode(MODE_HBLANK)
+                renderLine()
+        case MODE_HBLANK where clock >= 51:
                 clock %= 51
-                ++line
-                if line == 143 {
-                    mode = PPUMode.VBLANK
-                    //TODO: here copy image buffer to the UI
+                setLine(getLine()+1)
+                if getLine() == 143 {
+                    setMode(MODE_VBLANK)
+                    copyBuffer()
                 } else {
-                    mode = PPUMode.OAM_SCANLINE
+                    setMode(MODE_OAM_SCANLINE)
                 }
-        case PPUMode.VBLANK where clock >= 114:
+        case MODE_VBLANK where clock >= 114:
                 clock %= 114
-                ++line
-                if line > 153 {
-                    mode = PPUMode.OAM_SCANLINE
-                    line = 0
+                setLine(getLine()+1)
+                if getLine() > 153 {
+                    setMode(MODE_OAM_SCANLINE)
+                    setLine(0)
                 }
         default:
             return
@@ -67,7 +68,17 @@ class GameBoyPPU {
     
     func reset() {
         clock = 0
-        mode = PPUMode.HBLANK
-        line = UInt8(0)
+        setMode(MODE_HBLANK)
+        setLine(0)
+    }
+    
+    
+    func getLine() -> UInt8 { return memory.read(address: memory.LY) }
+    func setLine(line: UInt8) { memory.write(address: memory.LY, value: line) }
+    func getMode() -> UInt8 { return memory.read(address: memory.STAT) & 0x03 }
+    func setMode(mode: UInt8) {
+        var reg = memory.read(address: memory.STAT)
+        reg = reg & 0xFC + mode & 0x03
+        memory.write(address: memory.STAT, value: reg)
     }
 }

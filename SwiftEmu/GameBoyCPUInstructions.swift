@@ -483,9 +483,9 @@ func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
 // arithmetic
 func SUB_A_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < reg { cpu.registers.D |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.D |= F_CARRY }
-    if cpu.registers.A &- reg == 0 { cpu.registers.D |= F_ZERO }
+    if cpu.registers.A & 0x0F < reg { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- reg == 0 { cpu.registers.F |= F_ZERO }
     cpu.registers.A = cpu.registers.A &- reg
     cpu.registers.PC++
     cpu.updateClock(1)
@@ -493,9 +493,9 @@ func SUB_A_r(cpu: GameBoyCPU, reg: UInt8) {
 func SUB_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.D |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.D |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.D |= F_ZERO }
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -535,7 +535,7 @@ func EXT_OPCODE(cpu: GameBoyCPU) {
     let extOpCode = cpu.extOpcodes[Int(extOpCodeVal)]
     
     if extOpCode.instruction != nil {
-        print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
+        //print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
         extOpCode.instruction!(cpu: cpu)
     } else {
         print("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ".")
@@ -604,9 +604,9 @@ func CPL(cpu: GameBoyCPU) {
 func CP_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A == value { cpu.registers.F |= F_ZERO }
-    if cpu.registers.A & 0x0F < value & 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < value { cpu.registers.F |= F_CARRY }
+    if (cpu.registers.A & 0x0F) < value { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < (cpu.registers.A &- value) { cpu.registers.F |= F_CARRY }
+    if (cpu.registers.A &- value) == 0 { cpu.registers.F |= F_ZERO }
     
     cpu.registers.PC+=2
     cpu.updateClock(1)
