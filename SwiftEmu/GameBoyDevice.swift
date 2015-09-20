@@ -23,6 +23,8 @@ class GameBoyDevice {
     
     var queue: dispatch_queue_t
     
+    var bp: UInt16
+    
     
     init(screen emuScreen: EmulatorScreen) {
         let biosPath = NSBundle.mainBundle().pathForResource("bios", ofType: ".gb", inDirectory: "roms")!
@@ -44,6 +46,11 @@ class GameBoyDevice {
         
         self.queue = dispatch_queue_create("GameBoyLoop", DISPATCH_QUEUE_SERIAL)
         //start()
+        bp = 0xFFFF
+    }
+    
+    func setBP(point: UInt16) {
+       bp = point
     }
     
     func tic() {
@@ -51,6 +58,7 @@ class GameBoyDevice {
         cpu.tic()
         delta = cpu.timer.getMTimer() - delta
         ppu.tic(delta)
+        if cpu.registers.PC == bp { running = false }
     }
     
     func loadBios() {

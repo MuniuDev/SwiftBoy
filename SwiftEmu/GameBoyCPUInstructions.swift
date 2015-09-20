@@ -33,7 +33,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("ADD HL,BC",nil),
         OpCode("LD A,(BC)",{(cpu: GameBoyCPU) in LD_A_arr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
         OpCode("DEC BC",{(cpu: GameBoyCPU) in DEC_rr(cpu, regH: &cpu.registers.B, regL: &cpu.registers.C)}),
-        OpCode("INC C",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.C)}),
+        OpCode("INC C",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.C)}),
         OpCode("DEC C",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.C)}),
         OpCode("LD C,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.C)}),
         OpCode("RRC A",{(cpu: GameBoyCPU) in RRC_r(cpu, reg: &cpu.registers.A); cpu.registers.PC--}),
@@ -501,7 +501,47 @@ func SUB_A_aHL(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 
+// jumps
+func JR_n(cpu: GameBoyCPU) {
+    let num = cpu.memory.read(address: cpu.registers.PC+1)
+    if(num & 0x80 > 0) {
+        cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
+    } else {
+        cpu.registers.PC = cpu.registers.PC &+ UInt16(num)
+    }
+    cpu.registers.PC++  // is it really necessary?
+    cpu.updateClock(3)
+}
+func JR_NZ_n(cpu: GameBoyCPU) {
+    if(cpu.registers.F & F_ZERO == 0) {
+        JR_n(cpu)
+    } else {
+        cpu.registers.PC += 2
+        cpu.updateClock(2)
+    }
+}
+func JR_Z_n(cpu: GameBoyCPU) {
+    if(cpu.registers.F & F_ZERO != 0) {
+        JR_n(cpu)
+    } else {
+        cpu.registers.PC += 2
+        cpu.updateClock(2)
+    }
+}
 
+// 16 bit opcodes
+func EXT_OPCODE(cpu: GameBoyCPU) {
+    let extOpCodeVal = cpu.memory.read(address: cpu.registers.PC+1)
+    let extOpCode = cpu.extOpcodes[Int(extOpCodeVal)]
+    
+    if extOpCode.instruction != nil {
+        print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
+        extOpCode.instruction!(cpu: cpu)
+    } else {
+        print("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ".")
+        exit(-1)
+    }
+}
 
 ///////// functions below are not redesigned!!!
 
@@ -540,32 +580,6 @@ func JP_aHL(cpu: GameBoyCPU) {
 }
 
 
-func JR_n(cpu: GameBoyCPU) {
-    let num = cpu.memory.read(address: cpu.registers.PC+1)
-    if(num & 0x80 > 0) {
-        cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
-    } else {
-        cpu.registers.PC = cpu.registers.PC &+ UInt16(num)
-    }
-    cpu.registers.PC++  // is it really necessary?
-    cpu.updateClock(3)
-}
-func JR_NZ_n(cpu: GameBoyCPU) {
-    if(cpu.registers.F & F_ZERO == 0) {
-        JR_n(cpu)
-    } else {
-        cpu.registers.PC += 2
-        cpu.updateClock(2)
-    }
-}
-func JR_Z_n(cpu: GameBoyCPU) {
-    if(cpu.registers.F & F_ZERO != 0) {
-        JR_n(cpu)
-    } else {
-        cpu.registers.PC += 2
-        cpu.updateClock(2)
-    }
-}
 func CALL_nn(cpu: GameBoyCPU) {
     let jump = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.memory.write16(address: cpu.registers.SP-2, value: cpu.registers.PC+3)
@@ -596,20 +610,6 @@ func CP_n(cpu: GameBoyCPU) {
     
     cpu.registers.PC+=2
     cpu.updateClock(1)
-}
-
-// 16 bit opcodes
-func EXT_OPCODE(cpu: GameBoyCPU) {
-    let extOpCodeVal = cpu.memory.read(address: cpu.registers.PC+1)
-    let extOpCode = cpu.extOpcodes[Int(extOpCodeVal)]
-    
-    if extOpCode.instruction != nil {
-        print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
-        extOpCode.instruction!(cpu: cpu)
-    } else {
-        print("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ".")
-        exit(-1)
-    }
 }
 
 
