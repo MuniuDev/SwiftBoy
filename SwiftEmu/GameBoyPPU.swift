@@ -47,10 +47,12 @@ class GameBoyPPU {
             //let lyc = memory.read(address: memory.LYC)
             let scx = memory.read(address: memory.SCX)
             let scy = memory.read(address: memory.SCY)
+            let bgp = memory.read(address: memory.BGP)
             
             let start_y = (UInt16(ly) &+ UInt16(scy))/8
             let start_x = UInt16(scx)/8
             let frame_offset = Int(ly) * 160
+            let line_y_off = (UInt16(ly) &+ UInt16(scy))%8 * 2
             
             // is BG display on?
             if lcdc & 0x01 != 0 {   // draw BG
@@ -60,20 +62,20 @@ class GameBoyPPU {
                 
                 var tile_addr = bg_data + start_y*32 + start_x
                 var tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
-                var x = UInt16(scx) & 0x07
-                let y_off = (UInt16(ly) &+ UInt16(scy))%8 * 2
+                var x = UInt8(scx) & 0x07
+                var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                 
-                for var i = 0; i<160; ++i {
-                    let colorH = memory.read(address: bg_chr + UInt16(tile_id)*CHR_SIZE + y_off)
-                    let colorL = memory.read(address: bg_chr + UInt16(tile_id)*CHR_SIZE + y_off + 1)
+                for i in 0..<160 {
                     let mask = UInt8(0x80 >> x)
-                    let color_id = ((colorH & mask) >> UInt8(7-x)) << 1 + ((colorL & mask) >> UInt8(7-x))
-                    frameBuffer[frame_offset + i] = palette[Int(color_id)]
+                    let color_id = ((UInt8(colorLine & 0xFF) & mask) >> (7-x)) << 1 + ((UInt8(colorLine >> 8) & mask) >> (7-x))  // find color id
+                    let color_val = (bgp & (0x03 << color_id)) >> color_id      // mask it with BGP (palette) register to get actual color number
+                    frameBuffer[frame_offset + i] = palette[Int(color_val)]     // get RGB value from palette
                     ++x
                     if x == 8 {
                         x = 0
                         ++tile_addr
                         tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
+                        colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                     }
                 }
             }
