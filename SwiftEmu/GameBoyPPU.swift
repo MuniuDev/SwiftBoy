@@ -13,7 +13,7 @@ class GameBoyPPU {
     let CHR_0: UInt16 = 0x8000  //start addr of CHR data for bank 0
     let CHR_1: UInt16 = 0x8800  //start addr of CHR data for bank 1
     let CHR_SIZE: UInt16 = 0x0010   //size of single CHR
-    let CHR_OFFSET: UInt8 = 0x80
+    let CHR_OFFSET: UInt16 = 0x0080
     
     let BG_1: UInt16 = 0x9800   //start addr of bg data for bg display data 1
     let BG_2: UInt16 = 0x9C00   //start addr of bg data for bg display data 2
@@ -48,30 +48,32 @@ class GameBoyPPU {
             let scx = memory.read(address: memory.SCX)
             let scy = memory.read(address: memory.SCY)
             
-            let start_y = UInt16(ly) &+ UInt16(scy)
-            let start_x = UInt16(scx)
+            let start_y = (UInt16(ly) &+ UInt16(scy))/8
+            let start_x = UInt16(scx)/8
             let frame_offset = Int(ly) * 160
-            
-            
             
             // is BG display on?
             if lcdc & 0x01 != 0 {   // draw BG
                 let bg_data = (lcdc & 0x08 == 0) ? BG_1 : BG_2  //select bg display addr
                 let bg_chr = (lcdc & 0x10 == 0) ? CHR_1 : CHR_0 //select char bank addr
-                let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt8(0x00)   // offset when using CHR bank 1
+                let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt16(0x00)   // offset when using CHR bank 1
                 
                 var tile_addr = bg_data + start_y*32 + start_x
-                var tile_id = memory.read(address: tile_addr) &+ tile_id_offset
-                var x = start_x & 0x07
+                var tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
+                var x = UInt16(scx) & 0x07
+                let y_off = (UInt16(ly) &+ UInt16(scy))%8 * 2
                 
                 for var i = 0; i<160; ++i {
-                    frameBuffer[frame_offset + i] = memory.read(address: bg_chr + UInt16(tile_id))
+                    let colorH = memory.read(address: bg_chr + UInt16(tile_id)*CHR_SIZE + y_off)
+                    let colorL = memory.read(address: bg_chr + UInt16(tile_id)*CHR_SIZE + y_off + 1)
+                    let mask = UInt8(0x80 >> x)
+                    let color_id = ((colorH & mask) >> UInt8(7-x)) << 1 + ((colorL & mask) >> UInt8(7-x))
+                    frameBuffer[frame_offset + i] = palette[Int(color_id)]
                     ++x
                     if x == 8 {
                         x = 0
                         ++tile_addr
-                        tile_id = memory.read(address: tile_addr) &+ tile_id_offset
-                        //tile_id = memory.read(address: bg_data + start_y*256 + start_x + UInt16(i) ) &+ tile_id_offset
+                        tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
                     }
                 }
             }
