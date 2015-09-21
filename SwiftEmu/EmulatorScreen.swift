@@ -33,19 +33,17 @@ class EmulatorScreen: NSImageView {
         super.init(coder: aDecoder)
         image = NSImage(size: NSSize(width: scaledWidth, height: scaledHeight))
         image!.addRepresentation(imageRep)
-        paintBG();
     }
     
     func drawScreen(screenBuffer : [UInt8]) {
-        
-    }
-    
-    func paintBG(color : NSColor = NSColor(calibratedRed: CGFloat(1), green: CGFloat(1), blue: CGFloat(1), alpha: CGFloat(1))) {
-        for var i = 0; i < scaledWidth; ++i {
-            for var j = 0; j < scaledHeight; ++j {
+        for var j = 0; j < scaledHeight; ++j {
+            for var i = 0; i < scaledWidth; ++i {
+                let hue = CGFloat(255 - screenBuffer[(j/scale)*160+(i/scale)])/CGFloat(255)
+                let color = NSColor(calibratedRed: hue, green: hue, blue: hue, alpha: CGFloat(1))
                 imageRep.setColor(color, atX: i, y: j)
             }
         }
         setNeedsDisplay()
     }
+
 }

@@ -42,13 +42,18 @@ class GameBoyRAM {
     let SCX: UInt16 = 0xFF43    // Scroll X
     let LY: UInt16 = 0xFF44     // LCDC y coordinate
     let LYC: UInt16 = 0xFF45    // LCDC y coordinate compare LYC==LY
-    let DMA: UInt16 = 0xFF46    // DMA transfer
+    let DMA: UInt16 = 0xFF46    // DMA transfer register
     let BGP: UInt16 = 0xFF47    // BG palette data
     let OBP0: UInt16 = 0xFF48   // OBJ palette data 0
     let OBP1: UInt16 = 0xFF49   // OBJ palette data 1
     let WY: UInt16 = 0xFF4A     // Window Y-coordinate
     let WX: UInt16 = 0xFF4B     // Window X-coordinate
     
+    // DMA transfer details
+    let DMA_SIZE: UInt16 = 0x00A0
+    let DMA_START: UInt16 = 0xFE00
+    let DMA_END: UInt16 = 0xFE9F
+
     let biosSize = 0x100
     
     var memory : [UInt8]
@@ -70,12 +75,20 @@ class GameBoyRAM {
         }
     }
     
+    func DMATransfer(dma: UInt8) {
+        let addr = UInt16(dma) << 8
+        memory[Int(DMA_START)...Int(DMA_END)] = memory[Int(addr)..<Int(addr+DMA_SIZE)]
+    }
+    
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
         case biosSize...0xDFFF:
             memory[Int(address)] = value;
         case 0xE000...0xFDFF: //ram shadow
             memory[Int(address) - 0x2000] = value;
+        case Int(DMA):
+            memory[Int(address)] = value;
+            DMATransfer(value)
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:

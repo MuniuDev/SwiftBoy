@@ -44,7 +44,7 @@ class ViewController: NSViewController {
     }
 
     @IBAction func press(sender: AnyObject) {
-        emuScreen.paintBG();
+        //emuScreen.paintBG();
     }
     
     @IBAction func step(sender: AnyObject) {
@@ -83,6 +83,8 @@ class ViewController: NSViewController {
         valueSP.stringValue = "0x" + String(format:"%04X",SP)
         let PC = device!.cpu.registers.PC
         valuePC.stringValue = "0x" + String(format:"%04X",PC)
+        
+        emuScreen.drawScreen(device!.ppu.getBuffer())
         
         let q = dispatch_get_main_queue()
         dispatch_async(q, updateInfo)
