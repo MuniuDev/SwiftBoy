@@ -56,12 +56,16 @@ class GameBoyRAM {
 
     let biosSize = 0x100
     
-    var memory : [UInt8]
+    var memory: [UInt8]
+    var romHeader: [UInt8]
     
     init(bios: [UInt8], rom: [UInt8]) {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
         memory[0..<biosSize] = bios[0..<biosSize] //load bios into memory
         memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
+        
+        romHeader = [UInt8](count: biosSize, repeatedValue: UInt8(0))
+        romHeader[0..<biosSize] = rom[0..<biosSize] // save cartridge header for later
     }
     
     func loadRom(rom: [UInt8]) {
@@ -80,6 +84,8 @@ class GameBoyRAM {
         memory[Int(DMA_START)...Int(DMA_END)] = memory[Int(addr)..<Int(addr+DMA_SIZE)]
     }
     
+    func UnmapBios() { memory[0..<biosSize] = romHeader[0..<biosSize] }
+    
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
         case biosSize...0xDFFF:
@@ -89,6 +95,9 @@ class GameBoyRAM {
         case Int(DMA):
             memory[Int(address)] = value;
             DMATransfer(value)
+        case 0xFF50 where value == 0x01:
+            memory[Int(address)] = value;
+            UnmapBios()
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:

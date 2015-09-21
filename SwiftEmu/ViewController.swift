@@ -83,9 +83,8 @@ class ViewController: NSViewController {
         valueSP.stringValue = "0x" + String(format:"%04X",SP)
         let PC = device!.cpu.registers.PC
         valuePC.stringValue = "0x" + String(format:"%04X",PC)
-        var buff = device!.ppu.getBuffer()
-        buff[1000] = 255
-        emuScreen.drawScreen(buff)
+
+        emuScreen.drawScreen(device!.ppu.getBuffer())
         
         let q = dispatch_get_main_queue()
         dispatch_async(q, updateInfo)

@@ -29,6 +29,7 @@ class GameBoyPPU {
     var clock: UInt
     var frameBuffer: [UInt8]
     var palette: [UInt8] = [0,96,192,255]
+    var ready: Bool = false
     
     init(memory mem: GameBoyRAM) {
         memory = mem
@@ -108,8 +109,10 @@ class GameBoyPPU {
                 if getLine() == 143 {
                     setMode(MODE_VBLANK)
                     //copyBuffer()
+                    ready = true
                 } else {
                     setMode(MODE_OAM_SCANLINE)
+                    ready = false
                 }
         case MODE_VBLANK where clock >= 114:
                 clock %= 114
