@@ -227,34 +227,34 @@ func generateOpCodeTable() -> [OpCode] {
         //0xCn
         OpCode("RET NZ",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: !cpu.registers.checkZero())}),
         OpCode("POP BC",{(cpu: GameBoyCPU) in POP_rr(cpu, regH: &cpu.registers.B, regL: &cpu.registers.C)}),
-        OpCode("JP NZ,nn",nil),
+        OpCode("JP NZ,nn",{(cpu: GameBoyCPU) in JP_cc_nn(cpu, condition: !cpu.registers.checkZero())}),
         OpCode("JP nn",JP_nn),
-        OpCode("CALL NZ,nn",nil),
+        OpCode("CALL NZ,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: !cpu.registers.checkZero())}),
         OpCode("PUSH BC",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
         OpCode("ADD A,n",nil),
         OpCode("RST 0",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x00)}),
         OpCode("RET Z",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: cpu.registers.checkZero())}),
         OpCode("RET",RET),
-        OpCode("JP Z,nn",nil),
+        OpCode("JP Z,nn",{(cpu: GameBoyCPU) in JP_cc_nn(cpu, condition: cpu.registers.checkZero())}),
         OpCode("Two byte instruction set: Ext ops",EXT_OPCODE),
-        OpCode("CALL Z,nn",nil),
+        OpCode("CALL Z,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: cpu.registers.checkZero())}),
         OpCode("CALL nn",CALL_nn),
         OpCode("ADC A,n",nil),
         OpCode("RST 8",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x08)}),
         //0xDn
         OpCode("RET NC",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: !cpu.registers.checkCarry())}),
         OpCode("POP DE",{(cpu: GameBoyCPU) in POP_rr(cpu, regH: &cpu.registers.D, regL: &cpu.registers.E)}),
-        OpCode("JP NC,nn",nil),
+        OpCode("JP NC,nn",{(cpu: GameBoyCPU) in JP_cc_nn(cpu, condition: !cpu.registers.checkCarry())}),
         OpCode("XX",nil),
-        OpCode("CALL NC,nn",nil),
+        OpCode("CALL NC,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: !cpu.registers.checkCarry())}),
         OpCode("PUSH DE",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
         OpCode("SUB A,n",nil),
         OpCode("RST 10",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x10)}),
         OpCode("RET C",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("RETI",RETI),
-        OpCode("JP C,nn",nil),
+        OpCode("JP C,nn",{(cpu: GameBoyCPU) in JP_cc_nn(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("XX",nil),
-        OpCode("CALL C,nn",nil),
+        OpCode("CALL C,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("XX",nil),
         OpCode("SBC A,n",nil),
         OpCode("RST 18",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x18)}),
@@ -646,6 +646,14 @@ func JP_nn(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.updateClock(4)
 }
+func JP_cc_nn(cpu: GameBoyCPU, condition: Bool) {
+    if condition {
+        JP_nn(cpu)
+    } else {
+        cpu.registers.PC += 3
+        cpu.updateClock(3)
+    }
+}
 func JP_aHL(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.registers.getHL()
     cpu.updateClock(1)
@@ -656,6 +664,7 @@ func JR_n(cpu: GameBoyCPU) {
         cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
     } else {
         cpu.registers.PC = cpu.registers.PC &+ UInt16(num)
+        cpu.registers.PC++
     }
     cpu.registers.PC++  // is it really necessary?
     cpu.updateClock(3)
@@ -668,22 +677,6 @@ func JR_cc_n(cpu: GameBoyCPU, condition: Bool) {
         cpu.updateClock(2)
     }
 }
-/*func JR_NZ_n(cpu: GameBoyCPU) {
-    if(cpu.registers.F & F_ZERO == 0) {
-        JR_n(cpu)
-    } else {
-        cpu.registers.PC += 2
-        cpu.updateClock(2)
-    }
-}
-func JR_Z_n(cpu: GameBoyCPU) {
-    if(cpu.registers.F & F_ZERO != 0) {
-        JR_n(cpu)
-    } else {
-        cpu.registers.PC += 2
-        cpu.updateClock(2)
-    }
-}*/
 
 // calls
 func CALL_nn(cpu: GameBoyCPU) {
@@ -692,6 +685,14 @@ func CALL_nn(cpu: GameBoyCPU) {
     cpu.registers.PC = jump
     cpu.registers.SP -= 2;
     cpu.updateClock(6)
+}
+func CALL_cc_nn(cpu: GameBoyCPU, condition: Bool) {
+    if condition {
+        CALL_nn(cpu)
+    } else {
+        cpu.registers.PC += 3
+        cpu.updateClock(3)
+    }
 }
 func RET(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.memory.read16(address: cpu.registers.SP)
