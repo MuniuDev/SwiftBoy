@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Michal Majczak. All rights reserved.
 //
 
+// http://gameboy.mongenel.com/dmg/istat98.txt
+
 import Foundation
 
 class GameBoyPPU {
@@ -29,7 +31,6 @@ class GameBoyPPU {
     var clock: UInt
     var frameBuffer: [UInt8]
     var palette: [UInt8] = [0,96,192,255]
-    var ready: Bool = false
     
     init(memory mem: GameBoyRAM) {
         memory = mem
@@ -95,6 +96,14 @@ class GameBoyPPU {
     func tic(deltaClock: UInt) {
         clock = clock &+ deltaClock
         
+        let ly = memory.read(address: memory.LY)
+        let lyc = memory.read(address: memory.LYC)
+        var stat = memory.read(address: memory.STAT)
+        if ly == lyc { stat |= 0x04; memory.write(address: memory.STAT, value: stat) }
+        let lcdc_int = stat & 0x78
+        
+        if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(memory.I_LCDC) }
+        
         switch getMode() {
         case MODE_OAM_SCANLINE where clock >= 20:
                 clock %= 20
@@ -103,16 +112,18 @@ class GameBoyPPU {
                 clock %= 43
                 renderLine()
                 setMode(MODE_HBLANK)
+                if lcdc_int & 0x10 != 0 { memory.requestInterrupt(memory.I_LCDC)}
         case MODE_HBLANK where clock >= 51:
                 clock %= 51
                 setLine(getLine()+1)
                 if getLine() == 143 {
                     setMode(MODE_VBLANK)
+                    memory.requestInterrupt(memory.I_VBLANK)
+                    if lcdc_int & 0x20 != 0 { memory.requestInterrupt(memory.I_LCDC)}
                     //copyBuffer()
-                    ready = true
                 } else {
                     setMode(MODE_OAM_SCANLINE)
-                    ready = false
+                    if lcdc_int & 0x30 != 0 { memory.requestInterrupt(memory.I_LCDC)}
                 }
         case MODE_VBLANK where clock >= 114:
                 clock %= 114

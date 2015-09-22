@@ -79,11 +79,10 @@ class GameBoyTimer {
                 
                 
                 var tima = memory.read(address: memory.TIMA)
-                var didOverflow = tima > 0xFF - increment
+                if tima > 0xFF - increment { memory.requestInterrupt(memory.I_TIMER) } //request timer interrupt
                 tima = tima &+ increment
                 memory.write(address: memory.TIMA, value: tima)
                 memory.write(address: memory.TMA, value: tima)
-                //TODO handle timer overflow interrupt
             }
             
         }

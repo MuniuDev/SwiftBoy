@@ -60,7 +60,7 @@ class GameBoyCPU {
     var timer: GameBoyTimer
     var opcodes: [OpCode]
     var extOpcodes: [OpCode]
-    var interruptsEnabled: Bool
+    var interruptMasterFlag: Bool
     
     init(memory mem: GameBoyRAM) {
         registers = GameBoyRegisters()
@@ -68,10 +68,11 @@ class GameBoyCPU {
         opcodes = generateOpCodeTable()
         extOpcodes = generateExtOpCodeTable()
         timer = GameBoyTimer(memory: memory)
-        interruptsEnabled = false
+        interruptMasterFlag = false
     }
     
     func tic() {
+        HandleInterrupts()
         let opCodeVal = memory.read(address: registers.PC)
         let opCode = opcodes[Int(opCodeVal)]
         
@@ -83,6 +84,48 @@ class GameBoyCPU {
             exit(-1)
         }
         
+    }
+    
+    func HandleInterrupts() {
+        if !interruptMasterFlag { return }
+        let IE = memory.read(address: memory.IE)
+        let IF = memory.read(address: memory.IF)
+        
+        if (IE & IF & memory.I_P10P13) != 0 { // P10-P13 terminal negative edge
+            memory.write16(address: registers.SP-2, value: registers.PC)
+            registers.SP -= 2;
+            interruptMasterFlag = false
+            registers.PC = memory.JMP_I_P10P13
+            return
+        }
+        if (IE & IF & memory.I_SERIAL) != 0 { // Serial transfer completion
+            memory.write16(address: registers.SP-2, value: registers.PC)
+            registers.SP -= 2;
+            interruptMasterFlag = false
+            registers.PC = memory.JMP_I_SERIAL
+            return
+        }
+        if (IE & IF & memory.I_TIMER) != 0 { // Timer overflow
+            memory.write16(address: registers.SP-2, value: registers.PC)
+            registers.SP -= 2;
+            interruptMasterFlag = false
+            registers.PC = memory.JMP_I_TIMER
+            return
+        }
+        if (IE & IF & memory.I_LCDC) != 0 { // LCDC interrupt
+            memory.write16(address: registers.SP-2, value: registers.PC)
+            registers.SP -= 2;
+            interruptMasterFlag = false
+            registers.PC = memory.JMP_I_LCDC
+            return
+        }
+        if (IE & IF & memory.I_VBLANK) != 0 { // VBlank
+            memory.write16(address: registers.SP-2, value: registers.PC)
+            registers.SP -= 2;
+            interruptMasterFlag = false
+            registers.PC = memory.JMP_I_VBLANK
+            return
+        }
     }
     
     func updateClock(cycles: UInt8) {
@@ -100,7 +143,7 @@ class GameBoyCPU {
         registers.L = UInt8(0)
         registers.PC = UInt16(0)
         registers.SP = UInt16(0)
-        interruptsEnabled = false
+        interruptMasterFlag = false
         timer.reset()
     }
     

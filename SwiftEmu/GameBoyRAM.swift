@@ -53,6 +53,20 @@ class GameBoyRAM {
     let DMA_SIZE: UInt16 = 0x00A0
     let DMA_START: UInt16 = 0xFE00
     let DMA_END: UInt16 = 0xFE9F
+    
+    // Interrupts flags
+    let I_VBLANK: UInt8 = 0x01
+    let I_LCDC: UInt8 = 0x02
+    let I_TIMER: UInt8 = 0x04
+    let I_SERIAL: UInt8 = 0x08
+    let I_P10P13: UInt8 = 0x10
+    
+    // Interrupts jumps
+    let JMP_I_VBLANK: UInt16 = 0x0040
+    let JMP_I_LCDC: UInt16 = 0x0048
+    let JMP_I_TIMER: UInt16 = 0x0050
+    let JMP_I_SERIAL: UInt16 = 0x0058
+    let JMP_I_P10P13: UInt16 = 0x0060
 
     let biosSize = 0x100
     
@@ -84,7 +98,8 @@ class GameBoyRAM {
         memory[Int(DMA_START)...Int(DMA_END)] = memory[Int(addr)..<Int(addr+DMA_SIZE)]
     }
     
-    func UnmapBios() { memory[0..<biosSize] = romHeader[0..<biosSize] }
+    func unmapBios() { memory[0..<biosSize] = romHeader[0..<biosSize] }
+    func requestInterrupt(interrupt: UInt8) { memory[Int(IF)] |= interrupt }
     
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
@@ -97,7 +112,7 @@ class GameBoyRAM {
             DMATransfer(value)
         case 0xFF50 where value == 0x01:
             memory[Int(address)] = value;
-            UnmapBios()
+            unmapBios()
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:

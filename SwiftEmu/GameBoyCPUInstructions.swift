@@ -314,12 +314,12 @@ func NOP(cpu: GameBoyCPU) {
     cpu.updateClock(1)
 }
 func DI(cpu: GameBoyCPU) { //disable interrupts
-    //TODO implement interrupts
+    cpu.interruptMasterFlag = false
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func EI(cpu: GameBoyCPU) { //enable interrupts
-    //TODO implement interrupts
+    cpu.interruptMasterFlag = true
     cpu.registers.PC++
     cpu.updateClock(1)
 }
