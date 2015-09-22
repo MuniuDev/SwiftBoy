@@ -500,14 +500,14 @@ func SET_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
 // reset bit of given number
 func RES_b_r(cpu: GameBoyCPU, bit: UInt8, inout reg: UInt8) {
     let mask = UInt8(0x01 << bit)
-    reg = reg | ~mask
+    reg = reg & ~mask
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
 func RES_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
     let mask = UInt8(0x01 << bit)
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    val = val | ~mask
+    val = val & ~mask
     cpu.memory.write(address: cpu.registers.getHL(), value: val)
     cpu.updateClock(4)
     cpu.registers.PC+=2

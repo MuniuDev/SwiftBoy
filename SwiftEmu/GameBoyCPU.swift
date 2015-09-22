@@ -53,6 +53,9 @@ class GameBoyCPU {
             H = UInt8(value >> 8)
             L = UInt8(value & 0xFF)
         }
+        
+        func checkZero() -> Bool { return F & F_ZERO != 0 }
+        func checkCarry() -> Bool { return F & F_CARRY != 0 }
     }
     
     var registers: GameBoyRegisters
@@ -96,6 +99,7 @@ class GameBoyCPU {
             registers.SP -= 2;
             interruptMasterFlag = false
             registers.PC = memory.JMP_I_P10P13
+            memory.write(address: memory.IF, value: IF & ~memory.I_P10P13)
             return
         }
         if (IE & IF & memory.I_SERIAL) != 0 { // Serial transfer completion
@@ -103,6 +107,7 @@ class GameBoyCPU {
             registers.SP -= 2;
             interruptMasterFlag = false
             registers.PC = memory.JMP_I_SERIAL
+            memory.write(address: memory.IF, value: IF & ~memory.I_SERIAL)
             return
         }
         if (IE & IF & memory.I_TIMER) != 0 { // Timer overflow
@@ -110,6 +115,7 @@ class GameBoyCPU {
             registers.SP -= 2;
             interruptMasterFlag = false
             registers.PC = memory.JMP_I_TIMER
+            memory.write(address: memory.IF, value: IF & ~memory.I_TIMER)
             return
         }
         if (IE & IF & memory.I_LCDC) != 0 { // LCDC interrupt
@@ -117,6 +123,7 @@ class GameBoyCPU {
             registers.SP -= 2;
             interruptMasterFlag = false
             registers.PC = memory.JMP_I_LCDC
+            memory.write(address: memory.IF, value: IF & ~memory.I_LCDC)
             return
         }
         if (IE & IF & memory.I_VBLANK) != 0 { // VBlank
@@ -124,6 +131,7 @@ class GameBoyCPU {
             registers.SP -= 2;
             interruptMasterFlag = false
             registers.PC = memory.JMP_I_VBLANK
+            memory.write(address: memory.IF, value: IF & ~memory.I_VBLANK)
             return
         }
     }
