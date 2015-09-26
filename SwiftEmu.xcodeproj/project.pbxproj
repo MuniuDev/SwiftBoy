@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		906444811BB6C4A400FFC821 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9064447F1BB6C4A400FFC821 /* DebugViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		906444821BB6C4A400FFC821 /* EmulatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906444801BB6C4A400FFC821 /* EmulatorViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		90BD7F9C1B9F506C00C79443 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */; };
-		90BD7F9E1B9F506C00C79443 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7F9D1B9F506C00C79443 /* ViewController.swift */; };
 		90BD7FA01B9F506C00C79443 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7F9F1B9F506C00C79443 /* Images.xcassets */; };
 		90BD7FA31B9F506C00C79443 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FA11B9F506C00C79443 /* Main.storyboard */; };
 		90BD7FAF1B9F506C00C79443 /* SwiftEmuTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */; };
@@ -34,10 +35,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9064447F1BB6C4A400FFC821 /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
+		906444801BB6C4A400FFC821 /* EmulatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorViewController.swift; sourceTree = "<group>"; };
 		90BD7F961B9F506C00C79443 /* SwiftEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7F9A1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		90BD7F9D1B9F506C00C79443 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		90BD7F9F1B9F506C00C79443 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		90BD7FA21B9F506C00C79443 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,7 +98,8 @@
 				90BD7FF81BA45F8700C79443 /* roms */,
 				90BD7FF11BA40BD700C79443 /* Device */,
 				90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */,
-				90BD7F9D1B9F506C00C79443 /* ViewController.swift */,
+				9064447F1BB6C4A400FFC821 /* DebugViewController.swift */,
+				906444801BB6C4A400FFC821 /* EmulatorViewController.swift */,
 				90BD7FB81B9F59C800C79443 /* EmulatorScreen.swift */,
 				90BD7F9F1B9F506C00C79443 /* Images.xcassets */,
 				90BD7FA11B9F506C00C79443 /* Main.storyboard */,
@@ -247,9 +250,10 @@
 			files = (
 				90BD7FB91B9F59C800C79443 /* EmulatorScreen.swift in Sources */,
 				90C85B481BAD60D3002A599E /* GameBoyExtInstructions.swift in Sources */,
-				90BD7F9E1B9F506C00C79443 /* ViewController.swift in Sources */,
 				90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */,
 				90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */,
+				906444821BB6C4A400FFC821 /* EmulatorViewController.swift in Sources */,
+				906444811BB6C4A400FFC821 /* DebugViewController.swift in Sources */,
 				90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */,
 				90BD7FF71BA4107500C79443 /* GameBoyPPU.swift in Sources */,
 				90BD7FF51BA4106500C79443 /* GameBoyCPU.swift in Sources */,
