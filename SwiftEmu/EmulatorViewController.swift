@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class ViewController: NSViewController {
+class EmulatorViewController: NSViewController {
 
     // device IO
     @IBOutlet weak var emuScreen: EmulatorScreen!
