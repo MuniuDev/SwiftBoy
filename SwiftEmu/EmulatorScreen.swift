@@ -8,6 +8,37 @@
 
 import Cocoa
 
+extension EmulatorViewController: NSTableViewDataSource, NSTableViewDelegate {
+    
+    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+        return 0xFFFF
+    }
+    
+    func tableView(tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+        return 16
+    }
+    
+    func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
+
+        switch tableColumn!.identifier {
+        case "pc":
+            let cell = tableView.makeViewWithIdentifier("pc", owner: self) as! NSTableCellView
+            cell.textField!.stringValue = "0x" + String(format:"%04X",row)
+            return cell
+        case "opcode":
+            let cell = tableView.makeViewWithIdentifier("opcode", owner: self) as! NSTableCellView
+            cell.textField!.stringValue = "0x" + String(format:"%04X",(device!.memory.memory)[row])
+            return cell
+        case "instruction":
+            let cell = tableView.makeViewWithIdentifier("instruction", owner: self) as! NSTableCellView
+            cell.textField!.stringValue = device!.cpu.opcodes[Int((device!.memory.memory)[row])].name
+            return cell
+        default:
+            return nil
+        }
+    }
+}
+
 class EmulatorScreen: NSImageView {
     
     let imageRep : NSBitmapImageRep
