@@ -467,7 +467,8 @@ func SWAP_aHL(cpu: GameBoyCPU) {
 // check bit of given number
 func BIT_b_r(cpu: GameBoyCPU, bit: UInt8, reg: UInt8) {
     let mask = UInt8(0x01 << bit)
-    cpu.registers.F = F_HALF_CARRY
+    cpu.registers.F &= F_CARRY
+    cpu.registers.F |= F_HALF_CARRY
     if(mask & reg == 0) { cpu.registers.F |= F_ZERO }
     cpu.updateClock(2)
     cpu.registers.PC+=2
@@ -475,7 +476,8 @@ func BIT_b_r(cpu: GameBoyCPU, bit: UInt8, reg: UInt8) {
 func BIT_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
     let mask = UInt8(0x01 << bit)
     let val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F = F_HALF_CARRY
+    cpu.registers.F &= F_CARRY
+    cpu.registers.F |= F_HALF_CARRY
     if(mask & val == 0) { cpu.registers.F |= F_ZERO }
     cpu.updateClock(3)
     cpu.registers.PC+=2

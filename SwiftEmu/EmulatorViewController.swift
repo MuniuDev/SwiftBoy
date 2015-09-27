@@ -16,7 +16,6 @@ class EmulatorViewController: NSViewController {
     var device: GameBoyDevice?
 
     // debug IO
-    
     @IBOutlet weak var memoryView: NSTableView!
     @IBOutlet weak var valueAF: NSTextField!
     @IBOutlet weak var valueBC: NSTextField!

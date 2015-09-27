@@ -446,21 +446,21 @@ func LDD_aHL_A(cpu: GameBoyCPU) {
 // logical
 func AND_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.A &= reg
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func AND_aHL(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.A &= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func AND_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.A &= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
@@ -534,14 +534,14 @@ func CP_n(cpu: GameBoyCPU) {
 }
 func CPL(cpu: GameBoyCPU) {
     cpu.registers.A = 0xFF - cpu.registers.A
-    cpu.registers.F = F_HALF_CARRY | F_NEGATIVE
+    cpu.registers.F |= F_HALF_CARRY | F_NEGATIVE
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 
 // incrementation/ decrementation
 func INC_r(cpu: GameBoyCPU, inout reg: UInt8) {
-    cpu.registers.F = 0
+    cpu.registers.F &= F_CARRY // don't change last carry value
     if reg == 0xFF { cpu.registers.F |= F_ZERO }
     if reg & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
     reg = reg &+ 1
@@ -550,7 +550,8 @@ func INC_r(cpu: GameBoyCPU, inout reg: UInt8) {
 }
 func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     //flags
-    cpu.registers.F = F_NEGATIVE
+    cpu.registers.F &= F_CARRY
+    cpu.registers.F |= F_NEGATIVE
     if reg == 0x01 { cpu.registers.F |= F_ZERO }
     if reg & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
     reg = reg &- 1
@@ -573,7 +574,7 @@ func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
 }
 func INC_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F = 0
+    cpu.registers.F &= F_CARRY // don't change last carry value
     if val == 0xFF { cpu.registers.F |= F_ZERO }
     if val & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
     val = val &+ 1
@@ -583,7 +584,8 @@ func INC_aHL(cpu: GameBoyCPU) {
 }
 func DEC_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F = F_NEGATIVE
+    cpu.registers.F &= F_CARRY
+    cpu.registers.F |= F_NEGATIVE
     if val == 0x01 { cpu.registers.F |= F_ZERO }
     if val & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
     val = val &- 1
