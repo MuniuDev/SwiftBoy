@@ -69,8 +69,8 @@ class GameBoyPPU {
                 
                 for i in 0..<160 {
                     let mask = UInt8(0x80 >> x)
-                    let color_id = ((UInt8(colorLine & 0xFF) & mask) >> (7-x)) << 1 + ((UInt8(colorLine >> 8) & mask) >> (7-x))  // find color id
-                    let color_val = (bgp & (0x03 << color_id)) >> color_id      // mask it with BGP (palette) register to get actual color number
+                    let color_id = ((UInt8(colorLine & 0xFF) & mask) >> (7-x)) + ((UInt8(colorLine >> 8) & mask) >> (7-x)) << 1  // find color id
+                    let color_val = (bgp >> (color_id*2)) & 0x03 // mask it with BGP (palette) register to get actual color number
                     frameBuffer[frame_offset + i] = palette[Int(color_val)]     // get RGB value from palette
                     ++x
                     if x == 8 {

@@ -70,7 +70,7 @@ class EmulatorScreen: NSImageView {
         for var j = 0; j < scaledHeight; ++j {
             for var i = 0; i < scaledWidth; ++i {
                 let hue = CGFloat(255 - screenBuffer[(j/scale)*160+(i/scale)])/CGFloat(255)
-                let color = NSColor(calibratedRed: hue, green: hue, blue: hue, alpha: CGFloat(1))
+                let color = NSColor(calibratedRed: hue, green: hue, blue: hue, alpha: hue ) //CGFloat(1))
                 imageRep.setColor(color, atX: i, y: j)
             }
         }
