@@ -21,6 +21,8 @@ class GameBoyPPU {
     let BG_2: UInt16 = 0x9C00   //start addr of bg data for bg display data 2
     let BG_SIZE: UInt16 = 0x0400
     
+    let OAM: UInt16 = 0xFE00
+    
     let MODE_OAM_SCANLINE: UInt8 = 0x02
     let MODE_VRAM_SCANLINE: UInt8 = 0x03
     let MODE_HBLANK: UInt8 = 0x00
@@ -38,6 +40,12 @@ class GameBoyPPU {
         clock = 0
         setMode(MODE_HBLANK)
         setLine(0)
+    }
+    
+    func getPixelColor(fromLine line: UInt16, andColumn column: UInt8, withPalette palette: UInt8) -> UInt8 {
+        let mask = UInt8(0x80 >> column)
+        let color_id = ((UInt8(line & 0xFF) & mask) >> (7-column)) + ((UInt8(line >> 8) & mask) >> (7-column)) << 1  // find color id
+        return (palette >> (color_id*2)) & 0x03
     }
     
     func renderLine() {
@@ -68,10 +76,7 @@ class GameBoyPPU {
                 var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                 
                 for i in 0..<160 {
-                    let mask = UInt8(0x80 >> x)
-                    let color_id = ((UInt8(colorLine & 0xFF) & mask) >> (7-x)) + ((UInt8(colorLine >> 8) & mask) >> (7-x)) << 1  // find color id
-                    let color_val = (bgp >> (color_id*2)) & 0x03 // mask it with BGP (palette) register to get actual color number
-                    frameBuffer[frame_offset + i] = palette[Int(color_val)]     // get RGB value from palette
+                    frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
                     ++x
                     if x == 8 {
                         x = 0
@@ -83,8 +88,39 @@ class GameBoyPPU {
             }
             
             // is OBJ display on?
-            if lcdc & 0x02 != 0 {   // draw BG
-                
+            if lcdc & 0x02 != 0 {   // draw OBJ
+                //let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
+                var startAddr = OAM
+                var spriteCount = 0
+                for _ in 0..<40 {
+                    // extract sprite data
+                    let spr_y = memory.read(address: startAddr) &- 16
+                    let spr_x = memory.read(address: startAddr+1) &- 8
+                    let spr_num = memory.read(address: startAddr+2)
+                    let spr_attrib = memory.read(address: startAddr+3)
+                    startAddr += 4
+                    
+                    if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
+                        ++spriteCount
+                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? memory.OBP0 : memory.OBP1)
+                        var colorLine = UInt16(0)
+                        if spr_attrib & 0x40 != 0 { //check y flip
+                            colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + 14 - line_y_off)
+                        } else {
+                            colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + line_y_off)
+                        }
+                        
+                        for x : UInt8 in 0..<8 {
+                            let pos_x = spr_attrib & 0x20 != 0 ? 7-x : x
+                            let color = getPixelColor(fromLine: colorLine, andColumn: pos_x, withPalette: spr_palette)
+                            if spr_x + pos_x >= 0  && spr_x + pos_x < 160 && color != 0 &&
+                                (spr_attrib & 0x80 == 0 || frameBuffer[frame_offset + Int(spr_x) + Int(pos_x)] == 0) {
+                                frameBuffer[frame_offset + Int(spr_x) + Int(pos_x)] = palette[Int(color)]
+                            }
+                        }
+                    }
+                }
+                if spriteCount >= 9 { return }
             }
         }
     }
