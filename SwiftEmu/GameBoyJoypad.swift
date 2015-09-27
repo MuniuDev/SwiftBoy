@@ -10,9 +10,42 @@ import Foundation
 
 class GameBoyJoypad {
     
-    //TODO implement joypad
-    func getKeyValue(mask: UInt8) -> UInt8 {
-        return mask == 0x10 ? 0xDF : 0xEF
+    static let BTN_UP: UInt8 = 0x40
+    static let BTN_DOWN: UInt8 = 0x80
+    static let BTN_LEFT: UInt8 = 0x20
+    static let BTN_RIGHT: UInt8 = 0x10
+    
+    static let BTN_A: UInt8 = 0x01
+    static let BTN_B: UInt8 = 0x02
+    static let BTN_START: UInt8 = 0x08
+    static let BTN_SELECT: UInt8 = 0x04
+    
+    var state: UInt8
+    var mask: UInt8
+    
+    init() {
+        state = 0xFF
+        mask = 0x00
     }
     
+    func setRow(mask: UInt8) {
+        self.mask = mask & 0x30
+    }
+    
+    func getKeyValue() -> UInt8 {
+        if mask == 0x10 {
+            return (state & 0x0F)
+        } else if mask == 0x20 {
+            return ((state >> 4) & 0x0F)
+        }
+        return 0xFF
+    }
+    
+    func pressButton(flag: UInt8) {
+        state &= ~flag
+    }
+    
+    func releaseButton(flag: UInt8) {
+        state |= flag
+    }
 }

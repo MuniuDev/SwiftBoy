@@ -18,6 +18,10 @@ extension EmulatorViewController: NSTableViewDataSource, NSTableViewDelegate {
         return 16
     }
     
+    func tableView(tableView: NSTableView, shouldTypeSelectForEvent event: NSEvent, withCurrentSearchString searchString: String?) -> Bool {
+        return false
+    }
+    
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
 
         switch tableColumn!.identifier {

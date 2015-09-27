@@ -115,7 +115,8 @@ class GameBoyRAM {
             memory[Int(address)] = value;
             unmapBios()
         case Int(P1):    //write to joypad
-            memory[Int(address)] = joypad.getKeyValue(value)
+            joypad.setRow(value)
+            //memory[Int(address)] = joypad.getKeyValue()
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:
@@ -126,11 +127,13 @@ class GameBoyRAM {
     func read(address address: UInt16) -> UInt8 {
         switch Int(address) {
         case 0x0000...0xDFFF:
-                return memory[Int(address)];
+            return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
-                return memory[Int(address) - 0x2000];
+            return memory[Int(address) - 0x2000];
+        case Int(P1):    //write to joypad
+            return joypad.getKeyValue()
         case 0xFE00...0xFFFF:
-                return memory[Int(address)];
+            return memory[Int(address)];
         default:
             print("Read error of address: " + String(address) + ".")
             return UInt8(0);

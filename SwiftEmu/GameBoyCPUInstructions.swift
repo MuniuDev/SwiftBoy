@@ -533,7 +533,7 @@ func CP_n(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 func CPL(cpu: GameBoyCPU) {
-    cpu.registers.A = 0xFF - cpu.registers.A
+    cpu.registers.A = ~cpu.registers.A
     cpu.registers.F |= F_HALF_CARRY | F_NEGATIVE
     cpu.registers.PC++
     cpu.updateClock(1)
@@ -634,6 +634,15 @@ func ADD_HL_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
     cpu.updateClock(2)
 }
 func SUB_A_r(cpu: GameBoyCPU, reg: UInt8) {
+    cpu.registers.F = F_NEGATIVE
+    if cpu.registers.A & 0x0F < reg { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- reg == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &- reg
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func SUB_A_n(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.F = F_NEGATIVE
     if cpu.registers.A & 0x0F < reg { cpu.registers.F |= F_HALF_CARRY }
     if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= F_CARRY }

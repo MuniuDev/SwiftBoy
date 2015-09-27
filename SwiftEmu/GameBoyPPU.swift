@@ -54,7 +54,6 @@ class GameBoyPPU {
         if lcdc & 0x80 != 0 {
             //let stat = memory.read(address: memory.STAT)
             let ly = memory.read(address: memory.LY)
-            //let lyc = memory.read(address: memory.LYC)
             let scx = memory.read(address: memory.SCX)
             let scy = memory.read(address: memory.SCY)
             let bgp = memory.read(address: memory.BGP)
@@ -120,7 +119,7 @@ class GameBoyPPU {
                         }
                     }
                 }
-                if spriteCount >= 9 { return }
+                if spriteCount >= 10 { return }
             }
         }
     }
