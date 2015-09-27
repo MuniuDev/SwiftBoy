@@ -12,6 +12,7 @@ import Dispatch
 class GameBoyDevice {
     
     let screen: EmulatorScreen
+    let joypad: GameBoyJoypad
     let memory: GameBoyRAM
     let cpu: GameBoyCPU
     let ppu: GameBoyPPU
@@ -38,7 +39,8 @@ class GameBoyDevice {
         romData.getBytes(&rom, length: romData.length)
         
         self.screen = emuScreen
-        self.memory = GameBoyRAM(bios: bios,rom: rom)
+        self.joypad = GameBoyJoypad()
+        self.memory = GameBoyRAM(joypad: joypad, bios: bios,rom: rom)
         self.cpu = GameBoyCPU(memory: memory)
         self.ppu = GameBoyPPU(memory: memory)
         

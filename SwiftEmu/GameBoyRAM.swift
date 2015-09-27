@@ -72,12 +72,13 @@ class GameBoyRAM {
     
     var memory: [UInt8]
     var romHeader: [UInt8]
+    let joypad: GameBoyJoypad
     
-    init(bios: [UInt8], rom: [UInt8]) {
+    init(joypad: GameBoyJoypad, bios: [UInt8], rom: [UInt8]) {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
         memory[0..<biosSize] = bios[0..<biosSize] //load bios into memory
         memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
-        
+        self.joypad = joypad
         romHeader = [UInt8](count: biosSize, repeatedValue: UInt8(0))
         romHeader[0..<biosSize] = rom[0..<biosSize] // save cartridge header for later
     }
@@ -113,6 +114,8 @@ class GameBoyRAM {
         case 0xFF50 where value == 0x01:
             memory[Int(address)] = value;
             unmapBios()
+        case Int(P1):    //write to joypad
+            memory[Int(address)] = joypad.getKeyValue(value)
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:

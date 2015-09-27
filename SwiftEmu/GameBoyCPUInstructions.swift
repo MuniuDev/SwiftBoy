@@ -231,7 +231,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("JP nn",JP_nn),
         OpCode("CALL NZ,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: !cpu.registers.checkZero())}),
         OpCode("PUSH BC",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
-        OpCode("ADD A,n",nil),
+        OpCode("ADD A,n",ADD_A_n),
         OpCode("RST 0",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x00)}),
         OpCode("RET Z",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: cpu.registers.checkZero())}),
         OpCode("RET",RET),
@@ -606,6 +606,16 @@ func ADD_A_r(cpu: GameBoyCPU, reg: UInt8) {
 }
 func ADD_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL())
+    cpu.registers.F = 0
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &+ val
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+func ADD_A_n(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.F = 0
     if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }

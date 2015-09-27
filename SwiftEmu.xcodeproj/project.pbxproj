@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		906444811BB6C4A400FFC821 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9064447F1BB6C4A400FFC821 /* DebugViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		906444821BB6C4A400FFC821 /* EmulatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906444801BB6C4A400FFC821 /* EmulatorViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		9074EDFB1BB80C2B00C67852 /* GameBoyJoypad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */; settings = {ASSET_TAGS = (); }; };
 		90BD7F9C1B9F506C00C79443 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */; };
 		90BD7FA01B9F506C00C79443 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7F9F1B9F506C00C79443 /* Images.xcassets */; };
 		90BD7FA31B9F506C00C79443 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FA11B9F506C00C79443 /* Main.storyboard */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		9064447F1BB6C4A400FFC821 /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		906444801BB6C4A400FFC821 /* EmulatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorViewController.swift; sourceTree = "<group>"; };
+		9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyJoypad.swift; sourceTree = "<group>"; };
 		90BD7F961B9F506C00C79443 /* SwiftEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7F9A1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */,
 				90C85B471BAD60D3002A599E /* GameBoyExtInstructions.swift */,
 				90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */,
+				9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */,
 			);
 			name = Device;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 				90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */,
 				90BD7FF71BA4107500C79443 /* GameBoyPPU.swift in Sources */,
 				90BD7FF51BA4106500C79443 /* GameBoyCPU.swift in Sources */,
+				9074EDFB1BB80C2B00C67852 /* GameBoyJoypad.swift in Sources */,
 				90BD7F9C1B9F506C00C79443 /* AppDelegate.swift in Sources */,
 				90BD7FF31BA4105800C79443 /* GameBoyRAM.swift in Sources */,
 			);
