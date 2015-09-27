@@ -29,7 +29,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("DEC B",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.B)}),
         OpCode("LD B,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.B)}),
         OpCode("RLC A",{(cpu: GameBoyCPU) in RLC_r(cpu, reg: &cpu.registers.A); cpu.registers.PC--}),
-        OpCode("LD (nn),SP",nil),
+        OpCode("LD (nn),SP",LD_ann_SP),
         OpCode("ADD HL,BC",{(cpu: GameBoyCPU) in ADD_HL_rr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
         OpCode("LD A,(BC)",{(cpu: GameBoyCPU) in LD_A_arr(cpu, regH: cpu.registers.B, regL: cpu.registers.C)}),
         OpCode("DEC BC",{(cpu: GameBoyCPU) in DEC_rr(cpu, regH: &cpu.registers.B, regL: &cpu.registers.C)}),
@@ -46,7 +46,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("DEC D",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.D)}),
         OpCode("LD D,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.D)}),
         OpCode("RL A",{(cpu: GameBoyCPU) in RL_r(cpu, reg: &cpu.registers.A); cpu.registers.PC--}),
-        OpCode("JR n",JR_n),
+        OpCode("JR e",JR_e),
         OpCode("ADD HL,DE",{(cpu: GameBoyCPU) in ADD_HL_rr(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
         OpCode("LD A,(DE)",{(cpu: GameBoyCPU) in LD_A_arr(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
         OpCode("DEC DE",{(cpu: GameBoyCPU) in DEC_rr(cpu, regH: &cpu.registers.D, regL: &cpu.registers.E)}),
@@ -55,15 +55,15 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD E,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.E)}),
         OpCode("RR A",{(cpu: GameBoyCPU) in RR_r(cpu, reg: &cpu.registers.A); cpu.registers.PC--}),
         //0x2n
-        OpCode("JR NZ,n",{(cpu: GameBoyCPU) in JR_cc_n(cpu, condition: !cpu.registers.checkZero())}),
+        OpCode("JR NZ,e",{(cpu: GameBoyCPU) in JR_cc_e(cpu, condition: !cpu.registers.checkZero())}),
         OpCode("LD HL,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, regH: &cpu.registers.H, regL: &cpu.registers.L)}),
         OpCode("LDI (HL),A",LDI_aHL_A),
         OpCode("INC HL",{(cpu: GameBoyCPU) in INC_rr(cpu, regH: &cpu.registers.H, regL: &cpu.registers.L)}),
         OpCode("INC H",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.H)}),
         OpCode("DEC H",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.H)}),
         OpCode("LD H,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.H)}),
-        OpCode("DAA",nil),
-        OpCode("JR Z,n",{(cpu: GameBoyCPU) in JR_cc_n(cpu, condition: cpu.registers.checkZero())}),
+        OpCode("DAA",DAA),
+        OpCode("JR Z,e",{(cpu: GameBoyCPU) in JR_cc_e(cpu, condition: cpu.registers.checkZero())}),
         OpCode("ADD HL,HL",{(cpu: GameBoyCPU) in ADD_HL_rr(cpu, regH: cpu.registers.H, regL: cpu.registers.L)}),
         OpCode("LDI A,(HL)",LDI_A_aHL),
         OpCode("DEC HL",{(cpu: GameBoyCPU) in DEC_rr(cpu, regH: &cpu.registers.H, regL: &cpu.registers.L)}),
@@ -72,22 +72,22 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD L,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.L)}),
         OpCode("CPL",CPL),
         //0x3n
-        OpCode("JR NC,n",{(cpu: GameBoyCPU) in JR_cc_n(cpu, condition: !cpu.registers.checkCarry())}),
+        OpCode("JR NC,e",{(cpu: GameBoyCPU) in JR_cc_e(cpu, condition: !cpu.registers.checkCarry())}),
         OpCode("LD SP,nn",LD_SP_nn),
         OpCode("LDD (HL),A",LDD_aHL_A),
-        OpCode("INC SP",nil),
+        OpCode("INC SP",INC_SP),
         OpCode("INC (HL)",INC_aHL),
         OpCode("DEC (HL)",DEC_aHL),
         OpCode("LD (HL),n",LD_aHL_n),
-        OpCode("SCF",nil),
-        OpCode("JR C,n",{(cpu: GameBoyCPU) in JR_cc_n(cpu, condition: cpu.registers.checkCarry())}),
+        OpCode("SCF",SCF),
+        OpCode("JR C,e",{(cpu: GameBoyCPU) in JR_cc_e(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("ADD HL,SP",{(cpu: GameBoyCPU) in ADD_HL_rr(cpu, regH: UInt8(cpu.registers.SP >> 8), regL: UInt8(cpu.registers.SP & 0xFF))}),
         OpCode("LDD A,(HL)",LDD_A_aHL),
-        OpCode("DEC SP",nil),
+        OpCode("DEC SP",DEC_SP),
         OpCode("INC A",{(cpu: GameBoyCPU) in INC_r(cpu, reg: &cpu.registers.A)}),
         OpCode("DEC A",{(cpu: GameBoyCPU) in DEC_r(cpu, reg: &cpu.registers.A)}),
         OpCode("LD A,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.A)}),
-        OpCode("CCF",nil),
+        OpCode("CCF",CCF),
         //0x4n
         OpCode("LD B,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.B)}),
         OpCode("LD B,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.B, reg2: cpu.registers.C)}),
@@ -165,14 +165,14 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("ADD A,L",{(cpu: GameBoyCPU) in ADD_A_r(cpu, reg: cpu.registers.L)}),
         OpCode("ADD A,(HL)",ADD_A_aHL),
         OpCode("ADD A,A",{(cpu: GameBoyCPU) in ADD_A_r(cpu, reg: cpu.registers.A)}),
-        OpCode("ADC A,B",nil),
-        OpCode("ADC A,C",nil),
-        OpCode("ADC A,D",nil),
-        OpCode("ADC A,E",nil),
-        OpCode("ADC A,H",nil),
-        OpCode("ADC A,L",nil),
-        OpCode("ADC A,(HL)",nil),
-        OpCode("ADC A,A",nil),
+        OpCode("ADC A,B",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.B)}),
+        OpCode("ADC A,C",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.C)}),
+        OpCode("ADC A,D",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.D)}),
+        OpCode("ADC A,E",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.E)}),
+        OpCode("ADC A,H",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.H)}),
+        OpCode("ADC A,L",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.L)}),
+        OpCode("ADC A,(HL)",ADC_A_aHL),
+        OpCode("ADC A,A",{(cpu: GameBoyCPU) in ADC_A_r(cpu, reg: cpu.registers.A)}),
         //0x9n
         OpCode("SUB A,B",{(cpu: GameBoyCPU) in SUB_A_r(cpu, reg: cpu.registers.B)}),
         OpCode("SUB A,C",{(cpu: GameBoyCPU) in SUB_A_r(cpu, reg: cpu.registers.C)}),
@@ -182,14 +182,14 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("SUB A,L",{(cpu: GameBoyCPU) in SUB_A_r(cpu, reg: cpu.registers.L)}),
         OpCode("SUB A,(HL)",SUB_A_aHL),
         OpCode("SUB A,A",{(cpu: GameBoyCPU) in SUB_A_r(cpu, reg: cpu.registers.A)}),
-        OpCode("SBC A,B",nil),
-        OpCode("SBC A,C",nil),
-        OpCode("SBC A,D",nil),
-        OpCode("SBC A,E",nil),
-        OpCode("SBC A,H",nil),
-        OpCode("SBC A,L",nil),
-        OpCode("SBC A,(HL)",nil),
-        OpCode("SBC A,A",nil),
+        OpCode("SBC A,B",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.B)}),
+        OpCode("SBC A,C",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.C)}),
+        OpCode("SBC A,D",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.D)}),
+        OpCode("SBC A,E",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.E)}),
+        OpCode("SBC A,H",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.H)}),
+        OpCode("SBC A,L",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.L)}),
+        OpCode("SBC A,(HL)",SBC_A_aHL),
+        OpCode("SBC A,A",{(cpu: GameBoyCPU) in SBC_A_r(cpu, reg: cpu.registers.A)}),
         //0xAn
         OpCode("AND B",{(cpu: GameBoyCPU) in AND_r(cpu, reg: cpu.registers.B)}),
         OpCode("AND C",{(cpu: GameBoyCPU) in AND_r(cpu, reg: cpu.registers.C)}),
@@ -239,7 +239,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("Two byte instruction set: Ext ops",EXT_OPCODE),
         OpCode("CALL Z,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: cpu.registers.checkZero())}),
         OpCode("CALL nn",CALL_nn),
-        OpCode("ADC A,n",nil),
+        OpCode("ADC A,n",ADC_A_n),
         OpCode("RST 8",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x08)}),
         //0xDn
         OpCode("RET NC",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: !cpu.registers.checkCarry())}),
@@ -248,7 +248,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("XX",nil),
         OpCode("CALL NC,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: !cpu.registers.checkCarry())}),
         OpCode("PUSH DE",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
-        OpCode("SUB A,n",nil),
+        OpCode("SUB A,n",SUB_A_n),
         OpCode("RST 10",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x10)}),
         OpCode("RET C",{(cpu: GameBoyCPU) in RET_cc(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("RETI",RETI),
@@ -256,7 +256,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("XX",nil),
         OpCode("CALL C,nn",{(cpu: GameBoyCPU) in CALL_cc_nn(cpu, condition: cpu.registers.checkCarry())}),
         OpCode("XX",nil),
-        OpCode("SBC A,n",nil),
+        OpCode("SBC A,n",SBC_A_n),
         OpCode("RST 18",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x18)}),
         //0xEn
         OpCode("LDH (n),A",LDH_an_A),
@@ -267,7 +267,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("PUSH HL",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.H, regL: cpu.registers.L)}),
         OpCode("AND n",AND_n),
         OpCode("RST 20",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x20)}),
-        OpCode("ADD SP,d",nil),
+        OpCode("ADD SP,e",ADD_SP_e),
         OpCode("JP (HL)",JP_aHL),
         OpCode("LD (nn),A",LD_ann_A),
         OpCode("XX",nil),
@@ -284,8 +284,8 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("PUSH AF",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.A, regL: cpu.registers.F)}),
         OpCode("OR n",OR_n),
         OpCode("RST 30",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x30)}),
-        OpCode("LDHL SP,d",nil),
-        OpCode("LD SP,HL",nil),
+        OpCode("LDHL SP,e",LDHL_SP_e),
+        OpCode("LD SP,HL",LD_SP_HL),
         OpCode("LD A,(NN)",LD_A_ann),
         OpCode("EI",EI),
         OpCode("XX",nil),
@@ -320,6 +320,17 @@ func DI(cpu: GameBoyCPU) { //disable interrupts
 }
 func EI(cpu: GameBoyCPU) { //enable interrupts
     cpu.interruptMasterFlag = true
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func SCF(cpu: GameBoyCPU) {
+    cpu.registers.F &= F_ZERO
+    cpu.registers.F |= F_CARRY
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func CCF(cpu: GameBoyCPU) {
+    cpu.registers.F = F_ZERO | ((~cpu.registers.F) & F_CARRY)
     cpu.registers.PC++
     cpu.updateClock(1)
 }
@@ -439,6 +450,32 @@ func LDD_aHL_A(cpu: GameBoyCPU) {
     cpu.memory.write(address: addr, value: cpu.registers.A)
     --addr
     cpu.registers.setHL(addr)
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+func LD_ann_SP(cpu: GameBoyCPU) {
+    let addr = cpu.memory.read16(address: cpu.registers.PC+1)
+    cpu.memory.write16(address: addr, value: cpu.registers.SP)
+    cpu.registers.PC+=3
+    cpu.updateClock(5)
+}
+func LDHL_SP_e(cpu: GameBoyCPU) {
+    let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
+    let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
+    cpu.registers.setHL(val)
+    cpu.registers.F = 0
+    if tmp < 0 {
+        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= F_HALF_CARRY }
+        if val > cpu.registers.SP { cpu.registers.F |= F_CARRY }
+    } else {
+        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= F_HALF_CARRY }
+        if val < cpu.registers.SP { cpu.registers.F |= F_CARRY }
+    }
+    cpu.registers.PC+=2
+    cpu.updateClock(3)
+}
+func LD_SP_HL(cpu: GameBoyCPU) {
+    cpu.registers.SP = cpu.registers.getHL()
     cpu.registers.PC++
     cpu.updateClock(2)
 }
@@ -572,6 +609,16 @@ func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     cpu.registers.PC++
     cpu.updateClock(2)
 }
+func INC_SP(cpu: GameBoyCPU) {
+    cpu.registers.SP = cpu.registers.SP &+ 1
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+func DEC_SP(cpu: GameBoyCPU) {
+    cpu.registers.SP = cpu.registers.SP &- 1
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
 func INC_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.F &= F_CARRY // don't change last carry value
@@ -621,7 +668,7 @@ func ADD_A_n(cpu: GameBoyCPU) {
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
     if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
-    cpu.registers.PC++
+    cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func ADD_HL_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
@@ -642,14 +689,15 @@ func SUB_A_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-func SUB_A_n(cpu: GameBoyCPU, reg: UInt8) {
+func SUB_A_n(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < reg { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- reg == 0 { cpu.registers.F |= F_ZERO }
-    cpu.registers.A = cpu.registers.A &- reg
-    cpu.registers.PC++
-    cpu.updateClock(1)
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &- val
+    cpu.registers.PC+=2
+    cpu.updateClock(2)
 }
 func SUB_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL())
@@ -660,6 +708,139 @@ func SUB_A_aHL(cpu: GameBoyCPU) {
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC++
     cpu.updateClock(2)
+}
+
+func ADC_A_r(cpu: GameBoyCPU, reg: UInt8) {
+    let val = reg + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = 0
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &+ val
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func ADC_A_aHL(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = 0
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &+ val
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+func ADC_A_n(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = 0
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &+ val
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+func SBC_A_r(cpu: GameBoyCPU, reg: UInt8) {
+    let val = reg + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &- val
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func SBC_A_n(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &- val
+    cpu.registers.PC+=2
+    cpu.updateClock(2)
+}
+func SBC_A_aHL(cpu: GameBoyCPU) {
+    let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
+    cpu.registers.F = F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.A = cpu.registers.A &- val
+    cpu.registers.PC++
+    cpu.updateClock(2)
+}
+
+func ADD_SP_e(cpu: GameBoyCPU) {
+    let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
+    let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
+    cpu.registers.F = 0
+    if tmp < 0 {
+        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= F_HALF_CARRY }
+        if val > cpu.registers.SP { cpu.registers.F |= F_CARRY }
+    } else {
+        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= F_HALF_CARRY }
+        if val < cpu.registers.SP { cpu.registers.F |= F_CARRY }
+    }
+    cpu.registers.SP = val
+    cpu.registers.PC+=2
+    cpu.updateClock(4)
+}
+
+func DAA(cpu: GameBoyCPU) {
+    cpu.registers.F &= F_NEGATIVE
+    if(cpu.registers.A == 0) {
+        cpu.registers.F |= F_ZERO
+        cpu.registers.PC++
+        cpu.updateClock(1)
+        return
+    }
+    
+    if cpu.registers.F & F_NEGATIVE == 0 {
+        //addition
+        switch cpu.registers.F & (F_CARRY | F_HALF_CARRY) {
+        case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 < 0x90:
+            cpu.registers.A = cpu.registers.A &+ 0x06
+        case 0 where cpu.registers.A & 0x0F < 0x0A && cpu.registers.A & 0xF0 >= 0xA0:
+            cpu.registers.A = cpu.registers.A &+ 0x60
+            cpu.registers.F |= F_CARRY
+        case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 >= 0x90:
+            cpu.registers.A = cpu.registers.A &+ 0x66
+            cpu.registers.F |= F_CARRY
+        case F_HALF_CARRY where cpu.registers.A & 0xF0 < 0xA0:
+            cpu.registers.A = cpu.registers.A &+ 0x06
+        case F_HALF_CARRY where cpu.registers.A & 0xF0 >= 0xA0:
+            cpu.registers.A = cpu.registers.A &+ 0x66
+            cpu.registers.F |= F_CARRY
+        case F_CARRY where cpu.registers.A & 0x0F < 0x0A:
+            cpu.registers.A = cpu.registers.A &+ 0x60
+            cpu.registers.F |= F_CARRY
+        case F_CARRY where cpu.registers.A & 0x0F >= 0x0A:
+            cpu.registers.A = cpu.registers.A &+ 0x66
+            cpu.registers.F |= F_CARRY
+        case F_CARRY | F_HALF_CARRY:
+            cpu.registers.A = cpu.registers.A &+ 0x66
+            cpu.registers.F |= F_CARRY
+        default:
+            break
+        }
+    } else {
+        //subtraction
+        switch cpu.registers.F & (F_CARRY | F_HALF_CARRY) {
+        case F_HALF_CARRY:
+            cpu.registers.A = cpu.registers.A &+ 0xFA
+        case F_CARRY:
+            cpu.registers.A = cpu.registers.A &+ 0xA0
+            cpu.registers.F |= F_CARRY
+        case F_CARRY | F_HALF_CARRY:
+            cpu.registers.A = cpu.registers.A &+ 0x9A
+            cpu.registers.F |= F_CARRY
+        default:
+            break
+        }
+    }
+    cpu.registers.PC++
+    cpu.updateClock(1)
 }
 
 // jumps
@@ -679,20 +860,16 @@ func JP_aHL(cpu: GameBoyCPU) {
     cpu.registers.PC = cpu.registers.getHL()
     cpu.updateClock(1)
 }
-func JR_n(cpu: GameBoyCPU) {
-    let num = cpu.memory.read(address: cpu.registers.PC+1)
-    if(num & 0x80 > 0) {
-        cpu.registers.PC = cpu.registers.PC &- UInt16(num^0xFF)
-    } else {
-        cpu.registers.PC = cpu.registers.PC &+ UInt16(num)
-        cpu.registers.PC++
-    }
-    cpu.registers.PC++  // is it really necessary?
+func JR_e(cpu: GameBoyCPU) {
+    let tmp = cpu.memory.read(address: cpu.registers.PC+1)
+    let val = Int(Int8(bitPattern: tmp))
+    cpu.registers.PC = UInt16(truncatingBitPattern: Int(cpu.registers.PC) + val)
+    cpu.registers.PC+=2
     cpu.updateClock(3)
 }
-func JR_cc_n(cpu: GameBoyCPU, condition: Bool) {
+func JR_cc_e(cpu: GameBoyCPU, condition: Bool) {
     if condition {
-        JR_n(cpu)
+        JR_e(cpu)
     } else {
         cpu.registers.PC += 2
         cpu.updateClock(2)
