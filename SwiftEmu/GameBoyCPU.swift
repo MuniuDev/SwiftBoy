@@ -92,16 +92,7 @@ class GameBoyCPU {
     }
     
     func reset() {
-        registers.A = UInt8(0)
-        registers.F = UInt8(0)
-        registers.B = UInt8(0)
-        registers.C = UInt8(0)
-        registers.D = UInt8(0)
-        registers.E = UInt8(0)
-        registers.H = UInt8(0)
-        registers.L = UInt8(0)
-        registers.PC = UInt16(0)
-        registers.SP = UInt16(0)
+        registers.reset()
         interruptMasterFlag = false
         timer.reset()
     }

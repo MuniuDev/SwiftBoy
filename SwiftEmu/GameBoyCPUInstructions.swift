@@ -324,7 +324,7 @@ func CCF(cpu: GameBoyCPU) {
     cpu.updateClock(1)
 }
 func PUSH_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
-    let val = cpu.registers.get16(regH, regL)
+    let val = GameBoyRegisters.get16(regH, regL)
     cpu.memory.write16(address: cpu.registers.SP-2, value: val)
     cpu.registers.SP -= 2;
     cpu.registers.PC++
@@ -332,7 +332,7 @@ func PUSH_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
 }
 func POP_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     let val = cpu.memory.read16(address: cpu.registers.SP)
-    cpu.registers.set16(&regH, &regL, value: val)
+    GameBoyRegisters.set16(&regH, &regL, value: val)
     cpu.registers.SP += 2;
     cpu.registers.PC++
     cpu.updateClock(3)
@@ -379,7 +379,7 @@ func LD_aHL_n(cpu: GameBoyCPU) {
 }
 // load from address in register pair to A
 func LD_A_arr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
-    let addr = cpu.registers.get16(regH,regL)
+    let addr = GameBoyRegisters.get16(regH,regL)
     cpu.registers.A = cpu.memory.read(address: addr)
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -393,12 +393,12 @@ func LD_A_ann(cpu: GameBoyCPU) {
 }
 // load from 16-bit imediate to register pair
 func LD_rr_nn(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
-    cpu.registers.set16(&regH, &regL, value: cpu.memory.read16(address: cpu.registers.PC+1))
+    GameBoyRegisters.set16(&regH, &regL, value: cpu.memory.read16(address: cpu.registers.PC+1))
     cpu.registers.PC+=3
     cpu.updateClock(3)
 }
 func LD_arr_A(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
-    let addr = cpu.registers.get16(regH, regL)
+    let addr = GameBoyRegisters.get16(regH, regL)
     cpu.memory.write(address: addr, value: cpu.registers.A)
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -585,16 +585,16 @@ func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.updateClock(1)
 }
 func INC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
-    var value = cpu.registers.get16(regH, regL)
+    var value = GameBoyRegisters.get16(regH, regL)
     value = value &+ 1
-    cpu.registers.set16(&regH, &regL, value: value)
+    GameBoyRegisters.set16(&regH, &regL, value: value)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func DEC_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
-    var value = cpu.registers.get16(regH, regL)
+    var value = GameBoyRegisters.get16(regH, regL)
     value = value &- 1
-    cpu.registers.set16(&regH, &regL, value: value)
+    GameBoyRegisters.set16(&regH, &regL, value: value)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
@@ -661,7 +661,7 @@ func ADD_A_n(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 func ADD_HL_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
-    let val = cpu.registers.get16(regH, regL)
+    let val = GameBoyRegisters.get16(regH, regL)
     cpu.registers.F = cpu.registers.F & GameBoyRegisters.F_ZERO // don't change zero flag
     if cpu.registers.getHL() & 0x0FFF + val & 0x0FFF > 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.getHL() > cpu.registers.getHL() &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
