@@ -295,18 +295,7 @@ func generateOpCodeTable() -> [OpCode] {
     return table
 }
 
-/*
-F - flags register:
-0x80 - Z - last result was zero
-0x40 - N - last operation did subtraction
-0x20 - H - half-carry when during operation a bit is carried from lower nimble to higher or vice versa
-0x10 - CY - carry when operation carries over 255 or under 0
-*/
-
-let F_ZERO: UInt8 = 0x80
-let F_NEGATIVE: UInt8 = 0x40
-let F_HALF_CARRY: UInt8 = 0x20
-let F_CARRY: UInt8 = 0x10
+//TODO implement HALT and STOP instr.
 
 //instructions
 func NOP(cpu: GameBoyCPU) {
@@ -324,13 +313,13 @@ func EI(cpu: GameBoyCPU) { //enable interrupts
     cpu.updateClock(1)
 }
 func SCF(cpu: GameBoyCPU) {
-    cpu.registers.F &= F_ZERO
-    cpu.registers.F |= F_CARRY
+    cpu.registers.F &= GameBoyRegisters.F_ZERO
+    cpu.registers.F |= GameBoyRegisters.F_CARRY
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func CCF(cpu: GameBoyCPU) {
-    cpu.registers.F = F_ZERO | ((~cpu.registers.F) & F_CARRY)
+    cpu.registers.F = GameBoyRegisters.F_ZERO | ((~cpu.registers.F) & GameBoyRegisters.F_CARRY)
     cpu.registers.PC++
     cpu.updateClock(1)
 }
@@ -465,11 +454,11 @@ func LDHL_SP_e(cpu: GameBoyCPU) {
     cpu.registers.setHL(val)
     cpu.registers.F = 0
     if tmp < 0 {
-        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= F_HALF_CARRY }
-        if val > cpu.registers.SP { cpu.registers.F |= F_CARRY }
+        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val > cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     } else {
-        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= F_HALF_CARRY }
-        if val < cpu.registers.SP { cpu.registers.F |= F_CARRY }
+        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val < cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     }
     cpu.registers.PC+=2
     cpu.updateClock(3)
@@ -483,114 +472,114 @@ func LD_SP_HL(cpu: GameBoyCPU) {
 // logical
 func AND_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.A &= reg
-    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
+    cpu.registers.F = cpu.registers.A == 0 ? (GameBoyRegisters.F_ZERO | GameBoyRegisters.F_HALF_CARRY) : GameBoyRegisters.F_HALF_CARRY
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func AND_aHL(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.A &= value
-    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
+    cpu.registers.F = cpu.registers.A == 0 ? (GameBoyRegisters.F_ZERO | GameBoyRegisters.F_HALF_CARRY) : GameBoyRegisters.F_HALF_CARRY
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func AND_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.A &= value
-    cpu.registers.F = cpu.registers.A == 0 ? (F_ZERO | F_HALF_CARRY) : F_HALF_CARRY
+    cpu.registers.F = cpu.registers.A == 0 ? (GameBoyRegisters.F_ZERO | GameBoyRegisters.F_HALF_CARRY) : GameBoyRegisters.F_HALF_CARRY
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func OR_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.A |= reg
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func OR_aHL(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.A |= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func OR_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.A |= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 
 func XOR_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.A ^= reg
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func XOR_aHL(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.A ^= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func XOR_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.A ^= value
-    cpu.registers.F = cpu.registers.A == 0 ? F_ZERO : 0
+    cpu.registers.F = cpu.registers.A == 0 ? GameBoyRegisters.F_ZERO : 0
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 
 func CP_r(cpu: GameBoyCPU, reg: UInt8) {
-    cpu.registers.F = F_NEGATIVE
-    if (cpu.registers.A & 0x0F) < reg { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < (cpu.registers.A &- reg) { cpu.registers.F |= F_CARRY }
-    if (cpu.registers.A &- reg) == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if (cpu.registers.A & 0x0F) < reg { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < (cpu.registers.A &- reg) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if (cpu.registers.A &- reg) == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func CP_aHL(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F = F_NEGATIVE
-    if (cpu.registers.A & 0x0F) < value { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < (cpu.registers.A &- value) { cpu.registers.F |= F_CARRY }
-    if (cpu.registers.A &- value) == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if (cpu.registers.A & 0x0F) < value { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < (cpu.registers.A &- value) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if (cpu.registers.A &- value) == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func CP_n(cpu: GameBoyCPU) {
     let value = cpu.memory.read(address: cpu.registers.PC+1)
-    cpu.registers.F = F_NEGATIVE
-    if (cpu.registers.A & 0x0F) < value { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < (cpu.registers.A &- value) { cpu.registers.F |= F_CARRY }
-    if (cpu.registers.A &- value) == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if (cpu.registers.A & 0x0F) < value { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < (cpu.registers.A &- value) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if (cpu.registers.A &- value) == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func CPL(cpu: GameBoyCPU) {
     cpu.registers.A = ~cpu.registers.A
-    cpu.registers.F |= F_HALF_CARRY | F_NEGATIVE
+    cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY | GameBoyRegisters.F_NEGATIVE
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 
 // incrementation/ decrementation
 func INC_r(cpu: GameBoyCPU, inout reg: UInt8) {
-    cpu.registers.F &= F_CARRY // don't change last carry value
-    if reg == 0xFF { cpu.registers.F |= F_ZERO }
-    if reg & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    cpu.registers.F &= GameBoyRegisters.F_CARRY // don't change last carry value
+    if reg == 0xFF { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if reg & 0x0F == 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     reg = reg &+ 1
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func DEC_r(cpu: GameBoyCPU, inout reg: UInt8) {
     //flags
-    cpu.registers.F &= F_CARRY
-    cpu.registers.F |= F_NEGATIVE
-    if reg == 0x01 { cpu.registers.F |= F_ZERO }
-    if reg & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
+    cpu.registers.F &= GameBoyRegisters.F_CARRY
+    cpu.registers.F |= GameBoyRegisters.F_NEGATIVE
+    if reg == 0x01 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if reg & 0x0F == 0 { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     reg = reg &- 1
     cpu.registers.PC++
     cpu.updateClock(1)
@@ -621,9 +610,9 @@ func DEC_SP(cpu: GameBoyCPU) {
 }
 func INC_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F &= F_CARRY // don't change last carry value
-    if val == 0xFF { cpu.registers.F |= F_ZERO }
-    if val & 0x0F == 0x0F { cpu.registers.F |= F_HALF_CARRY }
+    cpu.registers.F &= GameBoyRegisters.F_CARRY // don't change last carry value
+    if val == 0xFF { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if val & 0x0F == 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     val = val &+ 1
     cpu.memory.write(address: cpu.registers.getHL(), value: val)
     cpu.registers.PC++
@@ -631,10 +620,10 @@ func INC_aHL(cpu: GameBoyCPU) {
 }
 func DEC_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F &= F_CARRY
-    cpu.registers.F |= F_NEGATIVE
-    if val == 0x01 { cpu.registers.F |= F_ZERO }
-    if val & 0x0F == 0 { cpu.registers.F |= F_HALF_CARRY }
+    cpu.registers.F &= GameBoyRegisters.F_CARRY
+    cpu.registers.F |= GameBoyRegisters.F_NEGATIVE
+    if val == 0x01 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if val & 0x0F == 0 { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     val = val &- 1
     cpu.memory.write(address: cpu.registers.getHL(), value: val)
     cpu.registers.PC++
@@ -644,9 +633,9 @@ func DEC_aHL(cpu: GameBoyCPU) {
 // arithmetic
 func ADD_A_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + reg & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ reg { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ reg == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + reg & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ reg { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ reg == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ reg
     cpu.registers.PC++
     cpu.updateClock(1)
@@ -654,9 +643,9 @@ func ADD_A_r(cpu: GameBoyCPU, reg: UInt8) {
 func ADD_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -664,47 +653,47 @@ func ADD_A_aHL(cpu: GameBoyCPU) {
 func ADD_A_n(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.PC+1)
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func ADD_HL_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
     let val = cpu.registers.get16(regH, regL)
-    cpu.registers.F = cpu.registers.F & F_ZERO // don't change zero flag
-    if cpu.registers.getHL() & 0x0FFF + val & 0x0FFF > 0x0FFF { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.getHL() > cpu.registers.getHL() &+ val { cpu.registers.F |= F_CARRY }
+    cpu.registers.F = cpu.registers.F & GameBoyRegisters.F_ZERO // don't change zero flag
+    if cpu.registers.getHL() & 0x0FFF + val & 0x0FFF > 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.getHL() > cpu.registers.getHL() &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     cpu.registers.setHL(cpu.registers.getHL() &+ val)
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func SUB_A_r(cpu: GameBoyCPU, reg: UInt8) {
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < reg { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- reg == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < reg { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- reg == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- reg
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func SUB_A_n(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.PC+1)
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func SUB_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL())
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -713,9 +702,9 @@ func SUB_A_aHL(cpu: GameBoyCPU) {
 func ADC_A_r(cpu: GameBoyCPU, reg: UInt8) {
     let val = reg + ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
     cpu.registers.PC++
     cpu.updateClock(1)
@@ -723,9 +712,9 @@ func ADC_A_r(cpu: GameBoyCPU, reg: UInt8) {
 func ADC_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -733,39 +722,39 @@ func ADC_A_aHL(cpu: GameBoyCPU) {
 func ADC_A_n(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
-    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &+ val == 0 { cpu.registers.F |= F_ZERO }
+    if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
     cpu.registers.PC++
     cpu.updateClock(2)
 }
 func SBC_A_r(cpu: GameBoyCPU, reg: UInt8) {
     let val = reg + ((cpu.registers.F >> 4) & 0x01)
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC++
     cpu.updateClock(1)
 }
 func SBC_A_n(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func SBC_A_aHL(cpu: GameBoyCPU) {
     let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
-    cpu.registers.F = F_NEGATIVE
-    if cpu.registers.A & 0x0F < val { cpu.registers.F |= F_HALF_CARRY }
-    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= F_CARRY }
-    if cpu.registers.A &- val == 0 { cpu.registers.F |= F_ZERO }
+    cpu.registers.F = GameBoyRegisters.F_NEGATIVE
+    if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+    if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    if cpu.registers.A &- val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &- val
     cpu.registers.PC++
     cpu.updateClock(2)
@@ -776,11 +765,11 @@ func ADD_SP_e(cpu: GameBoyCPU) {
     let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
     cpu.registers.F = 0
     if tmp < 0 {
-        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= F_HALF_CARRY }
-        if val > cpu.registers.SP { cpu.registers.F |= F_CARRY }
+        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val > cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     } else {
-        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= F_HALF_CARRY }
-        if val < cpu.registers.SP { cpu.registers.F |= F_CARRY }
+        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val < cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     }
     cpu.registers.SP = val
     cpu.registers.PC+=2
@@ -788,53 +777,53 @@ func ADD_SP_e(cpu: GameBoyCPU) {
 }
 
 func DAA(cpu: GameBoyCPU) {
-    cpu.registers.F &= F_NEGATIVE
+    cpu.registers.F &= GameBoyRegisters.F_NEGATIVE
     if(cpu.registers.A == 0) {
-        cpu.registers.F |= F_ZERO
+        cpu.registers.F |= GameBoyRegisters.F_ZERO
         cpu.registers.PC++
         cpu.updateClock(1)
         return
     }
     
-    if cpu.registers.F & F_NEGATIVE == 0 {
+    if cpu.registers.F & GameBoyRegisters.F_NEGATIVE == 0 {
         //addition
-        switch cpu.registers.F & (F_CARRY | F_HALF_CARRY) {
+        switch cpu.registers.F & (GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY) {
         case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 < 0x90:
             cpu.registers.A = cpu.registers.A &+ 0x06
         case 0 where cpu.registers.A & 0x0F < 0x0A && cpu.registers.A & 0xF0 >= 0xA0:
             cpu.registers.A = cpu.registers.A &+ 0x60
-            cpu.registers.F |= F_CARRY
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
         case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 >= 0x90:
             cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= F_CARRY
-        case F_HALF_CARRY where cpu.registers.A & 0xF0 < 0xA0:
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
+        case GameBoyRegisters.F_HALF_CARRY where cpu.registers.A & 0xF0 < 0xA0:
             cpu.registers.A = cpu.registers.A &+ 0x06
-        case F_HALF_CARRY where cpu.registers.A & 0xF0 >= 0xA0:
+        case GameBoyRegisters.F_HALF_CARRY where cpu.registers.A & 0xF0 >= 0xA0:
             cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= F_CARRY
-        case F_CARRY where cpu.registers.A & 0x0F < 0x0A:
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
+        case GameBoyRegisters.F_CARRY where cpu.registers.A & 0x0F < 0x0A:
             cpu.registers.A = cpu.registers.A &+ 0x60
-            cpu.registers.F |= F_CARRY
-        case F_CARRY where cpu.registers.A & 0x0F >= 0x0A:
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
+        case GameBoyRegisters.F_CARRY where cpu.registers.A & 0x0F >= 0x0A:
             cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= F_CARRY
-        case F_CARRY | F_HALF_CARRY:
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
+        case GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY:
             cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= F_CARRY
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
         default:
             break
         }
     } else {
         //subtraction
-        switch cpu.registers.F & (F_CARRY | F_HALF_CARRY) {
-        case F_HALF_CARRY:
+        switch cpu.registers.F & (GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY) {
+        case GameBoyRegisters.F_HALF_CARRY:
             cpu.registers.A = cpu.registers.A &+ 0xFA
-        case F_CARRY:
+        case GameBoyRegisters.F_CARRY:
             cpu.registers.A = cpu.registers.A &+ 0xA0
-            cpu.registers.F |= F_CARRY
-        case F_CARRY | F_HALF_CARRY:
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
+        case GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY:
             cpu.registers.A = cpu.registers.A &+ 0x9A
-            cpu.registers.F |= F_CARRY
+            cpu.registers.F |= GameBoyRegisters.F_CARRY
         default:
             break
         }

@@ -22,10 +22,15 @@ class GameBoyJoypad {
     
     var state: UInt8
     var mask: UInt8
+    var memory: GameBoyRAM?
     
     init() {
         state = 0xFF
         mask = 0x00
+    }
+    
+    func registerRAM(ram: GameBoyRAM) {
+        memory = ram
     }
     
     func setRow(mask: UInt8) {
@@ -43,6 +48,7 @@ class GameBoyJoypad {
     
     func pressButton(flag: UInt8) {
         state &= ~flag
+        memory?.requestInterrupt(GameBoyRAM.I_P10P13)
     }
     
     func releaseButton(flag: UInt8) {

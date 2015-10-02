@@ -41,6 +41,7 @@ class GameBoyDevice {
         self.screen = emuScreen
         self.joypad = GameBoyJoypad()
         self.memory = GameBoyRAM(joypad: joypad, bios: bios,rom: rom)
+        self.joypad.registerRAM(memory)
         self.cpu = GameBoyCPU(memory: memory)
         self.ppu = GameBoyPPU(memory: memory)
         

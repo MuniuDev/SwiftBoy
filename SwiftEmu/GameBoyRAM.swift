@@ -25,48 +25,48 @@ import Foundation
 
 class GameBoyRAM {
     // I/O registers
-    let P1: UInt16 = 0xFF00     // Ports P15-P10 (keypad)
-    let SB: UInt16 = 0xFF01     // Serial transfer data
-    let SC: UInt16 = 0xFF02     // Serial control
-    let DIV: UInt16 = 0xFF04    // Divider
-    let TIMA: UInt16 = 0xFF05   // Timer
-    let TMA: UInt16 = 0xFF06    // Modulo timer
-    let TAC: UInt16 = 0xFF07    // Timer control
-    let IF: UInt16 = 0xFF0F     // Interrupt request flag
-    let IE: UInt16 = 0xFFFF     // Interrupt enable flag
+    static let P1: UInt16 = 0xFF00     // Ports P15-P10 (keypad)
+    static let SB: UInt16 = 0xFF01     // Serial transfer data
+    static let SC: UInt16 = 0xFF02     // Serial control
+    static let DIV: UInt16 = 0xFF04    // Divider
+    static let TIMA: UInt16 = 0xFF05   // Timer
+    static let TMA: UInt16 = 0xFF06    // Modulo timer
+    static let TAC: UInt16 = 0xFF07    // Timer control
+    static let IF: UInt16 = 0xFF0F     // Interrupt request flag
+    static let IE: UInt16 = 0xFFFF     // Interrupt enable flag
     
     // video registers
-    let LCDC: UInt16 = 0xFF40   // LCDC control
-    let STAT: UInt16 = 0xFF41   // LCDC status
-    let SCY: UInt16 = 0xFF42    // Scroll Y
-    let SCX: UInt16 = 0xFF43    // Scroll X
-    let LY: UInt16 = 0xFF44     // LCDC y coordinate
-    let LYC: UInt16 = 0xFF45    // LCDC y coordinate compare LYC==LY
-    let DMA: UInt16 = 0xFF46    // DMA transfer register
-    let BGP: UInt16 = 0xFF47    // BG palette data
-    let OBP0: UInt16 = 0xFF48   // OBJ palette data 0
-    let OBP1: UInt16 = 0xFF49   // OBJ palette data 1
-    let WY: UInt16 = 0xFF4A     // Window Y-coordinate
-    let WX: UInt16 = 0xFF4B     // Window X-coordinate
+    static let LCDC: UInt16 = 0xFF40   // LCDC control
+    static let STAT: UInt16 = 0xFF41   // LCDC status
+    static let SCY: UInt16 = 0xFF42    // Scroll Y
+    static let SCX: UInt16 = 0xFF43    // Scroll X
+    static let LY: UInt16 = 0xFF44     // LCDC y coordinate
+    static let LYC: UInt16 = 0xFF45    // LCDC y coordinate compare LYC==LY
+    static let DMA: UInt16 = 0xFF46    // DMA transfer register
+    static let BGP: UInt16 = 0xFF47    // BG pastatic lette data
+    static let OBP0: UInt16 = 0xFF48   // OBJ pastatic lette data 0
+    static let OBP1: UInt16 = 0xFF49   // OBJ pastatic lette data 1
+    static let WY: UInt16 = 0xFF4A     // Window Y-coordinate
+    static let WX: UInt16 = 0xFF4B     // Window X-coordinate
     
     // DMA transfer details
-    let DMA_SIZE: UInt16 = 0x00A0
-    let DMA_START: UInt16 = 0xFE00
-    let DMA_END: UInt16 = 0xFE9F
+    static let DMA_SIZE: UInt16 = 0x00A0
+    static let DMA_START: UInt16 = 0xFE00
+    static let DMA_END: UInt16 = 0xFE9F
     
     // Interrupts flags
-    let I_VBLANK: UInt8 = 0x01
-    let I_LCDC: UInt8 = 0x02
-    let I_TIMER: UInt8 = 0x04
-    let I_SERIAL: UInt8 = 0x08
-    let I_P10P13: UInt8 = 0x10
+    static let I_VBLANK: UInt8 = 0x01
+    static let I_LCDC: UInt8 = 0x02
+    static let I_TIMER: UInt8 = 0x04
+    static let I_SERIAL: UInt8 = 0x08
+    static let I_P10P13: UInt8 = 0x10
     
     // Interrupts jumps
-    let JMP_I_VBLANK: UInt16 = 0x0040
-    let JMP_I_LCDC: UInt16 = 0x0048
-    let JMP_I_TIMER: UInt16 = 0x0050
-    let JMP_I_SERIAL: UInt16 = 0x0058
-    let JMP_I_P10P13: UInt16 = 0x0060
+    static let JMP_I_VBLANK: UInt16 = 0x0040
+    static let JMP_I_LCDC: UInt16 = 0x0048
+    static let JMP_I_TIMER: UInt16 = 0x0050
+    static let JMP_I_SERIAL: UInt16 = 0x0058
+    static let JMP_I_P10P13: UInt16 = 0x0060
 
     let biosSize = 0x100
     
@@ -96,11 +96,11 @@ class GameBoyRAM {
     
     func DMATransfer(dma: UInt8) {
         let addr = UInt16(dma) << 8
-        memory[Int(DMA_START)...Int(DMA_END)] = memory[Int(addr)..<Int(addr+DMA_SIZE)]
+        memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
     }
     
     func unmapBios() { memory[0..<biosSize] = romHeader[0..<biosSize] }
-    func requestInterrupt(interrupt: UInt8) { memory[Int(IF)] |= interrupt }
+    func requestInterrupt(interrupt: UInt8) { memory[Int(GameBoyRAM.IF)] |= interrupt }
     
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
@@ -108,13 +108,13 @@ class GameBoyRAM {
             memory[Int(address)] = value;
         case 0xE000...0xFDFF: //ram shadow
             memory[Int(address) - 0x2000] = value;
-        case Int(DMA):
+        case Int(GameBoyRAM.DMA):
             memory[Int(address)] = value;
             DMATransfer(value)
         case 0xFF50 where value == 0x01:
             memory[Int(address)] = value;
             unmapBios()
-        case Int(P1):    //write to joypad
+        case Int(GameBoyRAM.P1):    //write to joypad
             joypad.setRow(value)
             //memory[Int(address)] = joypad.getKeyValue()
         case 0xFE00...0xFFFF:
@@ -130,7 +130,7 @@ class GameBoyRAM {
             return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
             return memory[Int(address) - 0x2000];
-        case Int(P1):    //write to joypad
+        case Int(GameBoyRAM.P1):    //write to joypad
             return joypad.getKeyValue()
         case 0xFE00...0xFFFF:
             return memory[Int(address)];

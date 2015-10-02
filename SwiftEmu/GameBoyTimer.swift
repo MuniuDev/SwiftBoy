@@ -24,20 +24,20 @@ class GameBoyTimer {
         baseCounter = 0
         divCounter = 0
         timaCounter = 0
-        memory.write(address: memory.DIV, value: 0)
-        memory.write(address: memory.TIMA, value: 0)
-        memory.write(address: memory.TMA, value: 0)
-        memory.write(address: memory.TAC, value: 0)
+        memory.write(address: GameBoyRAM.DIV, value: 0)
+        memory.write(address: GameBoyRAM.TIMA, value: 0)
+        memory.write(address: GameBoyRAM.TMA, value: 0)
+        memory.write(address: GameBoyRAM.TAC, value: 0)
     }
     
     func reset() {
         baseCounter = 0
         divCounter = 0
         timaCounter = 0
-        memory.write(address: memory.DIV, value: 0)
-        memory.write(address: memory.TIMA, value: 0)
-        memory.write(address: memory.TMA, value: 0)
-        memory.write(address: memory.TAC, value: 0)
+        memory.write(address: GameBoyRAM.DIV, value: 0)
+        memory.write(address: GameBoyRAM.TIMA, value: 0)
+        memory.write(address: GameBoyRAM.TMA, value: 0)
+        memory.write(address: GameBoyRAM.TAC, value: 0)
     }
     
     func updateTimer(cycles: UInt8) {
@@ -51,13 +51,13 @@ class GameBoyTimer {
             timaCounter += baseBy4
             
             if divCounter >= 16 { //DIV updates at 1/16*4
-                var div = memory.read(address: memory.DIV)
+                var div = memory.read(address: GameBoyRAM.DIV)
                 div = div &+ UInt8(divCounter/16)
-                memory.write(address: memory.DIV, value: div)
+                memory.write(address: GameBoyRAM.DIV, value: div)
                 divCounter %= 16
             }
             
-            let timerControl = memory.read(address: memory.TAC)
+            let timerControl = memory.read(address: GameBoyRAM.TAC)
             if timerControl & 0x04 > 0 {
                 var increment = UInt8(0)
                 switch  timerControl & 0x03 {
@@ -78,11 +78,11 @@ class GameBoyTimer {
                 }
                 
                 
-                var tima = memory.read(address: memory.TIMA)
-                if tima > 0xFF - increment { memory.requestInterrupt(memory.I_TIMER) } //request timer interrupt
+                var tima = memory.read(address: GameBoyRAM.TIMA)
+                if tima > 0xFF - increment { memory.requestInterrupt(GameBoyRAM.I_TIMER) } //request timer interrupt
                 tima = tima &+ increment
-                memory.write(address: memory.TIMA, value: tima)
-                memory.write(address: memory.TMA, value: tima)
+                memory.write(address: GameBoyRAM.TIMA, value: tima)
+                memory.write(address: GameBoyRAM.TMA, value: tima)
             }
             
         }

@@ -49,14 +49,14 @@ class GameBoyPPU {
     }
     
     func renderLine() {
-        let lcdc = memory.read(address: memory.LCDC)
+        let lcdc = memory.read(address: GameBoyRAM.LCDC)
         // is LCD controller operational?
         if lcdc & 0x80 != 0 {
             //let stat = memory.read(address: memory.STAT)
-            let ly = memory.read(address: memory.LY)
-            let scx = memory.read(address: memory.SCX)
-            let scy = memory.read(address: memory.SCY)
-            let bgp = memory.read(address: memory.BGP)
+            let ly = memory.read(address: GameBoyRAM.LY)
+            let scx = memory.read(address: GameBoyRAM.SCX)
+            let scy = memory.read(address: GameBoyRAM.SCY)
+            let bgp = memory.read(address: GameBoyRAM.BGP)
             
             let start_y = (UInt16(ly) &+ UInt16(scy))/8
             let start_x = UInt16(scx)/8
@@ -101,7 +101,7 @@ class GameBoyPPU {
                     
                     if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
                         ++spriteCount
-                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? memory.OBP0 : memory.OBP1)
+                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? GameBoyRAM.OBP0 : GameBoyRAM.OBP1)
                         var colorLine = UInt16(0)
                         if spr_attrib & 0x40 != 0 { //check y flip
                             colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + 14 - line_y_off)
@@ -131,13 +131,13 @@ class GameBoyPPU {
     func tic(deltaClock: UInt) {
         clock = clock &+ deltaClock
         
-        let ly = memory.read(address: memory.LY)
-        let lyc = memory.read(address: memory.LYC)
-        var stat = memory.read(address: memory.STAT)
-        if ly == lyc { stat |= 0x04; memory.write(address: memory.STAT, value: stat) }
+        let ly = memory.read(address: GameBoyRAM.LY)
+        let lyc = memory.read(address: GameBoyRAM.LYC)
+        var stat = memory.read(address: GameBoyRAM.STAT)
+        if ly == lyc { stat |= 0x04; memory.write(address: GameBoyRAM.STAT, value: stat) }
         let lcdc_int = stat & 0x78
         
-        if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(memory.I_LCDC) }
+        if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(GameBoyRAM.I_LCDC) }
         
         switch getMode() {
         case MODE_OAM_SCANLINE where clock >= 20:
@@ -147,18 +147,18 @@ class GameBoyPPU {
                 clock %= 43
                 renderLine()
                 setMode(MODE_HBLANK)
-                if lcdc_int & 0x10 != 0 { memory.requestInterrupt(memory.I_LCDC)}
+                if lcdc_int & 0x10 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
         case MODE_HBLANK where clock >= 51:
                 clock %= 51
                 setLine(getLine()+1)
                 if getLine() == 144 {
                     setMode(MODE_VBLANK)
-                    memory.requestInterrupt(memory.I_VBLANK)
-                    if lcdc_int & 0x20 != 0 { memory.requestInterrupt(memory.I_LCDC)}
+                    memory.requestInterrupt(GameBoyRAM.I_VBLANK)
+                    if lcdc_int & 0x20 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
                     //copyBuffer()
                 } else {
                     setMode(MODE_OAM_SCANLINE)
-                    if lcdc_int & 0x30 != 0 { memory.requestInterrupt(memory.I_LCDC)}
+                    if lcdc_int & 0x30 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
                 }
         case MODE_VBLANK where clock >= 114:
                 clock %= 114
@@ -180,12 +180,12 @@ class GameBoyPPU {
     }
     
     
-    func getLine() -> UInt8 { return memory.read(address: memory.LY) }
-    func setLine(line: UInt8) { memory.write(address: memory.LY, value: line) }
-    func getMode() -> UInt8 { return memory.read(address: memory.STAT) & 0x03 }
+    func getLine() -> UInt8 { return memory.read(address: GameBoyRAM.LY) }
+    func setLine(line: UInt8) { memory.write(address: GameBoyRAM.LY, value: line) }
+    func getMode() -> UInt8 { return memory.read(address: GameBoyRAM.STAT) & 0x03 }
     func setMode(mode: UInt8) {
-        var reg = memory.read(address: memory.STAT)
+        var reg = memory.read(address: GameBoyRAM.STAT)
         reg = reg & 0xFC + mode & 0x03
-        memory.write(address: memory.STAT, value: reg)
+        memory.write(address: GameBoyRAM.STAT, value: reg)
     }
 }

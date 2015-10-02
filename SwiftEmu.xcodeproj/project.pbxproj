@@ -22,7 +22,8 @@
 		90BD7FF91BA45F8700C79443 /* roms in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FF81BA45F8700C79443 /* roms */; };
 		90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */; };
 		90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */; };
-		90C85B481BAD60D3002A599E /* GameBoyExtInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C85B471BAD60D3002A599E /* GameBoyExtInstructions.swift */; settings = {ASSET_TAGS = (); }; };
+		90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */; settings = {ASSET_TAGS = (); }; };
+		90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +56,8 @@
 		90BD7FF81BA45F8700C79443 /* roms */ = {isa = PBXFileReference; lastKnownFileType = folder; path = roms; sourceTree = "<group>"; };
 		90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUInstructions.swift; sourceTree = "<group>"; };
 		90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyTimer.swift; sourceTree = "<group>"; };
-		90C85B471BAD60D3002A599E /* GameBoyExtInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyExtInstructions.swift; sourceTree = "<group>"; };
+		90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUExtInstructions.swift; sourceTree = "<group>"; };
+		90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPURegisters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,9 +145,10 @@
 				90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */,
 				90BD7FF61BA4107500C79443 /* GameBoyPPU.swift */,
 				90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */,
-				90C85B471BAD60D3002A599E /* GameBoyExtInstructions.swift */,
+				90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */,
 				90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */,
 				9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */,
+				90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */,
 			);
 			name = Device;
 			sourceTree = "<group>";
@@ -252,8 +255,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				90BD7FB91B9F59C800C79443 /* EmulatorScreen.swift in Sources */,
-				90C85B481BAD60D3002A599E /* GameBoyExtInstructions.swift in Sources */,
+				90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */,
 				90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */,
+				90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */,
 				90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */,
 				906444821BB6C4A400FFC821 /* EmulatorViewController.swift in Sources */,
 				906444811BB6C4A400FFC821 /* DebugViewController.swift in Sources */,
@@ -396,6 +400,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SwiftEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				"MTL_ENABLE_DEBUG_INFO[arch=*]" = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
