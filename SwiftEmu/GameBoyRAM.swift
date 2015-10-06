@@ -72,20 +72,28 @@ class GameBoyRAM {
     
     var memory: [UInt8]
     var romHeader: [UInt8]
+    var fastBiosMode: Bool
     let joypad: GameBoyJoypad
     
-    init(joypad: GameBoyJoypad, bios: [UInt8], rom: [UInt8]) {
+    init(joypad: GameBoyJoypad) {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
-        memory[0..<biosSize] = bios[0..<biosSize] //load bios into memory
-        memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
+        self.romHeader = [UInt8](count: biosSize, repeatedValue: UInt8(0))
         self.joypad = joypad
-        romHeader = [UInt8](count: biosSize, repeatedValue: UInt8(0))
-        romHeader[0..<biosSize] = rom[0..<biosSize] // save cartridge header for later
+        fastBiosMode = true;
+    }
+    
+    func loadBios(bios: [UInt8]) {
+        memory[0..<biosSize] = bios[0..<biosSize]
+        fastBiosMode = false;
     }
     
     func loadRom(rom: [UInt8]) {
-        clear()
-        memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
+        if fastBiosMode {
+            memory[0..<rom.count] = rom[0..<rom.count]
+        } else {
+            romHeader[0..<biosSize] = rom[0..<biosSize]
+            memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
+        }
     }
     
     func clear() {
@@ -111,7 +119,7 @@ class GameBoyRAM {
         case Int(GameBoyRAM.DMA):
             memory[Int(address)] = value;
             DMATransfer(value)
-        case 0xFF50 where value == 0x01:
+        case 0xFF50 where value == 0x01 && !fastBiosMode:
             memory[Int(address)] = value;
             unmapBios()
         case Int(GameBoyRAM.P1):    //write to joypad
@@ -119,7 +127,7 @@ class GameBoyRAM {
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:
-            print("Write error to address: " + String(address) + ".")
+            LogE("Write error to address: 0x" + String(format:"%04X", address) + ".")
         }
     }
     
@@ -129,13 +137,10 @@ class GameBoyRAM {
             return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
             return memory[Int(address) - 0x2000];
-        /*case Int(GameBoyRAM.P1):    //write to joypad
-            print(String(format: "%04X", memory[Int(address)]))
-            return memory[Int(address)]*/
         case 0xFE00...0xFFFF:
             return memory[Int(address)];
         default:
-            print("Read error of address: " + String(address) + ".")
+            LogE("Read error of address: 0x" + String(format:"%04X", address) + ".")
             return UInt8(0);
         }
     }

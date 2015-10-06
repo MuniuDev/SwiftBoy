@@ -907,10 +907,10 @@ func EXT_OPCODE(cpu: GameBoyCPU) {
     let extOpCode = cpu.extOpcodes[Int(extOpCodeVal)]
     
     if extOpCode.instruction != nil {
-        //print("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ". PC=" + String(format:"%4X",cpu.registers.PC+1))
+        //LogD("Called: \"" + extOpCode.name + "\" of code: 0x" + String(format:"%02X", extOpCodeVal) + ". PC= 0x" + String(format:"%04X",cpu.registers.PC+1))
         extOpCode.instruction!(cpu: cpu)
     } else {
-        print("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%2X", extOpCodeVal) + ".")
+        LogE("ERROR: Unimplemented instruction \"" + extOpCode.name + "\" of code: 0x" + String(format:"%02X", extOpCodeVal) + ".")
         exit(-1)
     }
 }

@@ -31,10 +31,10 @@ class GameBoyCPU {
         let opCode = opcodes[Int(opCodeVal)]
         
         if opCode.instruction != nil {
-            //print("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + ". PC=" + String(format:"%4X",registers.PC))
+            //LogD("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + ". PC= 0x" + String(format:"%04X",registers.PC))
             opCode.instruction!(cpu: self)
         } else {
-            print("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%2X", opCodeVal) + " found in PC=" + String(format:"%4X", registers.PC))
+            LogE("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + " found in PC=" + String(format:"%04X", registers.PC))
             exit(-1)
         }
         

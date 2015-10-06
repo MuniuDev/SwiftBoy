@@ -24,6 +24,7 @@
 		90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */; };
 		90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */; settings = {ASSET_TAGS = (); }; };
 		90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */; settings = {ASSET_TAGS = (); }; };
+		90FAF2AA1BC4798E009612D3 /* EmulatorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyTimer.swift; sourceTree = "<group>"; };
 		90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUExtInstructions.swift; sourceTree = "<group>"; };
 		90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPURegisters.swift; sourceTree = "<group>"; };
+		90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +142,7 @@
 		90BD7FF11BA40BD700C79443 /* Device */ = {
 			isa = PBXGroup;
 			children = (
+				90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */,
 				90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */,
 				90BD7FF21BA4105800C79443 /* GameBoyRAM.swift */,
 				90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */,
@@ -264,6 +267,7 @@
 				90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */,
 				90BD7FF71BA4107500C79443 /* GameBoyPPU.swift in Sources */,
 				90BD7FF51BA4106500C79443 /* GameBoyCPU.swift in Sources */,
+				90FAF2AA1BC4798E009612D3 /* EmulatorLogger.swift in Sources */,
 				9074EDFB1BB80C2B00C67852 /* GameBoyJoypad.swift in Sources */,
 				90BD7F9C1B9F506C00C79443 /* AppDelegate.swift in Sources */,
 				90BD7FF31BA4105800C79443 /* GameBoyRAM.swift in Sources */,

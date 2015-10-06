@@ -58,13 +58,8 @@ class EmulatorViewController: NSViewController {
     
     @IBAction func updateBP(sender: AnyObject) {
         let bp = UInt16(strtoul(breakpointValue.stringValue,nil,16))
-        //if bp != nil {
-            device?.setBP(bp)
-            print("Updated BreakPoint with val = " + String(format:"%04X",bp))
-        /*} else {
-            print("Failed to parse breakpoint!")
-            breakpointValue.stringValue = String(format:"%04X",0)
-        }*/
+        device?.setBP(bp)
+        LogI("Updated BreakPoint with val = " + String(format:"%04X",bp))
     }
     
     func updateInfo() {
@@ -83,7 +78,7 @@ class EmulatorViewController: NSViewController {
 
         emuScreen.drawScreen(device!.ppu.getBuffer())
         memoryView.reloadData()
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.050))
+        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.033))
         dispatch_after(time, dispatch_get_main_queue(), updateInfo)
         //dispatch_async(dispatch_get_main_queue(), updateInfo)
     }
