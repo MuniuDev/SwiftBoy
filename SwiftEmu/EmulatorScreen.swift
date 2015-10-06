@@ -49,6 +49,17 @@ class EmulatorScreen: NSImageView {
     let scale : Int
     let scaledWidth : Int
     let scaledHeight : Int
+    var device: GameBoyDevice?
+    override var needsPanelToBecomeKey: Bool{
+        get {
+            return true
+        }
+    }
+    override var acceptsFirstResponder: Bool {
+        get {
+            return true
+        }
+    }
     
     required init?(coder aDecoder: NSCoder) {
         scale = Int(NSScreen.mainScreen()!.backingScaleFactor)
@@ -79,6 +90,52 @@ class EmulatorScreen: NSImageView {
             }
         }
         setNeedsDisplay()
+    }
+    
+    override func keyDown(theEvent: NSEvent) {
+        switch theEvent.keyCode {
+        case 126:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_UP)
+        case 125:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_DOWN)
+        case 124:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_RIGHT)
+        case 123:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_LEFT)
+        case 6:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_A)
+        case 7:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_B)
+        case 36:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_START)
+        case 49:
+            device?.joypad.pressButton(GameBoyJoypad.BTN_SELECT)
+        default:
+            super.keyDown(theEvent)
+        }
+    }
+    
+    override func keyUp(theEvent: NSEvent) {
+        switch theEvent.keyCode {
+        case 126:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_UP)
+        case 125:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_DOWN)
+        case 124:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_RIGHT)
+        case 123:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_LEFT)
+        case 6:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_A)
+        case 7:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_B)
+        case 36:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_START)
+        case 49:
+            device?.joypad.releaseButton(GameBoyJoypad.BTN_SELECT)
+        default:
+            super.keyUp(theEvent)
+        }
     }
 
 }

@@ -21,12 +21,12 @@ class GameBoyJoypad {
     static let BTN_SELECT: UInt8 = 0x04
     
     var state: UInt8
-    var mask: UInt8
+    var register: UInt8
     var memory: GameBoyRAM?
     
     init() {
         state = 0xFF
-        mask = 0x00
+        register = 0xFF
     }
     
     func registerRAM(ram: GameBoyRAM) {
@@ -34,21 +34,25 @@ class GameBoyJoypad {
     }
     
     func setRow(mask: UInt8) {
-        self.mask = mask & 0x30
+        let ctl = mask & 0x30
+        if ctl == 0x10 {
+            register = 0xD0 | (state & 0x0F)
+        } else if ctl == 0x20 {
+            register = 0xE0 | ((state >> 4) & 0x0F)
+        } else {
+            register = 0xF0 | ((state & (state >> 4)) & 0x0F)
+        }
     }
     
     func getKeyValue() -> UInt8 {
-        if mask == 0x10 {
-            return (state & 0x0F)
-        } else if mask == 0x20 {
-            return ((state >> 4) & 0x0F)
-        }
-        return 0xFF
+        return register
     }
     
     func pressButton(flag: UInt8) {
-        state &= ~flag
-        memory?.requestInterrupt(GameBoyRAM.I_P10P13)
+        if(state & flag != 0) {
+            state &= ~flag
+            memory?.requestInterrupt(GameBoyRAM.I_P10P13)
+        }
     }
     
     func releaseButton(flag: UInt8) {
