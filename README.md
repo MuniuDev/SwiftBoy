@@ -7,7 +7,7 @@ There is still a lot to do, but this project reached the state of what I call: "
 
 ![](emulator.gif)
 
-It still is not ready, as there are some bugs in Tetris I need to address (e.g. Score is not counting) but it's certainly is becoming more and more usefull. As of right now no other games were tested.
+It still is not ready, as there are some bugs in Tetris I need to address (e.g. score is not counting) but it certainly is becoming more and more usefull. As of right now no other games were tested.
 
 ## Features
 ### What is working

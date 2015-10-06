@@ -446,8 +446,7 @@ func SRL_aHL(cpu: GameBoyCPU) {
 
 // swap higher and lower nybbles
 func SWAP_r(cpu: GameBoyCPU, inout reg: UInt8) {
-    let lower = reg & 0xF0
-    reg = (lower << 4) + (reg >> 4)
+    reg = (reg << 4) + (reg >> 4)
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.updateClock(2)
@@ -455,8 +454,7 @@ func SWAP_r(cpu: GameBoyCPU, inout reg: UInt8) {
 }
 func SWAP_aHL(cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
-    let lower = val & 0xF0
-    val = (lower << 4) + (val >> 4)
+    val = (val << 4) + (val >> 4)
     cpu.memory.write(address: cpu.registers.getHL(), value: val)
     cpu.registers.F = 0
     if(val == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }

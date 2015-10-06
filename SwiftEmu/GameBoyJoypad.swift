@@ -21,31 +21,25 @@ class GameBoyJoypad {
     static let BTN_SELECT: UInt8 = 0x04
     
     var state: UInt8
-    var register: UInt8
     var memory: GameBoyRAM?
     
     init() {
         state = 0xFF
-        register = 0xFF
     }
     
     func registerRAM(ram: GameBoyRAM) {
         memory = ram
     }
     
-    func setRow(mask: UInt8) {
-        let ctl = mask & 0x30
-        if ctl == 0x10 {
-            register = 0xD0 | (state & 0x0F)
-        } else if ctl == 0x20 {
-            register = 0xE0 | ((state >> 4) & 0x0F)
-        } else {
-            register = 0xF0 | ((state & (state >> 4)) & 0x0F)
+    func getKeyValue(mask: UInt8) -> UInt8 {
+        switch mask & 0x30 {
+        case 0x10:
+            return 0xD0 | (state & 0x0F)
+        case 0x20:
+            return 0xE0 | ((state >> 4) & 0x0F)
+        default:
+            return 0xFF
         }
-    }
-    
-    func getKeyValue() -> UInt8 {
-        return register
     }
     
     func pressButton(flag: UInt8) {

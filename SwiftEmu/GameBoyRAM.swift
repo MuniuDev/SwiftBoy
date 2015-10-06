@@ -115,8 +115,7 @@ class GameBoyRAM {
             memory[Int(address)] = value;
             unmapBios()
         case Int(GameBoyRAM.P1):    //write to joypad
-            joypad.setRow(value)
-            //memory[Int(address)] = joypad.getKeyValue()
+            memory[Int(address)] = joypad.getKeyValue(value)
         case 0xFE00...0xFFFF:
             memory[Int(address)] = value;
         default:
@@ -130,8 +129,9 @@ class GameBoyRAM {
             return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
             return memory[Int(address) - 0x2000];
-        case Int(GameBoyRAM.P1):    //write to joypad
-            return joypad.getKeyValue()
+        /*case Int(GameBoyRAM.P1):    //write to joypad
+            print(String(format: "%04X", memory[Int(address)]))
+            return memory[Int(address)]*/
         case 0xFE00...0xFFFF:
             return memory[Int(address)];
         default:
