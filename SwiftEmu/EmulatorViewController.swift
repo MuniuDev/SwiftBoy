@@ -83,8 +83,9 @@ class EmulatorViewController: NSViewController {
 
         emuScreen.drawScreen(device!.ppu.getBuffer())
         memoryView.reloadData()
-        
-        dispatch_async(dispatch_get_main_queue(), updateInfo)
+        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.050))
+        dispatch_after(time, dispatch_get_main_queue(), updateInfo)
+        //dispatch_async(dispatch_get_main_queue(), updateInfo)
     }
     
 }
