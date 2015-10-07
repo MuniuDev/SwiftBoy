@@ -820,57 +820,36 @@ func ADD_SP_e(cpu: GameBoyCPU) {
 }
 // decimal arithmetic adjust
 func DAA(cpu: GameBoyCPU) {
-    cpu.registers.F &= GameBoyRegisters.F_NEGATIVE
-    if(cpu.registers.A == 0) {
-        cpu.registers.F |= GameBoyRegisters.F_ZERO
-        cpu.registers.PC++
-        cpu.updateClock(1)
-        return
-    }
+    var regA = UInt16(cpu.registers.A)
     
     if cpu.registers.F & GameBoyRegisters.F_NEGATIVE == 0 {
-        //addition
-        switch cpu.registers.F & (GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY) {
-        case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 < 0x90:
-            cpu.registers.A = cpu.registers.A &+ 0x06
-        case 0 where cpu.registers.A & 0x0F < 0x0A && cpu.registers.A & 0xF0 >= 0xA0:
-            cpu.registers.A = cpu.registers.A &+ 0x60
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case 0 where cpu.registers.A & 0x0F >= 0x0A && cpu.registers.A & 0xF0 >= 0x90:
-            cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case GameBoyRegisters.F_HALF_CARRY where cpu.registers.A & 0xF0 < 0xA0:
-            cpu.registers.A = cpu.registers.A &+ 0x06
-        case GameBoyRegisters.F_HALF_CARRY where cpu.registers.A & 0xF0 >= 0xA0:
-            cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case GameBoyRegisters.F_CARRY where cpu.registers.A & 0x0F < 0x0A:
-            cpu.registers.A = cpu.registers.A &+ 0x60
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case GameBoyRegisters.F_CARRY where cpu.registers.A & 0x0F >= 0x0A:
-            cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY:
-            cpu.registers.A = cpu.registers.A &+ 0x66
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        default:
-            break
+        if cpu.registers.F & GameBoyRegisters.F_HALF_CARRY != 0 || regA & 0x0F > 9 {
+            regA = regA &+ 0x06
+        }
+        if cpu.registers.F & GameBoyRegisters.F_CARRY != 0 || regA > 0x9F {
+            regA = regA &+ 0x60
         }
     } else {
-        //subtraction
-        switch cpu.registers.F & (GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY) {
-        case GameBoyRegisters.F_HALF_CARRY:
-            cpu.registers.A = cpu.registers.A &+ 0xFA
-        case GameBoyRegisters.F_CARRY:
-            cpu.registers.A = cpu.registers.A &+ 0xA0
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        case GameBoyRegisters.F_CARRY | GameBoyRegisters.F_HALF_CARRY:
-            cpu.registers.A = cpu.registers.A &+ 0x9A
-            cpu.registers.F |= GameBoyRegisters.F_CARRY
-        default:
-            break
+        if cpu.registers.F & GameBoyRegisters.F_HALF_CARRY != 0 {
+            regA = (regA &- 0x06) & 0xFF
+        }
+        if cpu.registers.F & GameBoyRegisters.F_CARRY != 0 {
+            regA = regA &- 0x60
         }
     }
+    
+    cpu.registers.F &= ~(GameBoyRegisters.F_HALF_CARRY | GameBoyRegisters.F_ZERO)
+    
+    if regA & 0x100 != 0 {
+        cpu.registers.F |= GameBoyRegisters.F_CARRY
+    }
+    
+    regA &= 0xFF
+    
+    if regA == 0 {
+        cpu.registers.F |= GameBoyRegisters.F_ZERO
+    }
+    cpu.registers.A = UInt8(regA)
     cpu.registers.PC++
     cpu.updateClock(1)
 }
