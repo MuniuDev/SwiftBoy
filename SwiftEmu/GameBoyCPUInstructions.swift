@@ -302,27 +302,32 @@ func NOP(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-func DI(cpu: GameBoyCPU) { //disable interrupts
+// disable interrupts
+func DI(cpu: GameBoyCPU) {
     cpu.interruptMasterFlag = false
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-func EI(cpu: GameBoyCPU) { //enable interrupts
+// enable interrupts
+func EI(cpu: GameBoyCPU) {
     cpu.interruptMasterFlag = true
     cpu.registers.PC++
     cpu.updateClock(1)
 }
+// set carry flag
 func SCF(cpu: GameBoyCPU) {
     cpu.registers.F &= GameBoyRegisters.F_ZERO
     cpu.registers.F |= GameBoyRegisters.F_CARRY
     cpu.registers.PC++
     cpu.updateClock(1)
 }
+// clear carry flag
 func CCF(cpu: GameBoyCPU) {
     cpu.registers.F = GameBoyRegisters.F_ZERO | ((~cpu.registers.F) & GameBoyRegisters.F_CARRY)
     cpu.registers.PC++
     cpu.updateClock(1)
 }
+// push register pair to stack
 func PUSH_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
     let val = GameBoyRegisters.get16(regH, regL)
     cpu.memory.write16(address: cpu.registers.SP-2, value: val)
@@ -330,6 +335,7 @@ func PUSH_rr(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
     cpu.registers.PC++
     cpu.updateClock(4)
 }
+// pop stack to register pair
 func POP_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     let val = cpu.memory.read16(address: cpu.registers.SP)
     GameBoyRegisters.set16(&regH, &regL, value: val)
@@ -337,6 +343,7 @@ func POP_rr(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     cpu.registers.PC++
     cpu.updateClock(3)
 }
+// reset (call) to t addr
 func RST_t(cpu: GameBoyCPU, t: UInt8) {
     cpu.memory.write16(address: cpu.registers.SP-2, value: cpu.registers.PC+1)
     cpu.registers.SP -= 2;
@@ -397,6 +404,7 @@ func LD_rr_nn(cpu: GameBoyCPU, inout regH: UInt8, inout regL: UInt8) {
     cpu.registers.PC+=3
     cpu.updateClock(3)
 }
+// load from A to address in register pair
 func LD_arr_A(cpu: GameBoyCPU, regH: UInt8, regL: UInt8) {
     let addr = GameBoyRegisters.get16(regH, regL)
     cpu.memory.write(address: addr, value: cpu.registers.A)
@@ -409,7 +417,7 @@ func LD_SP_nn(cpu: GameBoyCPU) {
     cpu.registers.PC+=3
     cpu.updateClock(3)
 }
-// load and decrement/increment
+// load from address in HL to A and increment HL
 func LDI_A_aHL(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
     cpu.registers.A = cpu.memory.read(address: addr)
@@ -418,6 +426,7 @@ func LDI_A_aHL(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(2)
 }
+// load from address in HL to A and decrement HL
 func LDD_A_aHL(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
     cpu.registers.A = cpu.memory.read(address: addr)
@@ -426,6 +435,7 @@ func LDD_A_aHL(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(2)
 }
+// load from A to address in HL and increment HL
 func LDI_aHL_A(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
     cpu.memory.write(address: addr, value: cpu.registers.A)
@@ -434,6 +444,7 @@ func LDI_aHL_A(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(2)
 }
+// load from A to address in HL and decrement HL
 func LDD_aHL_A(cpu: GameBoyCPU) {
     var addr = cpu.registers.getHL()
     cpu.memory.write(address: addr, value: cpu.registers.A)
@@ -442,12 +453,14 @@ func LDD_aHL_A(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(2)
 }
+// load from SP to address in 16-bit imediate
 func LD_ann_SP(cpu: GameBoyCPU) {
     let addr = cpu.memory.read16(address: cpu.registers.PC+1)
     cpu.memory.write16(address: addr, value: cpu.registers.SP)
     cpu.registers.PC+=3
     cpu.updateClock(5)
 }
+// load to HL the sum of SP and 8-bit U2 imediate
 func LDHL_SP_e(cpu: GameBoyCPU) {
     let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
     let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
@@ -463,10 +476,38 @@ func LDHL_SP_e(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.updateClock(3)
 }
+// load from HL to SP
 func LD_SP_HL(cpu: GameBoyCPU) {
     cpu.registers.SP = cpu.registers.getHL()
     cpu.registers.PC++
     cpu.updateClock(2)
+}
+// load from A to address in 16-bit imediate
+func LD_ann_A(cpu: GameBoyCPU) {
+    let addr = cpu.memory.read16(address: cpu.registers.PC+1)
+    cpu.memory.write(address: addr, value: cpu.registers.A)
+    cpu.registers.PC+=3
+    cpu.updateClock(4)
+}
+// load from A to address 0xFF00 + 8-bit imediate
+func LDH_an_A(cpu: GameBoyCPU) {
+    let addr = cpu.memory.read(address: cpu.registers.PC+1)
+    cpu.memory.write(address: UInt16(addr) + 0xFF00, value: cpu.registers.A)
+    cpu.registers.PC+=2
+    cpu.updateClock(3)
+}
+// load from address 0xFF00 + 8-bit imediate to A
+func LDH_A_an(cpu: GameBoyCPU) {
+    let addr = cpu.memory.read(address: cpu.registers.PC+1)
+    cpu.registers.A = cpu.memory.read(address: UInt16(addr) + 0xFF00)
+    cpu.registers.PC+=2
+    cpu.updateClock(3)
+}
+// load from A to address 0xFF00 + C
+func LDH_aC_A(cpu: GameBoyCPU) {
+    cpu.memory.write(address: UInt16(cpu.registers.C) + 0xFF00, value: cpu.registers.A)
+    cpu.registers.PC++
+    cpu.updateClock(3)
 }
 
 // logical
@@ -558,6 +599,8 @@ func CP_n(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.updateClock(2)
 }
+
+// negate the acumulator
 func CPL(cpu: GameBoyCPU) {
     cpu.registers.A = ~cpu.registers.A
     cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY | GameBoyRegisters.F_NEGATIVE
@@ -700,7 +743,7 @@ func SUB_A_aHL(cpu: GameBoyCPU) {
 }
 
 func ADC_A_r(cpu: GameBoyCPU, reg: UInt8) {
-    let val = reg + ((cpu.registers.F >> 4) & 0x01)
+    let val = reg &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
     if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -710,7 +753,7 @@ func ADC_A_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.updateClock(1)
 }
 func ADC_A_aHL(cpu: GameBoyCPU) {
-    let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
+    let val = cpu.memory.read(address: cpu.registers.getHL()) &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
     if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -720,7 +763,7 @@ func ADC_A_aHL(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 func ADC_A_n(cpu: GameBoyCPU) {
-    let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
+    let val = cpu.memory.read(address: cpu.registers.PC+1) &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = 0
     if cpu.registers.A & 0x0F + val & 0x0F > 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -730,7 +773,7 @@ func ADC_A_n(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 func SBC_A_r(cpu: GameBoyCPU, reg: UInt8) {
-    let val = reg + ((cpu.registers.F >> 4) & 0x01)
+    let val = reg &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = GameBoyRegisters.F_NEGATIVE
     if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -740,7 +783,7 @@ func SBC_A_r(cpu: GameBoyCPU, reg: UInt8) {
     cpu.updateClock(1)
 }
 func SBC_A_n(cpu: GameBoyCPU) {
-    let val = cpu.memory.read(address: cpu.registers.PC+1) + ((cpu.registers.F >> 4) & 0x01)
+    let val = cpu.memory.read(address: cpu.registers.PC+1) &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = GameBoyRegisters.F_NEGATIVE
     if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -750,7 +793,7 @@ func SBC_A_n(cpu: GameBoyCPU) {
     cpu.updateClock(2)
 }
 func SBC_A_aHL(cpu: GameBoyCPU) {
-    let val = cpu.memory.read(address: cpu.registers.getHL()) + ((cpu.registers.F >> 4) & 0x01)
+    let val = cpu.memory.read(address: cpu.registers.getHL()) &+ ((cpu.registers.F >> 4) & 0x01)
     cpu.registers.F = GameBoyRegisters.F_NEGATIVE
     if cpu.registers.A & 0x0F < val { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
     if cpu.registers.A < cpu.registers.A &- val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
@@ -775,7 +818,7 @@ func ADD_SP_e(cpu: GameBoyCPU) {
     cpu.registers.PC+=2
     cpu.updateClock(4)
 }
-
+// decimal arithmetic adjust
 func DAA(cpu: GameBoyCPU) {
     cpu.registers.F &= GameBoyRegisters.F_NEGATIVE
     if(cpu.registers.A == 0) {
@@ -914,31 +957,3 @@ func EXT_OPCODE(cpu: GameBoyCPU) {
         exit(-1)
     }
 }
-
-///////// functions below are not redesigned!!!
-
-func LD_ann_A(cpu: GameBoyCPU) {
-    let addr = cpu.memory.read16(address: cpu.registers.PC+1)
-    cpu.memory.write(address: addr, value: cpu.registers.A)
-    cpu.registers.PC+=3
-    cpu.updateClock(4)
-}
-func LDH_an_A(cpu: GameBoyCPU) {
-    let addr = cpu.memory.read(address: cpu.registers.PC+1)
-    cpu.memory.write(address: UInt16(addr) + 0xFF00, value: cpu.registers.A)
-    cpu.registers.PC+=2
-    cpu.updateClock(3)
-}
-func LDH_A_an(cpu: GameBoyCPU) {
-    let addr = cpu.memory.read(address: cpu.registers.PC+1)
-    cpu.registers.A = cpu.memory.read(address: UInt16(addr) + 0xFF00)
-    cpu.registers.PC+=2
-    cpu.updateClock(3)
-}
-func LDH_aC_A(cpu: GameBoyCPU) {
-    cpu.memory.write(address: UInt16(cpu.registers.C) + 0xFF00, value: cpu.registers.A)
-    cpu.registers.PC++
-    cpu.updateClock(3)
-}
-
-
