@@ -25,6 +25,7 @@
 		90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */; settings = {ASSET_TAGS = (); }; };
 		90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */; settings = {ASSET_TAGS = (); }; };
 		90FAF2AA1BC4798E009612D3 /* EmulatorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */; settings = {ASSET_TAGS = (); }; };
+		90FAF2AC1BC5D747009612D3 /* IMemoryBankController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2AB1BC5D747009612D3 /* IMemoryBankController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUExtInstructions.swift; sourceTree = "<group>"; };
 		90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPURegisters.swift; sourceTree = "<group>"; };
 		90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorLogger.swift; sourceTree = "<group>"; };
+		90FAF2AB1BC5D747009612D3 /* IMemoryBankController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMemoryBankController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 				90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */,
 				9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */,
 				90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */,
+				90FAF2AB1BC5D747009612D3 /* IMemoryBankController.swift */,
 			);
 			name = Device;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */,
 				90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */,
 				906444821BB6C4A400FFC821 /* EmulatorViewController.swift in Sources */,
+				90FAF2AC1BC5D747009612D3 /* IMemoryBankController.swift in Sources */,
 				906444811BB6C4A400FFC821 /* DebugViewController.swift in Sources */,
 				90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */,
 				90BD7FF71BA4107500C79443 /* GameBoyPPU.swift in Sources */,

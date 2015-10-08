@@ -37,17 +37,8 @@ class GameBoyDevice {
     }
     
     func loadRom(name: String) {
-        guard
-            let romPath = NSBundle.mainBundle().pathForResource(name, ofType: ".gb", inDirectory: "roms"),
-            let romData = NSData(contentsOfFile: romPath)
-            else {
-                LogE("Failed to load " + name + ".gb rom!")
-                exit(-1)
-        }
-        var rom = [UInt8](count: romData.length, repeatedValue: 0)
-        romData.getBytes(&rom, length: romData.length)
-        memory.loadRom(rom)
-        LogI("Rom " + name + ".gb load success.")
+        let mbc = loadRomMBC(name)
+        memory.loadRom(mbc)
     }
     
     func loadBios() {

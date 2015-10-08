@@ -71,29 +71,28 @@ class GameBoyRAM {
     let biosSize = 0x100
     
     var memory: [UInt8]
-    var romHeader: [UInt8]
+    var bios: [UInt8]
     var fastBiosMode: Bool
+    var inBios: Bool
+    var mbc: IMemoryBankController?
     let joypad: GameBoyJoypad
     
     init(joypad: GameBoyJoypad) {
         self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
-        self.romHeader = [UInt8](count: biosSize, repeatedValue: UInt8(0))
+        self.bios = [UInt8](count: biosSize, repeatedValue: UInt8(0))
         self.joypad = joypad
         fastBiosMode = true;
+        inBios = false
     }
     
     func loadBios(bios: [UInt8]) {
-        memory[0..<biosSize] = bios[0..<biosSize]
+        self.bios[0..<biosSize] = bios[0..<biosSize]
         fastBiosMode = false;
+        inBios = true
     }
     
-    func loadRom(rom: [UInt8]) {
-        if fastBiosMode {
-            memory[0..<rom.count] = rom[0..<rom.count]
-        } else {
-            romHeader[0..<biosSize] = rom[0..<biosSize]
-            memory[biosSize..<rom.count] = rom[biosSize..<rom.count]  //load cartridge
-        }
+    func loadRom(mbc: IMemoryBankController) {
+        self.mbc = mbc
     }
     
     func clear() {
@@ -104,15 +103,20 @@ class GameBoyRAM {
     
     func DMATransfer(dma: UInt8) {
         let addr = UInt16(dma) << 8
+        // TODO make sure that DMA transfers occur only in memory addr greater than 0x7FFF
         memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
     }
     
-    func unmapBios() { memory[0..<biosSize] = romHeader[0..<biosSize] }
     func requestInterrupt(interrupt: UInt8) { memory[Int(GameBoyRAM.IF)] |= interrupt }
     
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
-        case biosSize...0xDFFF:
+        case 0...0x00FF where inBios:
+            bios[Int(address)] = value;
+        case 0...0x7FFF:
+            // here write to MBC
+            mbc!.write(address: address, value: value)
+        case 0x8000...0xDFFF:
             memory[Int(address)] = value;
         case 0xE000...0xFDFF: //ram shadow
             memory[Int(address) - 0x2000] = value;
@@ -121,7 +125,7 @@ class GameBoyRAM {
             DMATransfer(value)
         case 0xFF50 where value == 0x01 && !fastBiosMode:
             memory[Int(address)] = value;
-            unmapBios()
+            inBios = false
         case Int(GameBoyRAM.P1):    //write to joypad
             memory[Int(address)] = joypad.getKeyValue(value)
         case 0xFE00...0xFFFF:
@@ -133,7 +137,12 @@ class GameBoyRAM {
     
     func read(address address: UInt16) -> UInt8 {
         switch Int(address) {
-        case 0x0000...0xDFFF:
+        case 0...0x00FF where inBios:
+            return bios[Int(address)];
+        case 0...0x7FFF:
+            // here write to MBC
+            return mbc!.read(address: address)
+        case 0x8000...0xDFFF:
             return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
             return memory[Int(address) - 0x2000];
