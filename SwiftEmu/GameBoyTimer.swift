@@ -48,7 +48,6 @@ class GameBoyTimer {
         if(baseBy4 > 0) {
             baseCounter -= baseBy4 * 4
             divCounter += baseBy4
-            timaCounter += baseBy4
             
             if divCounter >= 16 { //DIV updates at 1/16*4
                 var div = memory.read(address: GameBoyRAM.DIV)
@@ -59,6 +58,7 @@ class GameBoyTimer {
             
             let timerControl = memory.read(address: GameBoyRAM.TAC)
             if timerControl & 0x04 > 0 {
+                timaCounter += baseBy4
                 var increment = UInt8(0)
                 switch  timerControl & 0x03 {
                 case 0x00 where timaCounter >= 64: // M/64*4
@@ -67,10 +67,10 @@ class GameBoyTimer {
                 case 0x01:  // M/4
                     increment = UInt8(timaCounter)
                     timaCounter = 0
-                case 0x02 where timaCounter % 4 == 0: // M/4*4
+                case 0x02 where timaCounter >= 4: // M/4*4
                     increment = UInt8(timaCounter / 4)
                     timaCounter %= 4
-                case 0x03 where timaCounter % 16 == 0:// M/16*4
+                case 0x03 where timaCounter >= 16:// M/16*4
                     increment = UInt8(timaCounter / 16)
                     timaCounter %= 16
                 default:

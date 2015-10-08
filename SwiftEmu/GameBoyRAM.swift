@@ -96,6 +96,7 @@ class GameBoyRAM {
     }
     
     func clear() {
+        mbc?.reset()
         for var i = biosSize; i<memory.count; ++i {
             memory[i] = UInt8(0)
         }
@@ -103,8 +104,21 @@ class GameBoyRAM {
     
     func DMATransfer(dma: UInt8) {
         let addr = UInt16(dma) << 8
-        // TODO make sure that DMA transfers occur only in memory addr greater than 0x7FFF
-        memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
+        
+        // TODO implement DMA transfer from the MBC
+        switch Int(addr) {
+        case 0x8000...Int(0x9FFF-GameBoyRAM.DMA_SIZE):
+            memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
+        case 0xA000...Int(0xBFFF-GameBoyRAM.DMA_SIZE):
+            LogE("DMA from cartridge RAM not implemented!")
+            exit(-1)
+        case 0xC000...Int(0xDFFF-GameBoyRAM.DMA_SIZE):
+            memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
+        default:
+            LogE("DMA address out of bounds!")
+            exit(-1)
+        }
+        
     }
     
     func requestInterrupt(interrupt: UInt8) { memory[Int(GameBoyRAM.IF)] |= interrupt }
@@ -113,10 +127,12 @@ class GameBoyRAM {
         switch Int(address) {
         case 0...0x00FF where inBios:
             bios[Int(address)] = value;
-        case 0...0x7FFF:
+        case 0x8000...0x9FFF:
+            memory[Int(address)] = value;
+        case 0...0xBFFF:
             // here write to MBC
             mbc!.write(address: address, value: value)
-        case 0x8000...0xDFFF:
+        case 0xC000...0xDFFF:
             memory[Int(address)] = value;
         case 0xE000...0xFDFF: //ram shadow
             memory[Int(address) - 0x2000] = value;
@@ -139,10 +155,12 @@ class GameBoyRAM {
         switch Int(address) {
         case 0...0x00FF where inBios:
             return bios[Int(address)];
-        case 0...0x7FFF:
+        case 0x8000...0x9FFF:
+            return memory[Int(address)];
+        case 0...0xBFFF:
             // here write to MBC
             return mbc!.read(address: address)
-        case 0x8000...0xDFFF:
+        case 0xC000...0xDFFF:
             return memory[Int(address)];
         case 0xE000...0xFDFF: //ram shadow
             return memory[Int(address) - 0x2000];

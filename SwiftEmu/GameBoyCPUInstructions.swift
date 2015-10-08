@@ -38,7 +38,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD C,n",{(cpu: GameBoyCPU) in LD_r_n(cpu, reg: &cpu.registers.C)}),
         OpCode("RRC A",{(cpu: GameBoyCPU) in RRC_r(cpu, reg: &cpu.registers.A); cpu.registers.PC--}),
         //0x1n
-        OpCode("STOP",nil),
+        OpCode("STOP",STOP),
         OpCode("LD DE,nn",{(cpu: GameBoyCPU) in LD_rr_nn(cpu, regH: &cpu.registers.D, regL: &cpu.registers.E) }),
         OpCode("LD (DE),A",{(cpu: GameBoyCPU) in LD_arr_A(cpu, regH: cpu.registers.D, regL: cpu.registers.E)}),
         OpCode("INC DE",{(cpu: GameBoyCPU) in INC_rr(cpu, regH: &cpu.registers.D, regL: &cpu.registers.E)}),
@@ -146,7 +146,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("LD (HL),E",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.E)}),
         OpCode("LD (HL),H",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.H)}),
         OpCode("LD (HL),L",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.L)}),
-        OpCode("HALT",nil),
+        OpCode("HALT",HALT),
         OpCode("LD (HL),A",{(cpu: GameBoyCPU) in LD_aHL_r(cpu,reg: cpu.registers.A)}),
         OpCode("LD A,B",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.B)}),
         OpCode("LD A,C",{(cpu: GameBoyCPU) in LD_r_r(cpu, reg1: &cpu.registers.A, reg2: cpu.registers.C)}),
@@ -302,6 +302,15 @@ func NOP(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(1)
 }
+func STOP(cpu: GameBoyCPU){
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+func HALT(cpu: GameBoyCPU){
+    cpu.registers.PC++
+    cpu.updateClock(1)
+}
+
 // disable interrupts
 func DI(cpu: GameBoyCPU) {
     cpu.interruptMasterFlag = false

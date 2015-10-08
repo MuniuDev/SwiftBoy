@@ -33,7 +33,10 @@ class GameBoyDevice {
         self.bp = 0xFFFF
         
         loadBios()
-        loadRom("tetris") //FIXME temporary rom loading
+        //loadRom("tetris")
+        loadRom("SuperMarioLand")
+        //loadRom("cpu_instrs")
+        //loadRom("06-ld r,r")
     }
     
     func loadRom(name: String) {

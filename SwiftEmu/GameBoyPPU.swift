@@ -65,6 +65,11 @@ class GameBoyPPU {
             
             // is BG display on?
             if lcdc & 0x01 != 0 {   // draw BG
+                if lcdc & 0x20 != 0 {
+                    // TODO implement window mode
+                    LogW("Windowing enabled but not implemented!")
+                }
+                
                 let bg_data = (lcdc & 0x08 == 0) ? BG_1 : BG_2  //select bg display addr
                 let bg_chr = (lcdc & 0x10 == 0) ? CHR_1 : CHR_0 //select char bank addr
                 let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt16(0x00)   // offset when using CHR bank 1
@@ -112,9 +117,9 @@ class GameBoyPPU {
                         for x : UInt8 in 0..<8 {
                             let pos_x = spr_attrib & 0x20 != 0 ? 7-x : x
                             let color = getPixelColor(fromLine: colorLine, andColumn: pos_x, withPalette: spr_palette)
-                            if spr_x + pos_x >= 0  && spr_x + pos_x < 160 && color != 0 &&
+                            if spr_x &+ pos_x >= 0  && spr_x &+ pos_x < 160 && color != 0 &&
                                 (spr_attrib & 0x80 == 0 || frameBuffer[frame_offset + Int(spr_x) + Int(pos_x)] == 0) {
-                                frameBuffer[frame_offset + Int(spr_x) + Int(pos_x)] = palette[Int(color)]
+                                frameBuffer[frame_offset + Int(spr_x &+ pos_x)] = palette[Int(color)]
                             }
                         }
                     }
