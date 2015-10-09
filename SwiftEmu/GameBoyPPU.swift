@@ -142,8 +142,6 @@ class GameBoyPPU {
         if ly == lyc { stat |= 0x04; memory.write(address: GameBoyRAM.STAT, value: stat) }
         let lcdc_int = stat & 0x78
         
-        if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(GameBoyRAM.I_LCDC) }
-        
         switch getMode() {
         case MODE_OAM_SCANLINE where clock >= 20:
                 clock %= 20
@@ -164,6 +162,7 @@ class GameBoyPPU {
                 } else {
                     setMode(MODE_OAM_SCANLINE)
                     if lcdc_int & 0x30 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
+                    if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(GameBoyRAM.I_LCDC) }
                 }
         case MODE_VBLANK where clock >= 114:
                 clock %= 114

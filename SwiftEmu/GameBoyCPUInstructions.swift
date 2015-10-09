@@ -278,7 +278,7 @@ func generateOpCodeTable() -> [OpCode] {
         //0xFn
         OpCode("LDH A,(n)",LDH_A_an),
         OpCode("POP AF",{(cpu: GameBoyCPU) in POP_rr(cpu, regH: &cpu.registers.A, regL: &cpu.registers.F)}),
-        OpCode("XX",nil),
+        OpCode("LDH A,(C)",LDH_A_aC),
         OpCode("DI",DI),
         OpCode("XX",nil),
         OpCode("PUSH AF",{(cpu: GameBoyCPU) in PUSH_rr(cpu, regH: cpu.registers.A, regL: cpu.registers.F)}),
@@ -511,6 +511,12 @@ func LDH_A_an(cpu: GameBoyCPU) {
     cpu.registers.A = cpu.memory.read(address: UInt16(addr) + 0xFF00)
     cpu.registers.PC+=2
     cpu.updateClock(3)
+}
+// load from address 0xFF00 + C to A
+func LDH_A_aC(cpu: GameBoyCPU) {
+    cpu.registers.A = cpu.memory.read(address: UInt16(cpu.registers.C) + 0xFF00)
+    cpu.registers.PC+=1
+    cpu.updateClock(2)
 }
 // load from A to address 0xFF00 + C
 func LDH_aC_A(cpu: GameBoyCPU) {

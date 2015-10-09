@@ -110,8 +110,7 @@ class GameBoyRAM {
         case 0x8000...Int(0x9FFF-GameBoyRAM.DMA_SIZE):
             memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
         case 0xA000...Int(0xBFFF-GameBoyRAM.DMA_SIZE):
-            LogE("DMA from cartridge RAM not implemented!")
-            exit(-1)
+            memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = mbc!.getDMAData(address: addr, size: GameBoyRAM.DMA_SIZE)[0..<Int(GameBoyRAM.DMA_SIZE)]
         case 0xC000...Int(0xDFFF-GameBoyRAM.DMA_SIZE):
             memory[Int(GameBoyRAM.DMA_START)...Int(GameBoyRAM.DMA_END)] = memory[Int(addr)..<Int(addr+GameBoyRAM.DMA_SIZE)]
         default:
