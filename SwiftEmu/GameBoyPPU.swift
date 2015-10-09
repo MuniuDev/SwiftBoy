@@ -58,10 +58,10 @@ class GameBoyPPU {
             let scy = memory.read(address: GameBoyRAM.SCY)
             let bgp = memory.read(address: GameBoyRAM.BGP)
             
-            let start_y = (UInt16(ly) &+ UInt16(scy))/8
+            let start_y = (UInt16(UInt8(ly) &+ UInt8(scy)))/8
             let start_x = UInt16(scx)/8
             let frame_offset = Int(ly) * 160
-            let line_y_off = (UInt16(ly) &+ UInt16(scy))%8 * 2
+            let line_y_off = (UInt16(UInt8(ly) &+ UInt8(scy)))%8 * 2
             
             // is BG display on?
             if lcdc & 0x01 != 0 {   // draw BG
@@ -75,17 +75,16 @@ class GameBoyPPU {
                 let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt16(0x00)   // offset when using CHR bank 1
                 
                 var tile_addr = bg_data + start_y*32 + start_x
-                var tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
+                var tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
                 var x = UInt8(scx) & 0x07
                 var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
-                
                 for i in 0..<160 {
                     frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
                     ++x
                     if x == 8 {
                         x = 0
                         ++tile_addr
-                        tile_id = UInt16(memory.read(address: tile_addr)) &+ tile_id_offset
+                        tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
                         colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                     }
                 }

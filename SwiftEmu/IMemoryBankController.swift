@@ -70,7 +70,7 @@ class MBC1 : IMemoryBankController {
         self.rom[0..<romByteCount] = rom[0..<romByteCount]
         self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
         
-        currentRomBank = 0
+        currentRomBank = 1
         currentRamBank = 0
         ramEnabled = false
         ramBankingEnabled = false
