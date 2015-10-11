@@ -295,7 +295,7 @@ func generateOpCodeTable() -> [OpCode] {
     return table
 }
 
-//TODO implement HALT and STOP instr.
+//TODO implement STOP instr.
 
 //instructions
 func NOP(cpu: GameBoyCPU) {
@@ -307,6 +307,8 @@ func STOP(cpu: GameBoyCPU){
     cpu.updateClock(1)
 }
 func HALT(cpu: GameBoyCPU){
+    // FIXME add opcode skipping when DI and halt occurs (inherent Gameboy bug)
+    cpu.haltMode = true
     cpu.registers.PC++
     cpu.updateClock(1)
 }

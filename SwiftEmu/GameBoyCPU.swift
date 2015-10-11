@@ -15,6 +15,7 @@ class GameBoyCPU {
     var opcodes: [OpCode]
     var extOpcodes: [OpCode]
     var interruptMasterFlag: Bool
+    var haltMode: Bool
     
     init(memory mem: GameBoyRAM) {
         registers = GameBoyRegisters()
@@ -23,27 +24,37 @@ class GameBoyCPU {
         extOpcodes = generateExtOpCodeTable()
         timer = GameBoyTimer(memory: memory)
         interruptMasterFlag = false
+        haltMode = false
     }
     
     func tic() {
         HandleInterrupts()
-        let opCodeVal = memory.read(address: registers.PC)
-        let opCode = opcodes[Int(opCodeVal)]
-        
-        if opCode.instruction != nil {
-            //LogD("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + ". PC= 0x" + String(format:"%04X",registers.PC))
-            opCode.instruction!(cpu: self)
+        if !haltMode {
+            let opCodeVal = memory.read(address: registers.PC)
+            let opCode = opcodes[Int(opCodeVal)]
+            
+            if opCode.instruction != nil {
+                //LogD("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + ". PC= 0x" + String(format:"%04X",registers.PC))
+                opCode.instruction!(cpu: self)
+            } else {
+                LogE("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + " found in PC=" + String(format:"%04X", registers.PC))
+                exit(-1)
+            }
         } else {
-            LogE("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + " found in PC=" + String(format:"%04X", registers.PC))
-            exit(-1)
+            updateClock(1)
         }
         
     }
     
     func HandleInterrupts() {
-        if !interruptMasterFlag { return }
         let IE = memory.read(address: GameBoyRAM.IE)
         let IF = memory.read(address: GameBoyRAM.IF)
+        if !interruptMasterFlag {
+            if haltMode && (IE & IF) > 0{
+                haltMode = false
+            }
+            return
+        }
         
         if (IE & IF & GameBoyRAM.I_P10P13) != 0 { // P10-P13 terminal negative edge
             memory.write16(address: registers.SP-2, value: registers.PC)
@@ -51,6 +62,7 @@ class GameBoyCPU {
             interruptMasterFlag = false
             registers.PC = GameBoyRAM.JMP_I_P10P13
             memory.write(address: GameBoyRAM.IF, value: IF & ~GameBoyRAM.I_P10P13)
+            haltMode = false
             return
         }
         if (IE & IF & GameBoyRAM.I_SERIAL) != 0 { // Serial transfer completion
@@ -59,6 +71,7 @@ class GameBoyCPU {
             interruptMasterFlag = false
             registers.PC = GameBoyRAM.JMP_I_SERIAL
             memory.write(address: GameBoyRAM.IF, value: IF & ~GameBoyRAM.I_SERIAL)
+            haltMode = false
             return
         }
         if (IE & IF & GameBoyRAM.I_TIMER) != 0 { // Timer overflow
@@ -67,6 +80,7 @@ class GameBoyCPU {
             interruptMasterFlag = false
             registers.PC = GameBoyRAM.JMP_I_TIMER
             memory.write(address: GameBoyRAM.IF, value: IF & ~GameBoyRAM.I_TIMER)
+            haltMode = false
             return
         }
         if (IE & IF & GameBoyRAM.I_LCDC) != 0 { // LCDC interrupt
@@ -75,6 +89,7 @@ class GameBoyCPU {
             interruptMasterFlag = false
             registers.PC = GameBoyRAM.JMP_I_LCDC
             memory.write(address: GameBoyRAM.IF, value: IF & ~GameBoyRAM.I_LCDC)
+            haltMode = false
             return
         }
         if (IE & IF & GameBoyRAM.I_VBLANK) != 0 { // VBlank
@@ -83,6 +98,7 @@ class GameBoyCPU {
             interruptMasterFlag = false
             registers.PC = GameBoyRAM.JMP_I_VBLANK
             memory.write(address: GameBoyRAM.IF, value: IF & ~GameBoyRAM.I_VBLANK)
+            haltMode = false
             return
         }
     }
@@ -94,6 +110,7 @@ class GameBoyCPU {
     func reset() {
         registers.reset()
         interruptMasterFlag = false
+        haltMode = false
         timer.reset()
     }
     
