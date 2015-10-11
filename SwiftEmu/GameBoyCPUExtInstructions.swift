@@ -287,13 +287,13 @@ func generateExtOpCodeTable() -> [OpCode] {
 
 // extended instructions
 // rotate left, push to carry
-func RLC_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func RLC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x80) >> 7
     reg = (reg << 1) + carry
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
-    cpu.updateClock(2)
+    cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
 func RLC_aHL(cpu: GameBoyCPU) {
@@ -309,14 +309,14 @@ func RLC_aHL(cpu: GameBoyCPU) {
 }
 
 // 9-bit rotate left using carry
-func RL_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func RL_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = reg & 0x80
     reg = (reg << 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x01 }
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
-    cpu.updateClock(2)
+    cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
 func RL_aHL(cpu: GameBoyCPU) {
@@ -333,13 +333,13 @@ func RL_aHL(cpu: GameBoyCPU) {
 }
 
 // rotate right, push to carry
-func RRC_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func RRC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x01) << 7
     reg = (reg >> 1) + carry
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
-    cpu.updateClock(2)
+    cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
 func RRC_aHL(cpu: GameBoyCPU) {
@@ -355,14 +355,14 @@ func RRC_aHL(cpu: GameBoyCPU) {
 }
 
 // 9-bit rotate right using carry
-func RR_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func RR_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = reg & 0x01
     reg = (reg >> 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x80 }
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
-    cpu.updateClock(2)
+    cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
 func RR_aHL(cpu: GameBoyCPU) {

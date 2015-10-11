@@ -5,26 +5,37 @@ This project is currently under heavy developement and is not yet ready.
 
 There is still a lot to do, but this project reached the state of what I call: "Cool, I can see the results of my work". Now it's possible to run through all of the bootstrap instructions, display Nintendo logo and play some Tetris. You can see how it looks down below:
 
-![](emulator.gif)
+![](images/emulator.gif)
 
-It still is not ready, as there are some bugs in Tetris I need to address (e.g. score is not counting) but it certainly is becoming more and more usefull. As of right now no other games were tested.
+It still is not ready, as there are some bugs here and there, but it certainly is becoming more and more usefull.
 
 ## Features
 ### What is working
 - Bootstrap
+- Fast Bootstrap (no bios file required)
 - 99% of CPU instructions
 - Most of the PPU features
-- Interrupt mechanism
-- Tetris
+- Interrupts
+- Tetris, Super Mario Land (glitchy)
+- No MBC and MBC1
 
 ### What is not working
 - Sound
-- Memory bank controllers of any sort
-- STOP and HALT instructions
+- Rest of the memory bank controllers
+- STOP instruction
 - Window mode in PPU
 - V-sync
-- Some interrupts
+- Serial
+- No other games were tested yet
 
+## Tests
+This emulator is constantly tested using Blargg's GameBoy test roms. Current results can be seen below:
+
+General CPU Instruction test:
+![](images/cpu_instr_test.png)
+
+CPU Instruction timing test:
+![](images/cpu_instr_timing_test.png)
 
 ## Disclaimer
 As this is my first project in Swift it may contain ugly piecies of code, but trust me, I'm working on it.
