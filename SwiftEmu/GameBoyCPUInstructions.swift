@@ -277,7 +277,7 @@ func generateOpCodeTable() -> [OpCode] {
         OpCode("RST 28",{(cpu: GameBoyCPU) in RST_t(cpu, t: 0x28)}),
         //0xFn
         OpCode("LDH A,(n)",LDH_A_an),
-        OpCode("POP AF",{(cpu: GameBoyCPU) in POP_rr(cpu, regH: &cpu.registers.A, regL: &cpu.registers.F)}),
+        OpCode("POP AF",{(cpu: GameBoyCPU) in POP_rr(cpu, regH: &cpu.registers.A, regL: &cpu.registers.F); cpu.registers.F &= 0xF0}),
         OpCode("LDH A,(C)",LDH_A_aC),
         OpCode("DI",DI),
         OpCode("XX",nil),
@@ -784,7 +784,7 @@ func ADC_A_n(cpu: GameBoyCPU) {
     if cpu.registers.A > cpu.registers.A &+ val { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     if cpu.registers.A &+ val == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.registers.A = cpu.registers.A &+ val
-    cpu.registers.PC++
+    cpu.registers.PC+=2
     cpu.updateClock(2)
 }
 func SBC_A_r(cpu: GameBoyCPU, reg: UInt8) {
