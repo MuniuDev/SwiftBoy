@@ -32,9 +32,11 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 This emulator is constantly tested using Blargg's GameBoy test roms. Current results can be seen below:
 
 General CPU Instruction test:
+
 ![](images/cpu_instr_test.png)
 
 CPU Instruction timing test:
+
 ![](images/cpu_instr_timing_test.png)
 
 ## Disclaimer
