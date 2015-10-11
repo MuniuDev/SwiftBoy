@@ -36,10 +36,11 @@ class GameBoyDevice {
         //loadRom("tetris")
         //loadRom("SuperMarioLand")
         //loadRom("cpu_instrs")
+        //loadRom("instr_timing")
         //loadRom("01-special") //passed
         //loadRom("02-interrupts") //passed
-        loadRom("03-op sp,hl")
-        //loadRom("04-op r,imm")
+        //loadRom("03-op sp,hl") //passed
+        loadRom("04-op r,imm")
         //loadRom("05-op rp")   //passed
         //loadRom("06-ld r,r")  //passed
         //loadRom("07-jr,jp,call,ret,rst")    //passed

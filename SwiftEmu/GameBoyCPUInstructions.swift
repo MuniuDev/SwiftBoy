@@ -477,12 +477,14 @@ func LDHL_SP_e(cpu: GameBoyCPU) {
     let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
     cpu.registers.setHL(val)
     cpu.registers.F = 0
+    // half carry if overflow from 3rd to 4th bit
+    // carry if overflow from 7th to 8th bit
     if tmp < 0 {
-        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
-        if val > cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+        if val & 0x0F <= cpu.registers.SP & 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val & 0xFF <= cpu.registers.SP & 0xFF { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     } else {
-        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
-        if val < cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+        if val & 0x0F < cpu.registers.SP & 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val & 0xFF < cpu.registers.SP & 0xFF { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     }
     cpu.registers.PC+=2
     cpu.updateClock(3)
@@ -524,7 +526,7 @@ func LDH_A_aC(cpu: GameBoyCPU) {
 func LDH_aC_A(cpu: GameBoyCPU) {
     cpu.memory.write(address: UInt16(cpu.registers.C) + 0xFF00, value: cpu.registers.A)
     cpu.registers.PC++
-    cpu.updateClock(3)
+    cpu.updateClock(2)
 }
 
 // logical
@@ -824,12 +826,14 @@ func ADD_SP_e(cpu: GameBoyCPU) {
     let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
     let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
     cpu.registers.F = 0
+    // half carry if overflow from 3rd to 4th bit
+    // carry if overflow from 7th to 8th bit
     if tmp < 0 {
-        if cpu.registers.SP & 0x0FFF < UInt16(truncatingBitPattern: Int(-tmp)) { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
-        if val > cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+        if val & 0x0F <= cpu.registers.SP & 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val & 0xFF <= cpu.registers.SP & 0xFF { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     } else {
-        if val & 0x0FFF < cpu.registers.SP & 0x0FFF { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
-        if val < cpu.registers.SP { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+        if val & 0x0F < cpu.registers.SP & 0x0F { cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY }
+        if val & 0xFF < cpu.registers.SP & 0xFF { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     }
     cpu.registers.SP = val
     cpu.registers.PC+=2
