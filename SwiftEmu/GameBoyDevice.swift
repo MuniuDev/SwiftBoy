@@ -33,11 +33,11 @@ class GameBoyDevice {
         self.bp = 0xFFFF
         
         loadBios()
-        loadRom("tetris")
-        //loadRom("SuperMarioLand")
+        //loadRom("tetris")
+        loadRom("SuperMarioLand")
+        
+        /// INSTR test
         //loadRom("cpu_instrs")
-        //loadRom("mem_timing")
-        //loadRom("instr_timing")
         //loadRom("01-special") //passed
         //loadRom("02-interrupts") //passed
         //loadRom("03-op sp,hl") //passed
@@ -49,6 +49,15 @@ class GameBoyDevice {
         //loadRom("09-op r,r")
         //loadRom("10-bit ops")   //passed
         //loadRom("11-op a,(hl)")  //passed
+        
+        /// INSTR timing
+        //loadRom("instr_timing")
+        
+        /// MEM timing
+        //loadRom("mem_timing")
+        //loadRom("01-read_timing")
+        //loadRom("02-write_timing")
+        //loadRom("03-modify_timing")
     }
     
     func loadRom(name: String) {

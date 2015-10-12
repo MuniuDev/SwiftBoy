@@ -67,7 +67,7 @@ class MBC1 : IMemoryBankController {
         romByteCount = Int(0x8000) << Int(romSize)
         ramByteCount = ramSize == 0 ? 0 : Int(0x2000) << Int(ramSize-1)
         self.rom = [UInt8](count: romByteCount, repeatedValue: UInt8(0))
-        self.rom[0..<romByteCount] = rom[0..<romByteCount]
+        self.rom[0..<rom.count] = rom[0..<rom.count]
         self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
         
         currentRomBank = 1
