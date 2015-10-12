@@ -291,7 +291,7 @@ func RLC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x80) >> 7
     reg = (reg << 1) + carry
     cpu.registers.F = 0
-    if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if(reg == 0 && clock == 2) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     cpu.updateClock(clock)
     cpu.registers.PC+=2
@@ -314,7 +314,7 @@ func RL_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     reg = (reg << 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x01 }
     cpu.registers.F = 0
-    if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if(reg == 0 && clock == 2) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     cpu.updateClock(clock)
     cpu.registers.PC+=2
@@ -337,7 +337,7 @@ func RRC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x01) << 7
     reg = (reg >> 1) + carry
     cpu.registers.F = 0
-    if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if(reg == 0 && clock == 2) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     cpu.updateClock(clock)
     cpu.registers.PC+=2
@@ -360,7 +360,7 @@ func RR_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     reg = (reg >> 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x80 }
     cpu.registers.F = 0
-    if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    if(reg == 0 && clock == 2) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     if(carry > 0) { cpu.registers.F |= GameBoyRegisters.F_CARRY }
     cpu.updateClock(clock)
     cpu.registers.PC+=2

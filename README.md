@@ -14,6 +14,7 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Bootstrap
 - Fast Bootstrap (no bios file required)
 - 99% of CPU instructions
+- 100% accuracy of CPU instructions (according to Blargg test roms)
 - Most of the PPU features
 - Interrupts
 - Tetris, Super Mario Land (glitchy)

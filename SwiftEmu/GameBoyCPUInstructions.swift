@@ -332,9 +332,9 @@ func SCF(cpu: GameBoyCPU) {
     cpu.registers.PC++
     cpu.updateClock(1)
 }
-// clear carry flag
+// cycle carry flag
 func CCF(cpu: GameBoyCPU) {
-    cpu.registers.F = GameBoyRegisters.F_ZERO | ((~cpu.registers.F) & GameBoyRegisters.F_CARRY)
+    cpu.registers.F = (cpu.registers.F & GameBoyRegisters.F_ZERO) | ((~cpu.registers.F) & GameBoyRegisters.F_CARRY)
     cpu.registers.PC++
     cpu.updateClock(1)
 }
