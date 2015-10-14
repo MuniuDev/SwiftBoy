@@ -15,16 +15,16 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Fast Bootstrap (no bios file required)
 - 99% of CPU instructions
 - 100% accuracy of CPU instructions (according to Blargg test roms)
-- Most of the PPU features
+- BG, Window and Sprite rendering in PPU
 - Interrupts
-- Tetris, Super Mario Land (glitchy)
+- Tetris, Super Mario Land (grapgichs glitches)
 - No MBC and MBC1
 
 ### What is not working
 - Sound
 - Rest of the memory bank controllers
 - STOP instruction
-- Window mode in PPU
+- Some glitches left in PPU
 - V-sync
 - Serial
 - No other games were tested yet

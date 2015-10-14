@@ -58,17 +58,13 @@ class GameBoyPPU {
             let scy = memory.read(address: GameBoyRAM.SCY)
             let bgp = memory.read(address: GameBoyRAM.BGP)
             
-            let start_y = (UInt16(UInt8(ly) &+ UInt8(scy)))/8
-            let start_x = UInt16(scx)/8
             let frame_offset = Int(ly) * 160
-            let line_y_off = (UInt16(UInt8(ly) &+ UInt8(scy)))%8 * 2
             
             // is BG display on?
             if lcdc & 0x01 != 0 {   // draw BG
-                if lcdc & 0x20 != 0 {
-                    // TODO implement window mode
-                    LogW("Windowing enabled but not implemented!")
-                }
+                let start_y = (UInt16(UInt8(ly) &+ UInt8(scy)))/8
+                let start_x = UInt16(scx)/8
+                let line_y_off = (UInt16(UInt8(ly) &+ UInt8(scy)))%8 * 2
                 
                 let bg_data = (lcdc & 0x08 == 0) ? BG_1 : BG_2  //select bg display addr
                 let bg_chr = (lcdc & 0x10 == 0) ? CHR_1 : CHR_0 //select char bank addr
@@ -90,9 +86,42 @@ class GameBoyPPU {
                 }
             }
             
+            let wy = memory.read(address: GameBoyRAM.WY)
+            // is Window display on?
+            if lcdc & 0x01 != 0 && lcdc & 0x20 != 0 && ly >= wy {   // draw Window
+                
+                let wx = memory.read(address: GameBoyRAM.WX)
+                let start_y = UInt16(ly &- wy)/8
+                let line_y_off = (UInt16(ly &- wy))%8 * 2
+            
+                // Which bank of CHR is used by window?
+                let bg_data = (lcdc & 0x80 == 0) ? BG_1 : BG_2  //select bg display addr
+                let bg_chr = (lcdc & 0x10 == 0) ? CHR_1 : CHR_0 //select char bank addr
+                let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt16(0x00)   // offset when using CHR bank 1
+                
+                var tile_addr = bg_data + start_y*32
+                var tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
+                var x = wx % 8  //UInt8(0)
+                var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
+                for i in Int(wx)..<167 {
+                    if i >= 7  {
+                    frameBuffer[frame_offset + i - 7] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
+                    }
+                    ++x
+                    if x == 8 {
+                        x = 0
+                        ++tile_addr
+                        tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
+                        colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
+                    }
+                }
+            }
+            
             // is OBJ display on?
             if lcdc & 0x02 != 0 {   // draw OBJ
                 let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
+                let line_y_off = UInt16(ly)%8 * 2
+                
                 var startAddr = OAM
                 var spriteCount = 0
                 for _ in 0..<40 {
