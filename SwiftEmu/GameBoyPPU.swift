@@ -70,17 +70,21 @@ class GameBoyPPU {
                 let bg_chr = (lcdc & 0x10 == 0) ? CHR_1 : CHR_0 //select char bank addr
                 let tile_id_offset = (lcdc & 0x10 == 0) ? CHR_OFFSET : UInt16(0x00)   // offset when using CHR bank 1
                 
-                var tile_addr = bg_data + start_y*32 + start_x
-                var tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
+                var tile_addr_offset = start_x
+                let tile_addr = bg_data + start_y*32
+                
+                var tile_id = UInt8(memory.read(address: tile_addr + tile_addr_offset)) &+ UInt8(tile_id_offset)
                 var x = UInt8(scx) & 0x07
                 var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
+                
                 for i in 0..<160 {
                     frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
                     ++x
                     if x == 8 {
                         x = 0
-                        ++tile_addr
-                        tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
+                        ++tile_addr_offset
+                        tile_addr_offset %= 32
+                        tile_id = UInt8(memory.read(address: tile_addr + tile_addr_offset)) &+ UInt8(tile_id_offset)
                         colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                     }
                 }
