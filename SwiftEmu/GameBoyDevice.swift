@@ -34,7 +34,8 @@ class GameBoyDevice {
         
         loadBios()
         //loadRom("tetris")
-        loadRom("SuperMarioLand")
+        //loadRom("SuperMarioLand")
+        //loadRom("Castlevania")
         
         /// INSTR test
         //loadRom("cpu_instrs")

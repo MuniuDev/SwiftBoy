@@ -92,7 +92,7 @@ class GameBoyPPU {
             
             // is OBJ display on?
             if lcdc & 0x02 != 0 {   // draw OBJ
-                //let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
+                let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
                 var startAddr = OAM
                 var spriteCount = 0
                 for _ in 0..<40 {
@@ -103,9 +103,13 @@ class GameBoyPPU {
                     let spr_attrib = memory.read(address: startAddr+3)
                     startAddr += 4
                     
+                    if spriteHeight == 16 {
+                        LogW("Double OBJ sprites enabled but not implemented!")
+                    }
+                    
                     if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
                         ++spriteCount
-                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? GameBoyRAM.OBP0 : GameBoyRAM.OBP1)
+                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? GameBoyRAM.OBP1 : GameBoyRAM.OBP0)
                         var colorLine = UInt16(0)
                         if spr_attrib & 0x40 != 0 { //check y flip
                             colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + 14 - line_y_off)
@@ -114,11 +118,11 @@ class GameBoyPPU {
                         }
                         
                         for x : UInt8 in 0..<8 {
-                            let pos_x = spr_attrib & 0x20 != 0 ? 7-x : x
-                            let color = getPixelColor(fromLine: colorLine, andColumn: pos_x, withPalette: spr_palette)
-                            if spr_x &+ pos_x >= 0  && spr_x &+ pos_x < 160 && color != 0 &&
-                                (spr_attrib & 0x80 == 0 || frameBuffer[frame_offset + Int(spr_x) + Int(pos_x)] == 0) {
-                                frameBuffer[frame_offset + Int(spr_x &+ pos_x)] = palette[Int(color)]
+                            let pixel_x = spr_attrib & 0x20 != 0 ? 7-x : x
+                            let color = getPixelColor(fromLine: colorLine, andColumn: pixel_x, withPalette: spr_palette)
+                            if spr_x &+ x >= 0  && spr_x &+ x < 160 && color != 0 &&
+                                (spr_attrib & 0x80 == 0 || frameBuffer[frame_offset + Int(spr_x) + Int(x)] == palette[0]) {
+                                frameBuffer[frame_offset + Int(spr_x &+ x)] = palette[Int(color)]
                             }
                         }
                     }
