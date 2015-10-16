@@ -124,7 +124,6 @@ class GameBoyPPU {
             // is OBJ display on?
             if lcdc & 0x02 != 0 {   // draw OBJ
                 let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
-                let line_y_off = UInt16(ly)%8 * 2
                 
                 var startAddr = OAM
                 var spriteCount = 0
@@ -142,6 +141,7 @@ class GameBoyPPU {
                     
                     if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
                         ++spriteCount
+                        let line_y_off = UInt16(ly &- spr_y) * 2
                         let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? GameBoyRAM.OBP1 : GameBoyRAM.OBP0)
                         var colorLine = UInt16(0)
                         if spr_attrib & 0x40 != 0 { //check y flip
@@ -159,8 +159,8 @@ class GameBoyPPU {
                             }
                         }
                     }
+                    if spriteCount >= 10 { break }
                 }
-                if spriteCount >= 10 { return }
             }
         }
     }
