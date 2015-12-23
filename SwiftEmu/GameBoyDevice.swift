@@ -21,6 +21,14 @@ class GameBoyDevice {
     var queue: dispatch_queue_t
     var bp: UInt16
     
+    // CPU base clock in Hz
+    let clock: Int = 4194304
+    // CPU instr clock
+    lazy var iClock: Int = self.clock/4
+    lazy var ticTime: Double = 1.0/Double(self.iClock)
+    // aprox. tics in a half of a frame
+    lazy var ticLoopCount: Int = self.iClock/120
+    
     init(screen emuScreen: EmulatorScreen) {
         self.screen = emuScreen
         self.joypad = GameBoyJoypad()
@@ -86,11 +94,24 @@ class GameBoyDevice {
     }
     
     func tic() {
-        var delta = cpu.timer.getMTimer()
-        cpu.tic()
-        delta = cpu.timer.getMTimer() - delta
-        ppu.tic(delta)
-        if cpu.registers.PC == bp { running = false }
+        
+        let start = NSDate().timeIntervalSince1970
+        
+        for _ in 0..<ticLoopCount {
+            var delta = cpu.timer.getMTimer()
+            cpu.tic()
+            delta = cpu.timer.getMTimer() - delta
+            ppu.tic(delta)
+            if cpu.registers.PC == bp { running = false }
+        }
+        
+        let elapsed = NSDate().timeIntervalSince1970 - start
+        
+        if running {
+            let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(ticLoopCount) - elapsed)))
+            //print("time: " + String(Int64(Double(NSEC_PER_SEC) * ticTime * Double(ticLoopCount))) + " " + String(Int64(Double(NSEC_PER_SEC) * elapsed)))
+            dispatch_after(time, queue, tic)
+        }
     }
     
     func fastBootStrap() {
@@ -129,9 +150,7 @@ class GameBoyDevice {
     func start() {
         running = true
         dispatch_async(queue) {
-            while self.running {
-                self.tic()
-            }
+            self.tic()
         }
     }
     
