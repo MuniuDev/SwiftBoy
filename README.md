@@ -23,6 +23,7 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 
 ### What is not working
 - Sound
+- Sensible OpenGL rendering, current rendering takes about 70% of the app time!!!
 - Rest of the memory bank controllers
 - STOP instruction
 - Some glitches left in PPU
