@@ -96,19 +96,21 @@ class GameBoyDevice {
     func tic() {
         
         let start = NSDate().timeIntervalSince1970
-        
-        for _ in 0..<ticLoopCount {
+      
+        var count: Int = 0
+        while count < ticLoopCount {
             var delta = cpu.timer.getMTimer()
             cpu.tic()
             delta = cpu.timer.getMTimer() - delta
             ppu.tic(delta)
+            count += Int(delta)
             if cpu.registers.PC == bp { running = false }
         }
         
         let elapsed = NSDate().timeIntervalSince1970 - start
         
         if running {
-            let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(ticLoopCount) - elapsed)))
+            let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(count) - elapsed)))
             //print("time: " + String(Int64(Double(NSEC_PER_SEC) * ticTime * Double(ticLoopCount))) + " " + String(Int64(Double(NSEC_PER_SEC) * elapsed)))
             dispatch_after(time, queue, tic)
         }
