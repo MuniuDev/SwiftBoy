@@ -10,19 +10,26 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+  
+  let device: GameBoyDevice
+  
+  override init() {
+    device = GameBoyDevice()
+    super.init()
+  }
+  
+  func applicationDidFinishLaunching(aNotification: NSNotification) {
+    // Insert code here to initialize your application
+  }
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
-    }
-
-    func applicationWillTerminate(aNotification: NSNotification) {
-        // Insert code here to tear down your application
-    }
-    
-    // terminate when the window closes
-    func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {
-        return true;
-    }
+  func applicationWillTerminate(aNotification: NSNotification) {
+    // Insert code here to tear down your application
+  }
+  
+  // terminate when the window closes
+  func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {
+    return true;
+  }
 
 }
 

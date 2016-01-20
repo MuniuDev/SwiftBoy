@@ -11,7 +11,7 @@ import Dispatch
 
 class GameBoyDevice {
     
-    let screen: EmulatorScreen
+    //let screen: ProtoEmulatorScreen
     let joypad: GameBoyJoypad
     let memory: GameBoyRAM
     let cpu: GameBoyCPU
@@ -29,8 +29,8 @@ class GameBoyDevice {
     // aprox. tics in a half of a frame
     lazy var ticLoopCount: Int = self.iClock/120
     
-    init(screen emuScreen: EmulatorScreen) {
-        self.screen = emuScreen
+    init() {
+        //self.screen = emuScreen
         self.joypad = GameBoyJoypad()
         self.memory = GameBoyRAM(joypad: joypad)
         self.joypad.registerRAM(memory)
