@@ -9,10 +9,6 @@
 import Cocoa
 import GLUT
 
-protocol ProtoEmulatorScreen {
-  func copyBuffer(screenBuffer: [UInt8])
-}
-
 class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
 
   var textureName = GLuint()

@@ -30,6 +30,7 @@ class DebugViewController: NSViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view. 
       device = (NSApplication.sharedApplication().delegate as! AppDelegate).device
+      updateInfo()
     }
 
     override var representedObject: AnyObject? {

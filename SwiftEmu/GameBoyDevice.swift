@@ -9,9 +9,13 @@
 import Foundation
 import Dispatch
 
+protocol ProtoEmulatorScreen {
+  func copyBuffer(screenBuffer: [UInt8])
+}
+
 class GameBoyDevice {
     
-    //let screen: ProtoEmulatorScreen
+    var screen: ProtoEmulatorScreen?
     let joypad: GameBoyJoypad
     let memory: GameBoyRAM
     let cpu: GameBoyCPU
@@ -30,7 +34,7 @@ class GameBoyDevice {
     lazy var ticLoopCount: Int = self.iClock/120
     
     init() {
-        //self.screen = emuScreen
+      self.screen = nil;
         self.joypad = GameBoyJoypad()
         self.memory = GameBoyRAM(joypad: joypad)
         self.joypad.registerRAM(memory)
@@ -42,7 +46,7 @@ class GameBoyDevice {
         
         loadBios()
         //loadRom("tetris")
-        loadRom("SuperMarioLand")
+        //loadRom("SuperMarioLand")
         //loadRom("Castlevania")
         
         /// INSTR test
@@ -68,8 +72,12 @@ class GameBoyDevice {
         //loadRom("02-write_timing")
         //loadRom("03-modify_timing")
     }
-    
-    func loadRom(name: String) {
+  
+    func setScreen(screen: ProtoEmulatorScreen) {
+      self.screen = screen
+    }
+  
+    func loadRom(name: NSURL) {
         let mbc = loadRomMBC(name)
         memory.loadRom(mbc)
     }
@@ -113,7 +121,9 @@ class GameBoyDevice {
             let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(count) - elapsed)))
             //print("time: " + String(Int64(Double(NSEC_PER_SEC) * ticTime * Double(ticLoopCount))) + " " + String(Int64(Double(NSEC_PER_SEC) * elapsed)))
             dispatch_after(time, queue, tic)
-        }
+        } else {
+          print("mid")
+      }
     }
     
     func fastBootStrap() {
@@ -157,9 +167,13 @@ class GameBoyDevice {
     }
     
     func reset() {
+        print("before")
         running = false
+        dispatch_barrier_sync(queue, {});
+        print("after");
         memory.clear()
         cpu.reset()
         ppu.reset()
+        loadBios()
     }
 }

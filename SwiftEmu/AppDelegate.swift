@@ -11,7 +11,24 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
   
+
   let device: GameBoyDevice
+  
+  @IBAction func openRom(sender: NSMenuItem) {
+    print("open rom action")
+    var dialog = NSOpenPanel()
+    dialog.worksWhenModal = true
+    dialog.allowsMultipleSelection = false
+    dialog.canChooseDirectories = false
+    dialog.resolvesAliases = true
+    dialog.title = "Open ROM..."
+    dialog.message = "Open the rom file you want to play."
+    dialog.runModal()
+    let url = dialog.URL?.absoluteURL
+    device.reset()
+    device.loadRom(url!)
+    device.start()
+  }
   
   override init() {
     device = GameBoyDevice()

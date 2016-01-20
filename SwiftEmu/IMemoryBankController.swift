@@ -136,17 +136,18 @@ class MBC1 : IMemoryBankController {
     }
 }
 
-func loadRomMBC(name: String) -> IMemoryBankController {
+func loadRomMBC(name: NSURL) -> IMemoryBankController {
+  let romPath = name;
     guard
-        let romPath = NSBundle.mainBundle().pathForResource(name, ofType: ".gb", inDirectory: "roms"),
-        let romData = NSData(contentsOfFile: romPath)
+        //let romPath = NSBundle.mainBundle().pathForResource(name, ofType: ".gb", inDirectory: "roms"),
+        let romData = NSData(contentsOfURL: romPath)
         else {
-            LogE("Failed to load " + name + ".gb rom!")
+            LogE("Failed to load " + name.absoluteString + ".gb rom!")
             exit(-1)
     }
     var rom = [UInt8](count: romData.length, repeatedValue: 0)
     romData.getBytes(&rom, length: romData.length)
-    LogI("Rom " + name + ".gb load success.")
+    LogI("Rom " + name.absoluteString + ".gb load success.")
     
     switch rom[0x0147] {
     case 0:
