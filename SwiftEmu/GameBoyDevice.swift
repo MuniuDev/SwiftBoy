@@ -77,9 +77,14 @@ class GameBoyDevice {
       self.screen = screen
     }
   
-    func loadRom(name: NSURL) {
+    func loadRom(name: NSURL) -> Bool {
+      guard
         let mbc = loadRomMBC(name)
-        memory.loadRom(mbc)
+      else {
+        return false;
+      }
+      memory.loadRom(mbc)
+      return true;
     }
     
     func loadBios() {
@@ -100,7 +105,14 @@ class GameBoyDevice {
     func setBP(point: UInt16) {
        bp = point
     }
-    
+  
+    func stepTic() {
+      var delta = cpu.timer.getMTimer()
+      cpu.tic()
+      delta = cpu.timer.getMTimer() - delta
+      ppu.tic(delta)
+    }
+  
     func tic() {
         
         let start = NSDate().timeIntervalSince1970
@@ -119,11 +131,8 @@ class GameBoyDevice {
         
         if running {
             let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(count) - elapsed)))
-            //print("time: " + String(Int64(Double(NSEC_PER_SEC) * ticTime * Double(ticLoopCount))) + " " + String(Int64(Double(NSEC_PER_SEC) * elapsed)))
             dispatch_after(time, queue, tic)
-        } else {
-          print("mid")
-      }
+        }
     }
     
     func fastBootStrap() {
@@ -167,10 +176,8 @@ class GameBoyDevice {
     }
     
     func reset() {
-        print("before")
         running = false
         dispatch_barrier_sync(queue, {});
-        print("after");
         memory.clear()
         cpu.reset()
         ppu.reset()

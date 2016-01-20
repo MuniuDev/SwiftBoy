@@ -11,10 +11,15 @@ import GLUT
 
 class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
 
+  let screenWidth = 160
+  let screenHeight = 144
+  let texSize: Int32 = 256
+  
   var textureName = GLuint()
-  var textureData: [GLubyte] = [GLubyte](count: 256*256*4, repeatedValue: GLubyte(0))
+  var textureData: [GLubyte]
   
   required init?(coder aDecoder: NSCoder) {
+    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(0))
     super.init(coder: aDecoder)
   }
   
@@ -37,7 +42,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
     glBindTexture(UInt32(GL_TEXTURE_2D), textureName);
     glTexParameteri(UInt32(GL_TEXTURE_2D),UInt32(GL_TEXTURE_MIN_FILTER),GL_NEAREST);
     glTexParameteri(UInt32(GL_TEXTURE_2D),UInt32(GL_TEXTURE_MAG_FILTER),GL_NEAREST);
-    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), 256, 256, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_INT), textureData);
+    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), texSize, texSize, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_INT), textureData);
   }
   
   override func reshape() {
@@ -51,10 +56,10 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
     glEnable(UInt32(GL_TEXTURE_2D));
     glActiveTexture(UInt32(GL_TEXTURE0))
     glBindTexture(UInt32(GL_TEXTURE_2D), textureName);
-    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), 256, 256, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_BYTE), textureData);
+    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), texSize, texSize, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_BYTE), textureData);
     
-    let cord_right = Float(160.0/256.0)
-    let cord_down = Float(144.0/256.0)
+    let cord_right = Float(screenWidth)/Float(texSize)
+    let cord_down = Float(screenHeight)/Float(texSize)
     
     glBegin(UInt32(GL_TRIANGLE_STRIP));
     glTexCoord2f(0.0, cord_down); glVertex2f(-1.0, -1.0);
@@ -68,13 +73,13 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
   }
   
   func copyBuffer(screenBuffer: [UInt8]) {
-    for var j = 0; j < Int(144); ++j {
-      for var i = 0; i < Int(160); ++i {
-        let hue = 255 - screenBuffer[j*160+i]
-        textureData[(j*256+i)*4] = GLubyte(hue)
-        textureData[(j*256+i)*4+1] = GLubyte(hue)
-        textureData[(j*256+i)*4+2] = GLubyte(hue)
-        textureData[(j*256+i)*4+3] = 255;
+    for var j = 0; j < screenHeight; ++j {
+      for var i = 0; i < screenWidth; ++i {
+        let hue = 255 - screenBuffer[j*screenWidth+i]
+        textureData[(j*Int(texSize)+i)*4] = GLubyte(hue)
+        textureData[(j*Int(texSize)+i)*4+1] = GLubyte(hue)
+        textureData[(j*Int(texSize)+i)*4+2] = GLubyte(hue)
+        textureData[(j*Int(texSize)+i)*4+3] = 255;
       }
     }
     needsDisplay = true

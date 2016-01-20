@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   
   @IBAction func openRom(sender: NSMenuItem) {
     print("open rom action")
-    var dialog = NSOpenPanel()
+    let dialog = NSOpenPanel()
     dialog.worksWhenModal = true
     dialog.allowsMultipleSelection = false
     dialog.canChooseDirectories = false
@@ -24,10 +24,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     dialog.title = "Open ROM..."
     dialog.message = "Open the rom file you want to play."
     dialog.runModal()
-    let url = dialog.URL?.absoluteURL
+    guard
+      let url = dialog.URL?.absoluteURL
+      else {
+        print("Loading canceled")
+        return;
+    }
+    
     device.reset()
-    device.loadRom(url!)
-    device.start()
+    if device.loadRom(url) {
+      device.start()
+    } else {
+      print("Unsupported ROM format!")
+    }
   }
   
   override init() {

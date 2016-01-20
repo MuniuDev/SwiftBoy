@@ -12,8 +12,6 @@ class DebugViewController: NSViewController {
   
     var device: GameBoyDevice?
 
-    // debug IO
-  @IBOutlet weak var screen: LegacyEmulatorScreen!
     @IBOutlet weak var valueAF: NSTextField!
     @IBOutlet weak var valueBC: NSTextField!
     @IBOutlet weak var valueDE: NSTextField!
@@ -40,14 +38,12 @@ class DebugViewController: NSViewController {
     }
     
     @IBAction func step(sender: AnyObject) {
-        device?.tic()
-        
+        device?.stepTic()
     }
 
     @IBAction func run(sender: AnyObject) {
         if device?.running == false {
             device?.start()
-            updateInfo()
         } else {
             device?.running = false
         }
@@ -73,14 +69,9 @@ class DebugViewController: NSViewController {
         valueSP.stringValue = "0x" + String(format:"%04X",SP)
         let PC = device!.cpu.registers.PC
         valuePC.stringValue = "0x" + String(format:"%04X",PC)
-
-        // update screen
-        screen.copyBuffer(device!.ppu.getBuffer())
       
-      if device?.running == true {
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.033))
+        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.1))
         dispatch_after(time, dispatch_get_main_queue(), updateInfo)
-      }
     }
   
   

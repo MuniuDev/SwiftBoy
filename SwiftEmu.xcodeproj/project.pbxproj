@@ -15,7 +15,6 @@
 		90BD7FA01B9F506C00C79443 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7F9F1B9F506C00C79443 /* Images.xcassets */; };
 		90BD7FA31B9F506C00C79443 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FA11B9F506C00C79443 /* Main.storyboard */; };
 		90BD7FAF1B9F506C00C79443 /* SwiftEmuTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */; };
-		90BD7FB91B9F59C800C79443 /* LegacyEmulatorScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FB81B9F59C800C79443 /* LegacyEmulatorScreen.swift */; };
 		90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */; };
 		90BD7FF31BA4105800C79443 /* GameBoyRAM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FF21BA4105800C79443 /* GameBoyRAM.swift */; };
 		90BD7FF51BA4106500C79443 /* GameBoyCPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */; };
@@ -52,7 +51,6 @@
 		90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7FAD1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEmuTests.swift; sourceTree = "<group>"; };
-		90BD7FB81B9F59C800C79443 /* LegacyEmulatorScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyEmulatorScreen.swift; sourceTree = "<group>"; };
 		90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyDevice.swift; sourceTree = "<group>"; };
 		90BD7FF21BA4105800C79443 /* GameBoyRAM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyRAM.swift; sourceTree = "<group>"; };
 		90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPU.swift; sourceTree = "<group>"; };
@@ -108,7 +106,6 @@
 				90BD7FF81BA45F8700C79443 /* roms */,
 				90BD7FF11BA40BD700C79443 /* Device */,
 				90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */,
-				90BD7FB81B9F59C800C79443 /* LegacyEmulatorScreen.swift */,
 				906444801BB6C4A400FFC821 /* DebugViewController.swift */,
 				90AE9ACC1C4EEBEB00131683 /* EmulatorOpenGLScreen.swift */,
 				90AE9ACE1C4EED1900131683 /* EmulatorViewController.swift */,
@@ -263,7 +260,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90BD7FB91B9F59C800C79443 /* LegacyEmulatorScreen.swift in Sources */,
 				90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */,
 				90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */,
 				90AE9ACD1C4EEBEB00131683 /* EmulatorOpenGLScreen.swift in Sources */,

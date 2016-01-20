@@ -136,7 +136,7 @@ class MBC1 : IMemoryBankController {
     }
 }
 
-func loadRomMBC(name: NSURL) -> IMemoryBankController {
+func loadRomMBC(name: NSURL) -> IMemoryBankController? {
   let romPath = name;
     guard
         //let romPath = NSBundle.mainBundle().pathForResource(name, ofType: ".gb", inDirectory: "roms"),
@@ -156,6 +156,6 @@ func loadRomMBC(name: NSURL) -> IMemoryBankController {
         return MBC1(rom: rom)
     default:
         LogE("Failed to load proper MBC!")
-        exit(-1)
+        return nil
     }
 }
