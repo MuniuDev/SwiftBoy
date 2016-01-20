@@ -1,9 +1,9 @@
 # SwiftEmu
 Classic GameBoy emulator project written entirely in Swift. 
  
-This project is currently under developement and is not yet ready. 
+This project is currently in pre-alpha stage. 
 
-There is still a lot to do, but this project reached the state of what I call: "Cool, I can see the results of my work". Now it's possible to run through all of the bootstrap instructions, display Nintendo logo and play some Tetris or Super Mario Land. You can see how it looks down below:
+Although most of the emulation is working there are still much more to do. My main focus is now on improving the UI for the first alpha release. Any feedback is welcomed. You can see how it looks down below:
 
 ![](images/emulator.gif)
 
@@ -20,16 +20,20 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Tetris, Super Mario Land
 - Raw roms (no MBC) and MBC1 roms
 - Emulation speed synchronization
+- Fast OpenGL rendering
+- New better UI
+- Rom loading from popup (File -> Open Rom)
+
 
 ### What is not working
 - Sound
-- Sensible OpenGL rendering, current rendering takes about 70% of the app time!!!
 - Rest of the memory bank controllers
 - STOP instruction
 - Some glitches left in PPU
 - V-sync
 - Serial
 - No other games were tested yet
+- New UI may be unstable as of right now
 
 ## Tests
 This emulator is constantly tested using Blargg's GameBoy test roms. Current results can be seen below:
@@ -44,4 +48,4 @@ CPU Instruction timing test:
 
 ## Disclaimer
 As this is my first project in Swift it may contain ugly piecies of code, but trust me, I'm working on it.
-I currentely decided to push to the master branch, to be able to easily track progress. When this project reaches usable state I will switch to feature branch scheme.
+Main branch should now be stable (no rebases and force pushes), all of the developement is done on the feature branches.
