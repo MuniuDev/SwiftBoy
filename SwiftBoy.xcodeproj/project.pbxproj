@@ -14,12 +14,11 @@
 		90BD7F9C1B9F506C00C79443 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */; };
 		90BD7FA01B9F506C00C79443 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7F9F1B9F506C00C79443 /* Images.xcassets */; };
 		90BD7FA31B9F506C00C79443 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FA11B9F506C00C79443 /* Main.storyboard */; };
-		90BD7FAF1B9F506C00C79443 /* SwiftEmuTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */; };
+		90BD7FAF1B9F506C00C79443 /* SwiftBoyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FAE1B9F506C00C79443 /* SwiftBoyTests.swift */; };
 		90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */; };
 		90BD7FF31BA4105800C79443 /* GameBoyRAM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FF21BA4105800C79443 /* GameBoyRAM.swift */; };
 		90BD7FF51BA4106500C79443 /* GameBoyCPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */; };
 		90BD7FF71BA4107500C79443 /* GameBoyPPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FF61BA4107500C79443 /* GameBoyPPU.swift */; };
-		90BD7FF91BA45F8700C79443 /* roms in Resources */ = {isa = PBXBuildFile; fileRef = 90BD7FF81BA45F8700C79443 /* roms */; };
 		90BD7FFB1BA5568D00C79443 /* GameBoyCPUInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */; };
 		90BD7FFD1BA8BEA600C79443 /* GameBoyTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */; };
 		90C85B481BAD60D3002A599E /* GameBoyCPUExtInstructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */; };
@@ -50,12 +49,11 @@
 		90BD7FA21B9F506C00C79443 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7FAD1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEmuTests.swift; sourceTree = "<group>"; };
+		90BD7FAE1B9F506C00C79443 /* SwiftBoyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBoyTests.swift; sourceTree = "<group>"; };
 		90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyDevice.swift; sourceTree = "<group>"; };
 		90BD7FF21BA4105800C79443 /* GameBoyRAM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyRAM.swift; sourceTree = "<group>"; };
 		90BD7FF41BA4106500C79443 /* GameBoyCPU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPU.swift; sourceTree = "<group>"; };
 		90BD7FF61BA4107500C79443 /* GameBoyPPU.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyPPU.swift; sourceTree = "<group>"; };
-		90BD7FF81BA45F8700C79443 /* roms */ = {isa = PBXFileReference; lastKnownFileType = folder; path = roms; sourceTree = "<group>"; };
 		90BD7FFA1BA5568D00C79443 /* GameBoyCPUInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUInstructions.swift; sourceTree = "<group>"; };
 		90BD7FFC1BA8BEA600C79443 /* GameBoyTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyTimer.swift; sourceTree = "<group>"; };
 		90C85B471BAD60D3002A599E /* GameBoyCPUExtInstructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPUExtInstructions.swift; sourceTree = "<group>"; };
@@ -85,8 +83,8 @@
 		90BD7F8D1B9F506C00C79443 = {
 			isa = PBXGroup;
 			children = (
-				90BD7F981B9F506C00C79443 /* SwiftEmu */,
-				90BD7FAB1B9F506C00C79443 /* SwiftEmuTests */,
+				90BD7F981B9F506C00C79443 /* SwiftBoy */,
+				90BD7FAB1B9F506C00C79443 /* SwiftBoyTests */,
 				90BD7F971B9F506C00C79443 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -100,10 +98,9 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		90BD7F981B9F506C00C79443 /* SwiftEmu */ = {
+		90BD7F981B9F506C00C79443 /* SwiftBoy */ = {
 			isa = PBXGroup;
 			children = (
-				90BD7FF81BA45F8700C79443 /* roms */,
 				90BD7FF11BA40BD700C79443 /* Device */,
 				90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */,
 				906444801BB6C4A400FFC821 /* DebugViewController.swift */,
@@ -113,6 +110,7 @@
 				90BD7FA11B9F506C00C79443 /* Main.storyboard */,
 				90BD7F991B9F506C00C79443 /* Supporting Files */,
 			);
+			name = SwiftBoy;
 			path = SwiftEmu;
 			sourceTree = "<group>";
 		};
@@ -124,12 +122,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		90BD7FAB1B9F506C00C79443 /* SwiftEmuTests */ = {
+		90BD7FAB1B9F506C00C79443 /* SwiftBoyTests */ = {
 			isa = PBXGroup;
 			children = (
-				90BD7FAE1B9F506C00C79443 /* SwiftEmuTests.swift */,
+				90BD7FAE1B9F506C00C79443 /* SwiftBoyTests.swift */,
 				90BD7FAC1B9F506C00C79443 /* Supporting Files */,
 			);
+			name = SwiftBoyTests;
 			path = SwiftEmuTests;
 			sourceTree = "<group>";
 		};
@@ -162,9 +161,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		90BD7F951B9F506C00C79443 /* SwiftEmu */ = {
+		90BD7F951B9F506C00C79443 /* SwiftBoy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 90BD7FB21B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftEmu" */;
+			buildConfigurationList = 90BD7FB21B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftBoy" */;
 			buildPhases = (
 				90BD7F921B9F506C00C79443 /* Sources */,
 				90BD7F931B9F506C00C79443 /* Frameworks */,
@@ -174,14 +173,14 @@
 			);
 			dependencies = (
 			);
-			name = SwiftEmu;
+			name = SwiftBoy;
 			productName = SwiftEmu;
 			productReference = 90BD7F961B9F506C00C79443 /* SwiftEmu.app */;
 			productType = "com.apple.product-type.application";
 		};
-		90BD7FA71B9F506C00C79443 /* SwiftEmuTests */ = {
+		90BD7FA71B9F506C00C79443 /* SwiftBoyTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 90BD7FB51B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftEmuTests" */;
+			buildConfigurationList = 90BD7FB51B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftBoyTests" */;
 			buildPhases = (
 				90BD7FA41B9F506C00C79443 /* Sources */,
 				90BD7FA51B9F506C00C79443 /* Frameworks */,
@@ -192,7 +191,7 @@
 			dependencies = (
 				90BD7FAA1B9F506C00C79443 /* PBXTargetDependency */,
 			);
-			name = SwiftEmuTests;
+			name = SwiftBoyTests;
 			productName = SwiftEmuTests;
 			productReference = 90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -216,7 +215,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 90BD7F911B9F506C00C79443 /* Build configuration list for PBXProject "SwiftEmu" */;
+			buildConfigurationList = 90BD7F911B9F506C00C79443 /* Build configuration list for PBXProject "SwiftBoy" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -229,8 +228,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				90BD7F951B9F506C00C79443 /* SwiftEmu */,
-				90BD7FA71B9F506C00C79443 /* SwiftEmuTests */,
+				90BD7F951B9F506C00C79443 /* SwiftBoy */,
+				90BD7FA71B9F506C00C79443 /* SwiftBoyTests */,
 			);
 		};
 /* End PBXProject section */
@@ -241,7 +240,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				90BD7FA01B9F506C00C79443 /* Images.xcassets in Resources */,
-				90BD7FF91BA45F8700C79443 /* roms in Resources */,
 				90BD7FA31B9F506C00C79443 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,7 +280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90BD7FAF1B9F506C00C79443 /* SwiftEmuTests.swift in Sources */,
+				90BD7FAF1B9F506C00C79443 /* SwiftBoyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,7 +289,7 @@
 /* Begin PBXTargetDependency section */
 		90BD7FAA1B9F506C00C79443 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 90BD7F951B9F506C00C79443 /* SwiftEmu */;
+			target = 90BD7F951B9F506C00C79443 /* SwiftBoy */;
 			targetProxy = 90BD7FA91B9F506C00C79443 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -397,7 +395,7 @@
 				INFOPLIST_FILE = SwiftEmu/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SwiftBoy;
 			};
 			name = Debug;
 		};
@@ -410,7 +408,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				"MTL_ENABLE_DEBUG_INFO[arch=*]" = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = SwiftBoy;
 			};
 			name = Release;
 		};
@@ -430,8 +428,8 @@
 				INFOPLIST_FILE = SwiftEmuTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftEmu.app/Contents/MacOS/SwiftEmu";
+				PRODUCT_NAME = SwiftBoy;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftBoy.app/Contents/MacOS/SwiftBoy";
 			};
 			name = Debug;
 		};
@@ -447,15 +445,15 @@
 				INFOPLIST_FILE = SwiftEmuTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftEmu.app/Contents/MacOS/SwiftEmu";
+				PRODUCT_NAME = SwiftBoy;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SwiftBoy.app/Contents/MacOS/SwiftBoy";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		90BD7F911B9F506C00C79443 /* Build configuration list for PBXProject "SwiftEmu" */ = {
+		90BD7F911B9F506C00C79443 /* Build configuration list for PBXProject "SwiftBoy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				90BD7FB01B9F506C00C79443 /* Debug */,
@@ -464,7 +462,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		90BD7FB21B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftEmu" */ = {
+		90BD7FB21B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftBoy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				90BD7FB31B9F506C00C79443 /* Debug */,
@@ -473,7 +471,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		90BD7FB51B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftEmuTests" */ = {
+		90BD7FB51B9F506C00C79443 /* Build configuration list for PBXNativeTarget "SwiftBoyTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				90BD7FB61B9F506C00C79443 /* Debug */,

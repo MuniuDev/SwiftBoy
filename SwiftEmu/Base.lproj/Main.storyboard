@@ -10,11 +10,11 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="SwiftEmu" id="1Xt-HY-uBw">
+                            <menuItem title="SwiftBoy" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="SwiftEmu" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="SwiftBoy" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About SwiftEmu" id="5kV-Vb-QxS">
+                                        <menuItem title="About SwiftBoy" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
@@ -28,7 +28,7 @@
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide SwiftEmu" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide SwiftBoy" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -46,7 +46,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit SwiftEmu" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit SwiftBoy" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -121,7 +121,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                                     <items>
-                                        <menuItem title="SwiftEmu Help" keyEquivalent="?" id="FKE-Sm-Kum">
+                                        <menuItem title="SwiftBoy Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                             <connections>
                                                 <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
                                             </connections>
@@ -135,7 +135,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SwiftEmu" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="SwiftBoy" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-793" y="-158"/>
@@ -162,7 +162,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="SwiftEmu" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="SwiftBoy" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenDisallowsTiling="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -180,8 +180,8 @@
         <!--Emulator View Controller-->
         <scene sceneID="WmR-YY-VhR">
             <objects>
-                <viewController id="ekA-N3-FJS" customClass="EmulatorViewController" customModule="SwiftEmu" customModuleProvider="target" sceneMemberID="viewController">
-                    <openGLView key="view" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" id="WjL-32-d4C" customClass="EmulatorOpenGLScreen" customModule="SwiftEmu" customModuleProvider="target">
+                <viewController id="ekA-N3-FJS" customClass="EmulatorViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
+                    <openGLView key="view" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" id="WjL-32-d4C" customClass="EmulatorOpenGLScreen" customModule="SwiftBoy" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="443" height="400"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                     </openGLView>
@@ -196,7 +196,7 @@
         <!--Debug View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="DebugViewController" customModule="SwiftEmu" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="DebugViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="159" height="295"/>
                         <autoresizingMask key="autoresizingMask"/>

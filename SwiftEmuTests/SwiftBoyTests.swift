@@ -9,7 +9,7 @@
 import Cocoa
 import XCTest
 
-class SwiftEmuTests: XCTestCase {
+class SwiftBoyTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

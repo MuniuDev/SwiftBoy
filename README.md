@@ -1,4 +1,4 @@
-# SwiftEmu
+# SwiftBoy
 Classic GameBoy emulator project written entirely in Swift. 
  
 This project is currently in pre-alpha stage. 
