@@ -42,12 +42,12 @@
 		9074EDFA1BB80C2B00C67852 /* GameBoyJoypad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyJoypad.swift; sourceTree = "<group>"; };
 		90AE9ACC1C4EEBEB00131683 /* EmulatorOpenGLScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorOpenGLScreen.swift; sourceTree = "<group>"; };
 		90AE9ACE1C4EED1900131683 /* EmulatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorViewController.swift; sourceTree = "<group>"; };
-		90BD7F961B9F506C00C79443 /* SwiftEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftEmu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		90BD7F961B9F506C00C79443 /* SwiftEmu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = SwiftEmu.app; path = SwiftBoy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7F9A1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90BD7F9B1B9F506C00C79443 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		90BD7F9F1B9F506C00C79443 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		90BD7FA21B9F506C00C79443 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEmuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		90BD7FA81B9F506C00C79443 /* SwiftEmuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = SwiftEmuTests.xctest; path = SwiftBoy.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		90BD7FAD1B9F506C00C79443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		90BD7FAE1B9F506C00C79443 /* SwiftBoyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBoyTests.swift; sourceTree = "<group>"; };
 		90BD7FEF1BA40BD000C79443 /* GameBoyDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyDevice.swift; sourceTree = "<group>"; };
@@ -110,8 +110,7 @@
 				90BD7FA11B9F506C00C79443 /* Main.storyboard */,
 				90BD7F991B9F506C00C79443 /* Supporting Files */,
 			);
-			name = SwiftBoy;
-			path = SwiftEmu;
+			path = SwiftBoy;
 			sourceTree = "<group>";
 		};
 		90BD7F991B9F506C00C79443 /* Supporting Files */ = {
@@ -128,8 +127,7 @@
 				90BD7FAE1B9F506C00C79443 /* SwiftBoyTests.swift */,
 				90BD7FAC1B9F506C00C79443 /* Supporting Files */,
 			);
-			name = SwiftBoyTests;
-			path = SwiftEmuTests;
+			path = SwiftBoyTests;
 			sourceTree = "<group>";
 		};
 		90BD7FAC1B9F506C00C79443 /* Supporting Files */ = {
@@ -392,7 +390,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = SwiftEmu/Info.plist;
+				INFOPLIST_FILE = SwiftBoy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SwiftBoy;
@@ -404,7 +402,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = SwiftEmu/Info.plist;
+				INFOPLIST_FILE = SwiftBoy/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				"MTL_ENABLE_DEBUG_INFO[arch=*]" = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
