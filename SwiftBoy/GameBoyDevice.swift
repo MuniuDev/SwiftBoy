@@ -14,8 +14,7 @@ protocol ProtoEmulatorScreen {
 }
 
 class GameBoyDevice {
-    
-    var screen: ProtoEmulatorScreen?
+
     let joypad: GameBoyJoypad
     let memory: GameBoyRAM
     let cpu: GameBoyCPU
@@ -34,7 +33,6 @@ class GameBoyDevice {
     lazy var ticLoopCount: Int = self.iClock/120
     
     init() {
-      self.screen = nil;
         self.joypad = GameBoyJoypad()
         self.memory = GameBoyRAM(joypad: joypad)
         self.joypad.registerRAM(memory)
@@ -43,74 +41,37 @@ class GameBoyDevice {
         self.queue = dispatch_queue_create("GameBoyLoop", DISPATCH_QUEUE_SERIAL)
         self.running = false
         self.bp = 0xFFFF
-        
-        loadBios()
-        //loadRom("tetris")
-        //loadRom("SuperMarioLand")
-        //loadRom("Castlevania")
-        
-        /// INSTR test
-        //loadRom("cpu_instrs")
-        //loadRom("01-special") //passed
-        //loadRom("02-interrupts") //passed
-        //loadRom("03-op sp,hl") //passed
-        //loadRom("04-op r,imm") //passed
-        //loadRom("05-op rp")   //passed
-        //loadRom("06-ld r,r")  //passed
-        //loadRom("07-jr,jp,call,ret,rst")    //passed
-        //loadRom("08-misc instrs") //passed
-        //loadRom("09-op r,r")
-        //loadRom("10-bit ops")   //passed
-        //loadRom("11-op a,(hl)")  //passed
-        
-        /// INSTR timing
-        //loadRom("instr_timing")
-        
-        /// MEM timing
-        //loadRom("mem_timing")
-        //loadRom("01-read_timing")
-        //loadRom("02-write_timing")
-        //loadRom("03-modify_timing")
+      
+        fastBootStrap()
     }
   
     func setScreen(screen: ProtoEmulatorScreen) {
-      self.screen = screen
+        self.ppu.setScreen(screen)
     }
   
     func loadRom(name: NSURL) -> Bool {
-      guard
-        let mbc = loadRomMBC(name)
-      else {
-        return false;
-      }
-      memory.loadRom(mbc)
-      return true;
+        guard
+            let mbc = loadRomMBC(name)
+        else {
+            return false;
+        }
+        memory.loadRom(mbc)
+        return true;
     }
     
     func loadBios() {
-        guard
-            let biosPath = NSBundle.mainBundle().pathForResource("bios", ofType: ".gb", inDirectory: "roms"),
-            let biosData = NSData(contentsOfFile: biosPath)
-            else {
-                LogW("WARNING! No bios file found! Running fast bios...")
-                fastBootStrap() // if failed to load bootstrap file, simulate it
-                return
-        }
-        var bios = [UInt8](count: biosData.length, repeatedValue: 0)
-        biosData.getBytes(&bios, length: biosData.length)
-        memory.loadBios(bios)
-        LogI("Bios load success.")
+        fastBootStrap()
     }
     
     func setBP(point: UInt16) {
-       bp = point
+        bp = point
     }
   
     func stepTic() {
-      var delta = cpu.timer.getMTimer()
-      cpu.tic()
-      delta = cpu.timer.getMTimer() - delta
-      ppu.tic(delta)
+        var delta = cpu.timer.getMTimer()
+        cpu.tic()
+        delta = cpu.timer.getMTimer() - delta
+        ppu.tic(delta)
     }
   
     func tic() {

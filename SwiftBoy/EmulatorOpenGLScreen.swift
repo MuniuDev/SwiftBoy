@@ -19,7 +19,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
   var textureData: [GLubyte]
   
   required init?(coder aDecoder: NSCoder) {
-    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(0))
+    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(255))
     super.init(coder: aDecoder)
   }
   
