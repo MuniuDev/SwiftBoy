@@ -1,6 +1,6 @@
 //
 //  GameBoyJoypad.swift
-//  SwiftEmu
+//  SwiftBoy
 //
 //  Created by Michal Majczak on 27.09.2015.
 //  Copyright © 2015 Michal Majczak. All rights reserved.

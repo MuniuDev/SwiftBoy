@@ -1,6 +1,6 @@
 //
 //  GameBoyPPU.swift
-//  SwiftEmu
+//  SwiftBoy
 //
 //  Created by Michal Majczak on 12.09.2015.
 //  Copyright (c) 2015 Michal Majczak. All rights reserved.
@@ -194,7 +194,6 @@ class GameBoyPPU {
                     setMode(MODE_VBLANK)
                     memory.requestInterrupt(GameBoyRAM.I_VBLANK)
                     if lcdc_int & 0x20 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
-                    //copyBuffer()
                 } else {
                     setMode(MODE_OAM_SCANLINE)
                     if lcdc_int & 0x30 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}

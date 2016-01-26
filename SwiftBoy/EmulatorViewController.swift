@@ -1,6 +1,6 @@
 //
 //  EmulatorViewController.swift
-//  SwiftEmu
+//  SwiftBoy
 //
 //  Created by Michal Majczak on 19.01.2016.
 //  Copyright © 2016 Michal Majczak. All rights reserved.

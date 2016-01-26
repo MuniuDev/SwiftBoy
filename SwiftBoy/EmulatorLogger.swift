@@ -1,6 +1,6 @@
 //
 //  EmulatorLogger.swift
-//  SwiftEmu
+//  SwiftBoy
 //
 //  Created by Michal Majczak on 06.10.2015.
 //  Copyright © 2015 Michal Majczak. All rights reserved.
