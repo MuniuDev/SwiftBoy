@@ -33,7 +33,7 @@
 			containerPortal = 90BD7F8E1B9F506C00C79443 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 90BD7F951B9F506C00C79443;
-			remoteInfo = SwiftEmu;
+			remoteInfo = SwiftBoy;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -172,7 +172,7 @@
 			dependencies = (
 			);
 			name = SwiftBoy;
-			productName = SwiftEmu;
+			productName = SwiftBoy;
 			productReference = 90BD7F961B9F506C00C79443 /* SwiftBoy.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -190,7 +190,7 @@
 				90BD7FAA1B9F506C00C79443 /* PBXTargetDependency */,
 			);
 			name = SwiftBoyTests;
-			productName = SwiftEmuTests;
+			productName = SwiftBoyTests;
 			productReference = 90BD7FA81B9F506C00C79443 /* SwiftBoy.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -423,7 +423,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SwiftEmuTests/Info.plist;
+				INFOPLIST_FILE = SwiftBoyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SwiftBoy;
@@ -440,7 +440,7 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SwiftEmuTests/Info.plist;
+				INFOPLIST_FILE = SwiftBoyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.muniusoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SwiftBoy;
