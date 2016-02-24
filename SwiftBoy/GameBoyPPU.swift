@@ -35,6 +35,8 @@ class GameBoyPPU {
     var frameBuffer: [UInt8]
     var palette: [UInt8] = [0,96,192,255]
     
+    var errorChecked = false;
+    
     init(memory mem: GameBoyRAM) {
         memory = mem
         frameBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
@@ -141,8 +143,9 @@ class GameBoyPPU {
                     let spr_attrib = memory.read(address: startAddr+3)
                     startAddr += 4
                     
-                    if spriteHeight == 16 {
+                    if spriteHeight == 16 && !errorChecked{
                         LogW("Double OBJ sprites enabled but not implemented!")
+                        errorChecked = true;
                     }
                     
                     if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
