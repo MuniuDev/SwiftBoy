@@ -15,7 +15,7 @@ enum LogLevel: Int {
     case ERROR
 }
 
-let currentLogLevel = LogLevel.INFO
+let currentLogLevel = LogLevel.DEBUG
 
 func LogD(msg: String) { Log(LogLevel.DEBUG, msg: msg) }
 func LogI(msg: String) { Log(LogLevel.INFO, msg: msg) }
