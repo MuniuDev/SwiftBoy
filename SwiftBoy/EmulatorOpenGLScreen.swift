@@ -19,7 +19,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
   var textureData: [GLubyte]
   
   required init?(coder aDecoder: NSCoder) {
-    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(0))
+    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(255))
     super.init(coder: aDecoder)
   }
   
@@ -42,7 +42,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
     glBindTexture(UInt32(GL_TEXTURE_2D), textureName);
     glTexParameteri(UInt32(GL_TEXTURE_2D),UInt32(GL_TEXTURE_MIN_FILTER),GL_NEAREST);
     glTexParameteri(UInt32(GL_TEXTURE_2D),UInt32(GL_TEXTURE_MAG_FILTER),GL_NEAREST);
-    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), texSize, texSize, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_INT), textureData);
+    glTexImage2D(UInt32(GL_TEXTURE_2D), 0, Int32(GL_RGBA), texSize, texSize, 0, UInt32(GL_RGBA), UInt32(GL_UNSIGNED_BYTE), textureData);
   }
   
   override func reshape() {

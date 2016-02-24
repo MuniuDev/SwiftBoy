@@ -21,120 +21,35 @@ extension IMemoryBankController {
     //func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {return [UInt8]()}
 }
 
-class RawRom : IMemoryBankController {
-    var rom: [UInt8]
-    
-    init(rom: [UInt8]) {
-        self.rom = [UInt8](count: 0xC000, repeatedValue: UInt8(0))
-        self.rom[0...0x7FFF] = rom[0...0x7FFF]
-    }
-    
-    func write(address address: UInt16, value: UInt8) {
-        if address < 0x8000 { return }
-        rom[Int(address)] = value
-    }
-    
-    func read(address address: UInt16) -> UInt8 {
-        return rom[Int(address)]
-    }
-    
-    func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {
-        var ret = [UInt8](count: Int(size), repeatedValue: UInt8(0))
-        ret[0..<Int(size)] = rom[ Int(address)..<Int(address + size)]
-        return ret
-    }
-}
-
-class MBC1 : IMemoryBankController {
-    var rom: [UInt8]
-    var ram: [UInt8]
-    let type: UInt8
-    let romSize: UInt8
-    let ramSize: UInt8
-    let romByteCount: Int
-    let ramByteCount: Int
-    
-    var currentRomBank: UInt8
-    var currentRamBank: UInt8
-    
-    var ramEnabled: Bool
-    var ramBankingEnabled: Bool
-    
-    init(rom: [UInt8]) {
-        type = rom[0x0147]
-        romSize = rom[0x0148]
-        ramSize = rom[0x0149]
-        romByteCount = Int(0x8000) << Int(romSize)
-        ramByteCount = ramSize == 0 ? 0 : Int(0x2000) << Int(ramSize-1)
-        self.rom = [UInt8](count: romByteCount, repeatedValue: UInt8(0))
-        self.rom[0..<rom.count] = rom[0..<rom.count]
-        self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
-        
-        currentRomBank = 1
-        currentRamBank = 0
-        ramEnabled = false
-        ramBankingEnabled = false
-    }
-    
-    func read(address address: UInt16) -> UInt8 {
-        switch Int(address) {
-        case 0x0000...0x3FFF:
-            return rom[Int(address)]
-        case 0x4000...0x7FFF: // access rom bank
-            return rom[Int(address) + 0x4000*(Int(currentRomBank) - 1)]
-        case 0xA000...0xBFFF: // access ram bank
-            if ramSize != 0 {
-                return ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))]
-            }
-        default:
-            LogE("Invalid read in MBC1!")
-            exit(-1)
-        }
-        return 0
-    }
-    
-    func write(address address: UInt16, value: UInt8) {
-        switch Int(address) {
-        case 0x0000...0x1FFF: // if value = 0x0A enable RAM else disable RAM
-            ramEnabled = (value == 0x0A)
-        case 0x2000...0x3FFF: // value in range 0x01...0x1F selects lower 5-bits of ROM bank, 0x00 is translated to 0x01
-            if value == 0x00 {
-                currentRomBank |= (value+1) & 0x1F
-            } else {
-                currentRomBank = (currentRomBank & 0x60) | value & 0x0F
-            }
-        case 0x4000...0x5FFF: // value in range 0x00...0x03 selects higher 2 bits of ROM bank or specify RAM bank if RAM banking is enabled
-            if ramEnabled && ramBankingEnabled {
-                currentRamBank = value & 0x03
-            } else {
-                currentRomBank = (currentRomBank & 0x1F) | (value & 0x03) << 4
-            }
-        case 0x6000...0x7FFF: // if value is 0x01 RAM banking is enabled, else it's disabled
-            ramBankingEnabled = (value == 0x01)
-        case 0xA000...0xBFFF:
-            if ramSize != 0 {
-            ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))] = value
-            }
-        default:
-            LogE("Invalid write in MBC1!")
-            exit(-1)
-        }
-    }
-    
-    func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {
-        var ret = [UInt8](count: Int(size), repeatedValue: UInt8(0))
-        ret[0..<Int(size)] = ram[ Int(address - 0xA000)..<Int(address - 0xA000 + size)]
-        return ret
-    }
-    
-    func reset() {
-        self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
-        currentRomBank = 0
-        currentRamBank = 0
-        ramEnabled = false
-        ramBankingEnabled = false
-    }
-}
+// Cartridge types:
+// 0x00 - Raw ROM cartridge
+// 0x01 - MBC1
+// 0x02 - MBC1 + RAM
+// 0x03 - MBC1 + RAM + Battery
+// 0x05 - MBC2
+// 0x06 - MBC2 + RAM + Battery
+// 0x08 - ROM + RAM
+// 0x09 - ROM + RAM + Battery
+// 0x0B - MMM01
+// 0x0C - MMM01 + RAM
+// 0x0D - MMM01 + RAM + Battery
+// 0x0F - MBC3 + RTC + Battery
+// 0x10 - MBC3 + RAM + RTC + Battery
+// 0x11 - MBC3
+// 0x12 - MBC3 + RAM
+// 0x13 - MBC3 + RAM + Battery
+// 0x19 - MBC5
+// 0x1A - MBC5 + RAM
+// 0x1B - MBC5 + RAM + Battery
+// 0x1C - MBC5 + Rumble
+// 0x1D - MBC5 + RAM + Rumble
+// 0x1E - MBC5 + RAM + Battery + Rumble
+// 0x20 - MBC6 + RAM + Battery
+// 0x22 - MBC7 + RAM + Battery + Accelerometer
+// 0xFC - Pocket Camera
+// 0xFD - BANDAI TAMA5
+// 0xFE - HuC3
+// 0xFF - HuC1 + RAM + Battery
 
 func loadRomMBC(name: NSURL) -> IMemoryBankController? {
   let romPath = name;
@@ -148,7 +63,7 @@ func loadRomMBC(name: NSURL) -> IMemoryBankController? {
     var rom = [UInt8](count: romData.length, repeatedValue: 0)
     romData.getBytes(&rom, length: romData.length)
     LogI("Rom " + name.absoluteString + ".gb load success.")
-    
+    LogD("Rom type: 0x" + String(format:"%02X", rom[0x0147]))
     switch rom[0x0147] {
     case 0:
         return RawRom(rom: rom)
@@ -158,4 +73,51 @@ func loadRomMBC(name: NSURL) -> IMemoryBankController? {
         LogE("Failed to load proper MBC!")
         return nil
     }
+}
+
+func getROMBankCount(romSizeRegiserVal: UInt8 ) -> Int {
+    if romSizeRegiserVal > 0x08 {
+        LogE("Too big rom size, possibly broken rom image.")
+        return -1
+    }
+    return Int(2 << romSizeRegiserVal)
+}
+
+func getRAMBankCount(ramSizeRegiserVal: UInt8 ) -> Int {
+    var count = -1
+    switch ramSizeRegiserVal {
+    case 0x00: count = 0
+    case 0x01: count = 1
+    case 0x02: count = 1
+    case 0x03: count = 4
+    case 0x04: count = 16
+    case 0x05: count = 8
+    default:
+        LogE("Too big ram size, possibly broken rom image.")
+    }
+    return count
+}
+
+func getROMTotalSize(romSizeRegiserVal: UInt8 ) -> Int {
+    if romSizeRegiserVal > 0x08 {
+        LogE("Too big rom size, possibly broken rom image.")
+        return -1
+    }
+    return getROMBankCount(romSizeRegiserVal) * 32 * 1024
+}
+
+func getRAMTotalSize(ramSizeRegiserVal: UInt8 ) -> Int {
+    var count = Int(0)
+    switch ramSizeRegiserVal {
+    case 0x00: count = 0
+    case 0x01: count = 2
+    case 0x02: count = 8
+    case 0x03: count = 32
+    case 0x04: count = 128
+    case 0x05: count = 64
+    default:
+        LogE("Too big ram size, possibly broken rom image.")
+        return -1
+    }
+    return count*1024
 }

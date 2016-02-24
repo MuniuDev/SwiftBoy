@@ -22,20 +22,13 @@ class EmulatorViewController: NSViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
     device = (NSApplication.sharedApplication().delegate as! AppDelegate).device
-    updateInfo()
+    device?.setScreen(emuScreen)
   }
   
   override var representedObject: AnyObject? {
     didSet {
       // Update the view, if already loaded.
     }
-  }
-  
-  func updateInfo() {
-    emuScreen.copyBuffer(device!.ppu.getBuffer())
-    
-    let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.016))
-    dispatch_after(time, dispatch_get_main_queue(), updateInfo)
   }
   
   override func keyDown(theEvent: NSEvent) {

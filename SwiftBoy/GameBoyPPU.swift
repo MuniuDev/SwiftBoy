@@ -28,7 +28,8 @@ class GameBoyPPU {
     let MODE_HBLANK: UInt8 = 0x00
     let MODE_VBLANK: UInt8 = 0x01
     
-    
+  
+    var screen: ProtoEmulatorScreen?
     var memory: GameBoyRAM
     var clock: UInt
     var frameBuffer: [UInt8]
@@ -38,10 +39,15 @@ class GameBoyPPU {
         memory = mem
         frameBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
         clock = 0
+        screen = nil
         setMode(MODE_HBLANK)
         setLine(0)
     }
-    
+  
+    func setScreen(screen: ProtoEmulatorScreen) {
+      self.screen = screen
+    }
+  
     func getPixelColor(fromLine line: UInt16, andColumn column: UInt8, withPalette palette: UInt8) -> UInt8 {
         let mask = UInt8(0x80 >> column)
         let color_id = ((UInt8(line & 0xFF) & mask) >> (7-column)) + ((UInt8(line >> 8) & mask) >> (7-column)) << 1  // find color id
@@ -169,7 +175,7 @@ class GameBoyPPU {
         return frameBuffer
     }
     
-    func tic(deltaClock: UInt) {
+    func tic(deltaClock: UInt) -> Int {
         clock = clock &+ deltaClock
         
         let ly = memory.read(address: GameBoyRAM.LY)
@@ -178,37 +184,43 @@ class GameBoyPPU {
         if ly == lyc { stat |= 0x04; memory.write(address: GameBoyRAM.STAT, value: stat) }
         let lcdc_int = stat & 0x78
         
+        var ret = 0
+        
         switch getMode() {
         case MODE_OAM_SCANLINE where clock >= 20:
-                clock %= 20
-                setMode(MODE_VRAM_SCANLINE)
+            clock %= 20
+            setMode(MODE_VRAM_SCANLINE)
         case MODE_VRAM_SCANLINE where clock >= 43:
-                clock %= 43
-                renderLine()
-                setMode(MODE_HBLANK)
-                if lcdc_int & 0x10 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
+            clock %= 43
+            renderLine()
+            setMode(MODE_HBLANK)
+            if lcdc_int & 0x10 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
         case MODE_HBLANK where clock >= 51:
-                clock %= 51
-                setLine(getLine()+1)
-                if getLine() == 144 {
-                    setMode(MODE_VBLANK)
-                    memory.requestInterrupt(GameBoyRAM.I_VBLANK)
-                    if lcdc_int & 0x20 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
-                } else {
-                    setMode(MODE_OAM_SCANLINE)
-                    if lcdc_int & 0x30 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
-                    if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(GameBoyRAM.I_LCDC) }
-                }
+            clock %= 51
+            setLine(getLine()+1)
+            if getLine() == 144 {
+                setMode(MODE_VBLANK)
+                memory.requestInterrupt(GameBoyRAM.I_VBLANK)
+                if lcdc_int & 0x20 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
+                // copy buffer to screen
+                screen?.copyBuffer(frameBuffer);
+                ret = 1
+            } else {
+                setMode(MODE_OAM_SCANLINE)
+                if lcdc_int & 0x30 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
+                if lcdc_int & 0x40 != 0 && ly == lyc { memory.requestInterrupt(GameBoyRAM.I_LCDC) }
+            }
         case MODE_VBLANK where clock >= 114:
-                clock %= 114
-                setLine(getLine()+1)
-                if getLine() > 153 {
-                    setMode(MODE_OAM_SCANLINE)
-                    setLine(0)
-                }
+            clock %= 114
+            setLine(getLine()+1)
+            if getLine() > 153 {
+                setMode(MODE_OAM_SCANLINE)
+                setLine(0)
+            }
         default:
-            return
+            return ret
         }
+        return ret
     }
     
     func reset() {
