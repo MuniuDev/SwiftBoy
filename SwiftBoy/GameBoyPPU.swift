@@ -33,11 +33,15 @@ class GameBoyPPU {
     var memory: GameBoyRAM
     var clock: UInt
     var frameBuffer: [UInt8]
+    var colorIDBuffer: [UInt8]
     var palette: [UInt8] = [0,96,192,255]
+    
+    var errorChecked = false;
     
     init(memory mem: GameBoyRAM) {
         memory = mem
         frameBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
+        colorIDBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
         clock = 0
         screen = nil
         setMode(MODE_HBLANK)
@@ -47,10 +51,14 @@ class GameBoyPPU {
     func setScreen(screen: ProtoEmulatorScreen) {
       self.screen = screen
     }
+    
+    func getPixelColorID(fromLine line: UInt16, andColumn column: UInt8) -> UInt8 {
+        let mask = UInt8(0x80 >> column)
+        return ((UInt8(line & 0xFF) & mask) >> (7-column)) + ((UInt8(line >> 8) & mask) >> (7-column)) << 1  // find color id
+    }
   
     func getPixelColor(fromLine line: UInt16, andColumn column: UInt8, withPalette palette: UInt8) -> UInt8 {
-        let mask = UInt8(0x80 >> column)
-        let color_id = ((UInt8(line & 0xFF) & mask) >> (7-column)) + ((UInt8(line >> 8) & mask) >> (7-column)) << 1  // find color id
+        let color_id = getPixelColorID(fromLine: line, andColumn: column)  // find color id
         return (palette >> (color_id*2)) & 0x03
     }
     
@@ -85,6 +93,7 @@ class GameBoyPPU {
                 
                 for i in 0..<160 {
                     frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
+                    colorIDBuffer[frame_offset + i] = getPixelColorID(fromLine: colorLine, andColumn: x);
                     ++x
                     if x == 8 {
                         x = 0
@@ -111,12 +120,12 @@ class GameBoyPPU {
                 
                 var tile_addr = bg_data + start_y*32
                 var tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
-                var x = wx % 8  //UInt8(0)
+                var x = 7 - (wx % 8) // get leftmost tile starting row num
                 var colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
-                for i in Int(wx)..<167 {
-                    if i >= 7  {
-                    frameBuffer[frame_offset + i - 7] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
-                    }
+                let start = wx >= 7 ? Int(wx - 7) : 0
+                for i in start..<160 {
+                    frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
+                    colorIDBuffer[frame_offset + i] = getPixelColorID(fromLine: colorLine, andColumn: x);
                     ++x
                     if x == 8 {
                         x = 0
@@ -141,8 +150,9 @@ class GameBoyPPU {
                     let spr_attrib = memory.read(address: startAddr+3)
                     startAddr += 4
                     
-                    if spriteHeight == 16 {
+                    if spriteHeight == 16 && !errorChecked{
                         LogW("Double OBJ sprites enabled but not implemented!")
+                        errorChecked = true;
                     }
                     
                     if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
@@ -159,9 +169,11 @@ class GameBoyPPU {
                         for x : UInt8 in 0..<8 {
                             let pixel_x = spr_attrib & 0x20 != 0 ? 7-x : x
                             let color = getPixelColor(fromLine: colorLine, andColumn: pixel_x, withPalette: spr_palette)
-                            if spr_x &+ x >= 0  && spr_x &+ x < 160 && color != 0 &&
-                                (spr_attrib & 0x80 == 0 || frameBuffer[frame_offset + Int(spr_x) + Int(x)] == palette[0]) {
+                            let colorID = getPixelColorID(fromLine: colorLine, andColumn: pixel_x)
+                            if spr_x &+ x >= 0  && spr_x &+ x < 160 && colorID != 0 &&
+                                (spr_attrib & 0x80 == 0 || colorIDBuffer[frame_offset + Int(spr_x &+ x)] == 0) {
                                 frameBuffer[frame_offset + Int(spr_x &+ x)] = palette[Int(color)]
+                                colorIDBuffer[frame_offset + Int(spr_x &+ x)] = colorID;
                             }
                         }
                     }

@@ -69,6 +69,8 @@ func loadRomMBC(name: NSURL) -> IMemoryBankController? {
         return RawRom(rom: rom)
     case 0x01...0x03:
         return MBC1(rom: rom)
+    case 0x0F...0x13:
+        return MBC3(rom: rom)
     default:
         LogE("Failed to load proper MBC!")
         return nil

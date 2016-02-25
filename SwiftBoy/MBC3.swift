@@ -1,5 +1,5 @@
 //
-//  MBC1.swift
+//  MBC3.swift
 //  SwiftBoy
 //
 //  Created by Michal Majczak on 24.02.2016.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MBC1 : IMemoryBankController {
+class MBC3 : IMemoryBankController {
     var rom: [UInt8]
     var ram: [UInt8]
     let type: UInt8
@@ -21,7 +21,7 @@ class MBC1 : IMemoryBankController {
     var currentRamBank: UInt8
     
     var ramEnabled: Bool
-    var ramBankingEnabled: Bool
+    var rtcEnabled: Bool
     
     init(rom: [UInt8]) {
         type = rom[0x0147]
@@ -36,7 +36,7 @@ class MBC1 : IMemoryBankController {
         currentRomBank = 1
         currentRamBank = 0
         ramEnabled = false
-        ramBankingEnabled = false
+        rtcEnabled = false
     }
     
     func read(address address: UInt16) -> UInt8 {
@@ -47,10 +47,15 @@ class MBC1 : IMemoryBankController {
             return rom[Int(address) + 0x4000*(Int(currentRomBank) - 1)]
         case 0xA000...0xBFFF: // access ram bank
             if ramSize != 0 {
-                return ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))]
+                if currentRamBank < 0x08 {
+                    return ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))]
+                } else {
+                    LogE("RTC not implemented yet!!!")
+                    //TODO RTC
+                }
             }
         default:
-            LogE("Invalid read in MBC1!")
+            LogE("Invalid read in MBC3!")
             exit(-1)
         }
         return 0
@@ -60,26 +65,23 @@ class MBC1 : IMemoryBankController {
         switch Int(address) {
         case 0x0000...0x1FFF: // if value = 0x0A enable RAM else disable RAM
             ramEnabled = (value & 0x0F == 0x0A)
-        case 0x2000...0x3FFF: // value in range 0x01...0x1F selects lower 5-bits of ROM bank, 0x00 is translated to 0x01
-            if value == 0x00 || value == 0x20 || value == 0x40 || value == 0x60 {
-                currentRomBank |= (value+1) & 0x1F
+        case 0x2000...0x3FFF: // value in range 0x01...0x1F selects lower 7-bits of ROM bank, 0x00 is translated to 0x01
+            if value == 0x00 {
+                currentRomBank = 1
             } else {
-                currentRomBank = (currentRomBank & 0x60) | value & 0x0F
+                currentRomBank = value & 0x7F
             }
-        case 0x4000...0x5FFF: // value in range 0x00...0x03 selects higher 2 bits of ROM bank or specify RAM bank if RAM banking is enabled
-            if ramEnabled && ramBankingEnabled {
-                currentRamBank = value & 0x03
-            } else {
-                currentRomBank = (currentRomBank & 0x1F) | (value & 0x03) << 4
-            }
-        case 0x6000...0x7FFF: // if value is 0x01 RAM banking is enabled, else it's disabled
-            ramBankingEnabled = (value == 0x01)
+        case 0x4000...0x5FFF: // value in range 0x00...0x08 selects RAM bank, 0x09 - 0x0C selects RTC
+            currentRamBank = value & 0x0C
+        case 0x6000...0x7FFF: // RTC latching
+            LogE("RTC not implemented yet!!!")
+            //TODO RTC latching
         case 0xA000...0xBFFF:
             if ramSize != 0 {
                 ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))] = value
             }
         default:
-            LogE("Invalid write in MBC1!")
+            LogE("Invalid write in MBC3!")
             exit(-1)
         }
     }
@@ -95,6 +97,5 @@ class MBC1 : IMemoryBankController {
         currentRomBank = 1
         currentRamBank = 0
         ramEnabled = false
-        ramBankingEnabled = false
     }
 }
