@@ -1,11 +1,15 @@
 # SwiftBoy
 Classic GameBoy emulator project written entirely in Swift. 
  
-This project is currently in pre-alpha stage. 
+This project is currently in pre-alpha stage, but recentely reached a major milestone. 
 
-Although most of the emulation is working there are still much more to do. My main focus is now on improving the UI for the first alpha release. Any feedback is welcomed. You can see how it looks down below:
+Although most of the emulation is working there are still much more to do. My main focus is now on providing support for all most common cartridge types and improving the UI for the first alpha release. Any feedback is welcomed. You can see how it looks down below:
 
 ![](images/emulator.gif)
+
+It even runs Pokemon Blue flawlessly! Checkout this [video](https://www.youtube.com/watch?v=mHkm-G8RO1c).
+
+![](images/emulator-pokemon.png)
 
 It still is not ready, as there are some bugs here and there, but it certainly is becoming more and more usefull.
 
@@ -17,10 +21,10 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - 100% accuracy of CPU instructions (according to Blargg test roms)
 - BG, Window and Sprite rendering in PPU
 - Interrupts
-- Tetris, Super Mario Land
-- Raw roms (no MBC) and MBC1 roms
+- Tetris, Super Mario Land, Pokemon Red/Blue, Alladin, and probably many more ;)
+- Raw roms (no MBC), MBC1 and MBC3 roms
 - Emulation speed synchronization
-- Fast OpenGL rendering
+- Fast OpenGL rendering with v-sync
 - New better UI
 - Rom loading from popup (File -> Open Rom)
 
@@ -30,7 +34,6 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Rest of the memory bank controllers
 - STOP instruction
 - Some glitches left in PPU
-- V-sync
 - Serial
 - No other games were tested yet
 - New UI may be unstable as of right now
