@@ -37,6 +37,7 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Serial
 - No other games were tested yet
 - New UI may be unstable as of right now
+- Savestates and ingame saving
 
 ## Tests
 This emulator is constantly tested using Blargg's GameBoy test roms. Current results can be seen below:
