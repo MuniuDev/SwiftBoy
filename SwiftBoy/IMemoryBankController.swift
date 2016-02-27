@@ -105,7 +105,7 @@ func getROMTotalSize(romSizeRegiserVal: UInt8 ) -> Int {
         LogE("Too big rom size, possibly broken rom image.")
         return -1
     }
-    return getROMBankCount(romSizeRegiserVal) * 32 * 1024
+    return getROMBankCount(romSizeRegiserVal) * 16 * 1024
 }
 
 func getRAMTotalSize(ramSizeRegiserVal: UInt8 ) -> Int {

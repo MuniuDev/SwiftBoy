@@ -209,7 +209,7 @@ class GameBoyPPU {
             if lcdc_int & 0x10 != 0 { memory.requestInterrupt(GameBoyRAM.I_LCDC)}
         case MODE_HBLANK where clock >= 51:
             clock %= 51
-            setLine(getLine()+1)
+            setLine(getLine()&+1)
             if getLine() == 144 {
                 setMode(MODE_VBLANK)
                 memory.requestInterrupt(GameBoyRAM.I_VBLANK)

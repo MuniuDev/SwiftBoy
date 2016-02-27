@@ -16,6 +16,7 @@ class MBC1 : IMemoryBankController {
     let ramSize: UInt8
     let romByteCount: Int
     let ramByteCount: Int
+    let romBankCount: Int
     
     var currentRomBank: UInt8
     var currentRamBank: UInt8
@@ -27,6 +28,7 @@ class MBC1 : IMemoryBankController {
         type = rom[0x0147]
         romSize = rom[0x0148]
         ramSize = rom[0x0149]
+        romBankCount = getROMBankCount(romSize)
         romByteCount = getROMTotalSize(romSize) //Int(0x8000) << Int(romSize)
         ramByteCount = getRAMTotalSize(ramSize) //ramSize == 0 ? 0 : Int(0x2000) << Int(ramSize-1)
         self.rom = [UInt8](count: romByteCount, repeatedValue: UInt8(0))
@@ -46,14 +48,14 @@ class MBC1 : IMemoryBankController {
         case 0x4000...0x7FFF: // access rom bank
             return rom[Int(address) + 0x4000*(Int(currentRomBank) - 1)]
         case 0xA000...0xBFFF: // access ram bank
-            if ramSize != 0 {
+            if ramSize != 0 && ramEnabled {
                 return ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))]
             }
         default:
             LogE("Invalid read in MBC1!")
             exit(-1)
         }
-        return 0
+        return 0xFF
     }
     
     func write(address address: UInt16, value: UInt8) {
@@ -61,21 +63,19 @@ class MBC1 : IMemoryBankController {
         case 0x0000...0x1FFF: // if value = 0x0A enable RAM else disable RAM
             ramEnabled = (value & 0x0F == 0x0A)
         case 0x2000...0x3FFF: // value in range 0x01...0x1F selects lower 5-bits of ROM bank, 0x00 is translated to 0x01
-            if value == 0x00 || value == 0x20 || value == 0x40 || value == 0x60 {
-                currentRomBank |= (value+1) & 0x1F
-            } else {
-                currentRomBank = (currentRomBank & 0x60) | value & 0x0F
-            }
+            currentRomBank = (currentRomBank & 0x60) | (value & 0x1F)
+            if value & 0x1F == 0x00 { currentRomBank += 1 }
         case 0x4000...0x5FFF: // value in range 0x00...0x03 selects higher 2 bits of ROM bank or specify RAM bank if RAM banking is enabled
-            if ramEnabled && ramBankingEnabled {
+            if ramBankingEnabled {
                 currentRamBank = value & 0x03
             } else {
-                currentRomBank = (currentRomBank & 0x1F) | (value & 0x03) << 4
+                currentRomBank = (currentRomBank & 0x1F) | ((value & 0x03) << 5)
             }
         case 0x6000...0x7FFF: // if value is 0x01 RAM banking is enabled, else it's disabled
-            ramBankingEnabled = (value == 0x01)
+            ramBankingEnabled = (value & 0x01 == 0x01)
+            if !ramBankingEnabled { currentRamBank = 0 }
         case 0xA000...0xBFFF:
-            if ramSize != 0 {
+            if ramSize != 0 && ramEnabled {
                 ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))] = value
             }
         default:

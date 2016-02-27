@@ -56,6 +56,7 @@ class GameBoyDevice {
             return false;
         }
         memory.loadRom(mbc)
+        fastBootStrap()
         return true;
     }
     

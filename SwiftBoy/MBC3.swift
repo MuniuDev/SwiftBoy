@@ -58,7 +58,7 @@ class MBC3 : IMemoryBankController {
             LogE("Invalid read in MBC3!")
             exit(-1)
         }
-        return 0
+        return 0xFF
     }
     
     func write(address address: UInt16, value: UInt8) {
