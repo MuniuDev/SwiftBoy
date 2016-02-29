@@ -10,6 +10,20 @@
 
 import Foundation
 
+struct Sprite {
+    var y : UInt8
+    var x : UInt8
+    var num : UInt8
+    var attrib : UInt8
+    
+    init(memory: GameBoyRAM, startAddr : UInt16) {
+        y = memory.read(address: startAddr) &- 16
+        x = memory.read(address: startAddr+1) &- 8
+        num = memory.read(address: startAddr+2)
+        attrib = memory.read(address: startAddr+3)
+    }
+}
+
 class GameBoyPPU {
     
     let CHR_0: UInt16 = 0x8000  //start addr of CHR data for bank 0
@@ -35,8 +49,6 @@ class GameBoyPPU {
     var frameBuffer: [UInt8]
     var colorIDBuffer: [UInt8]
     var palette: [UInt8] = [0,96,192,255]
-    
-    var errorChecked = false;
     
     init(memory mem: GameBoyRAM) {
         memory = mem
@@ -138,46 +150,73 @@ class GameBoyPPU {
             
             // is OBJ display on?
             if lcdc & 0x02 != 0 {   // draw OBJ
-                let spriteHeight = lcdc & 0x08 != 0 ? 16 : 8
+                let spriteHeight = lcdc & 0x04 == 0 ? UInt8(8) : UInt8(16)
                 
                 var startAddr = OAM
                 var spriteCount = 0
+                var sprites = [Sprite]()
+                sprites.reserveCapacity(10)
+                
+                // find sprites
                 for _ in 0..<40 {
                     // extract sprite data
-                    let spr_y = memory.read(address: startAddr) &- 16
-                    let spr_x = memory.read(address: startAddr+1) &- 8
-                    let spr_num = memory.read(address: startAddr+2)
-                    let spr_attrib = memory.read(address: startAddr+3)
+                    var spr = Sprite(memory: memory, startAddr: startAddr)
                     startAddr += 4
                     
-                    if spriteHeight == 16 && !errorChecked{
-                        LogW("Double OBJ sprites enabled but not implemented!")
-                        errorChecked = true;
+                    if spr.y <= ly && spr.y &+ 8 > ly {
+                        if spriteHeight == UInt8(16) {spr.num = spr.num & 0xFE}
+                        sprites.insert(spr, atIndex: spriteCount++)
+                        if spriteCount >= 10 { break }
+                        continue;
                     }
                     
-                    if spr_y <= ly && spr_y + 8 > ly { //do sprite intersect with line?
-                        ++spriteCount
-                        let line_y_off = UInt16(ly &- spr_y) * 2
-                        let spr_palette = memory.read(address: spr_attrib & 0x10 != 0 ? GameBoyRAM.OBP1 : GameBoyRAM.OBP0)
-                        var colorLine = UInt16(0)
-                        if spr_attrib & 0x40 != 0 { //check y flip
-                            colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + 14 - line_y_off)
-                        } else {
-                            colorLine = memory.read16(address: CHR_0 + UInt16(spr_num)*CHR_SIZE + line_y_off)
-                        }
-                        
-                        for x : UInt8 in 0..<8 {
-                            let pixel_x = spr_attrib & 0x20 != 0 ? 7-x : x
-                            let color = getPixelColor(fromLine: colorLine, andColumn: pixel_x, withPalette: spr_palette)
-                            let colorID = getPixelColorID(fromLine: colorLine, andColumn: pixel_x)
-                            if spr_x &+ x >= 0  && spr_x &+ x < 160 && colorID != 0 &&
-                                (spr_attrib & 0x80 == 0 || colorIDBuffer[frame_offset + Int(spr_x &+ x)] == 0) {
-                                frameBuffer[frame_offset + Int(spr_x &+ x)] = palette[Int(color)]
-                                colorIDBuffer[frame_offset + Int(spr_x &+ x)] = colorID;
-                            }
+                    // 8x16 mode
+                    if spriteHeight == UInt8(16) && spr.y &+ 8 <= ly && spr.y &+ 16 > ly {
+                        spr.y = spr.y &+ 8
+                        spr.num = spr.num | 0x01
+                        sprites.insert(spr, atIndex: spriteCount++)
+                        if spriteCount >= 10 { break }
+                    }
+                }
+                
+                // sort them
+                for i in 0..<spriteCount {
+                    for j in i+1..<spriteCount {
+                        if sprites[j].x < sprites[i].x {
+                            let tmp = sprites[i]
+                            sprites[i] = sprites[j]
+                            sprites[j] = tmp
                         }
                     }
-                    if spriteCount >= 10 { break }
+                }
+                
+                // draw them
+                for spr in sprites {
+                    let line_y_off = UInt16(ly &- spr.y) * 2
+                    let spr_palette = memory.read(address: spr.attrib & 0x10 != 0 ? GameBoyRAM.OBP1 : GameBoyRAM.OBP0)
+                    var colorLine = UInt16(0)
+                    if spr.attrib & 0x40 != 0 { //check y flip
+                        if spriteHeight == UInt8(16) {
+                            // toggle the last bit of the sprite number if in 8x16 mode
+                            colorLine = memory.read16(address: CHR_0 + UInt16(spr.num & 0xFE | ~spr.num & 0x01 )*CHR_SIZE + 14 - line_y_off)
+                        } else {
+                            colorLine = memory.read16(address: CHR_0 + UInt16(spr.num)*CHR_SIZE + 14 - line_y_off)
+                        }
+                    } else {
+                        colorLine = memory.read16(address: CHR_0 + UInt16(spr.num)*CHR_SIZE + line_y_off)
+                    }
+                    
+                    // draw line
+                    for x : UInt8 in 0..<8 {
+                        let pixel_x = spr.attrib & 0x20 != 0 ? 7-x : x
+                        let color = getPixelColor(fromLine: colorLine, andColumn: pixel_x, withPalette: spr_palette)
+                        let colorID = getPixelColorID(fromLine: colorLine, andColumn: pixel_x)
+                        if spr.x &+ x >= 0  && spr.x &+ x < 160 && colorID != 0 &&
+                            (spr.attrib & 0x80 == 0 || colorIDBuffer[frame_offset + Int(spr.x &+ x)] == 0) {
+                            frameBuffer[frame_offset + Int(spr.x &+ x)] = palette[Int(color)]
+                            colorIDBuffer[frame_offset + Int(spr.x &+ x)] = colorID;
+                        }
+                    }
                 }
             }
         }

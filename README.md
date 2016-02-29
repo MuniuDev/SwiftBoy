@@ -19,7 +19,8 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Fast Bootstrap (no bios file required)
 - 99% of CPU instructions
 - 100% accuracy of CPU instructions (according to Blargg test roms)
-- BG, Window and Sprite rendering in PPU
+- BG, Window and Sprite rendering in PPU (both 8x8 and 8x16)
+- There seems to be no more major bugs in PPU
 - Interrupts
 - Tetris, Super Mario Land, Pokemon Red/Blue, Alladin, and probably many more ;)
 - Raw roms (no MBC), MBC1 and MBC3 roms
@@ -33,7 +34,6 @@ It still is not ready, as there are some bugs here and there, but it certainly i
 - Sound
 - Rest of the memory bank controllers
 - STOP instruction
-- Some glitches left in PPU
 - Serial
 - No other games were tested yet
 - New UI may be unstable as of right now
