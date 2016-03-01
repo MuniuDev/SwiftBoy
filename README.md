@@ -13,6 +13,14 @@ It even runs Pokemon Blue flawlessly! Checkout this [video](https://www.youtube.
 
 It still is not ready, as there are some bugs here and there, but it certainly is becoming more and more usefull.
 
+
+## Keymaping
+- D-pad - keyboard arrows
+- A - Z
+- B - X
+- START - Enter
+- SELECT - Space Bar
+
 ## Features
 ### What is working
 - Bootstrap
