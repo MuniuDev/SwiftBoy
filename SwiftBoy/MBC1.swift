@@ -24,6 +24,8 @@ class MBC1 : IMemoryBankController {
     var ramEnabled: Bool
     var ramBankingEnabled: Bool
     
+    let cartridgeName: String
+    
     init(rom: [UInt8]) {
         type = rom[0x0147]
         romSize = rom[0x0148]
@@ -31,6 +33,8 @@ class MBC1 : IMemoryBankController {
         romBankCount = getROMBankCount(romSize)
         romByteCount = getROMTotalSize(romSize) //Int(0x8000) << Int(romSize)
         ramByteCount = getRAMTotalSize(ramSize) //ramSize == 0 ? 0 : Int(0x2000) << Int(ramSize-1)
+        cartridgeName = getCartridgeName(Array<UInt8>(rom[0x0134...0x0143]))
+        LogD(cartridgeName)
         self.rom = [UInt8](count: romByteCount, repeatedValue: UInt8(0))
         self.rom[0..<rom.count] = rom[0..<rom.count]
         self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
@@ -39,6 +43,8 @@ class MBC1 : IMemoryBankController {
         currentRamBank = 0
         ramEnabled = false
         ramBankingEnabled = false
+        
+        loadRAM()
     }
     
     func read(address address: UInt16) -> UInt8 {
@@ -77,10 +83,54 @@ class MBC1 : IMemoryBankController {
         case 0xA000...0xBFFF:
             if ramSize != 0 && ramEnabled {
                 ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))] = value
+                saveRAM() // temporary
             }
         default:
             LogE("Invalid write in MBC1!")
             exit(-1)
+        }
+    }
+    
+    func saveRAM() {
+        // make sure it's battery backed up
+        if ramSize != 0 && type == 0x03
+            && createFolderAt("SwiftBoySaves", location: .DocumentDirectory) {
+            guard
+                let documentsURL = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
+            else {
+                LogE("Failed to resolve path while saving RAM.")
+                return
+            }
+            let fileURL = documentsURL.URLByAppendingPathComponent("SwiftBoySaves")
+                .URLByAppendingPathComponent(cartridgeName)
+                .URLByAppendingPathExtension(".sav")
+            let data = NSData(bytes: ram, length: ram.count)
+            data.writeToURL(fileURL, atomically: true)
+        }
+    }
+    
+    func loadRAM() {
+        // make sure it's battery backed up
+        if ramSize != 0 && type == 0x03 {
+            guard
+            let documentsURL = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
+                else {
+                    LogD("Failed to find " + cartridgeName + ".sav save file!")
+                    return
+            }
+
+            let fileURL = documentsURL.URLByAppendingPathComponent("SwiftBoySaves")
+                .URLByAppendingPathComponent(cartridgeName)
+                .URLByAppendingPathExtension(".sav")
+            
+            guard
+            let ramData = NSData(contentsOfURL: fileURL)
+                else {
+                    LogD("Failed to load " + cartridgeName + ".sav save file!")
+                    return
+            }
+            ramData.getBytes(&ram, length: ramData.length)
+            LogD("Succeded to load " + cartridgeName + ".sav save file!")
         }
     }
     

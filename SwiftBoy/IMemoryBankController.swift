@@ -13,11 +13,15 @@ protocol IMemoryBankController {
     func read(address address: UInt16) -> UInt8
     func getDMAData(address address: UInt16, size: UInt16) -> [UInt8]
     func reset()
+    func saveRAM()
+    func loadRAM()
 }
 
 extension IMemoryBankController {
-    func write(address address: UInt16, value: UInt8) {}
+    //func write(address address: UInt16, value: UInt8) {}
     func reset() {}
+    func saveRAM() {}
+    func loadRAM() {}
     //func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {return [UInt8]()}
 }
 
@@ -122,4 +126,30 @@ func getRAMTotalSize(ramSizeRegiserVal: UInt8 ) -> Int {
         return -1
     }
     return count*1024
+}
+
+func getCartridgeName(nameData: [UInt8]) -> String {
+    var name = String()
+    for byte in nameData {
+        if byte == 0 { break; }
+        name.append(Character(UnicodeScalar(byte)))
+    }
+    return name
+}
+
+func createFolderAt(folder: String, location: NSSearchPathDirectory ) -> Bool {
+    guard let locationUrl = NSFileManager().URLsForDirectory(location, inDomains: .UserDomainMask).first else { return false }
+    do {
+        try NSFileManager().createDirectoryAtURL(locationUrl.URLByAppendingPathComponent(folder), withIntermediateDirectories: false, attributes: nil)
+        return true
+    } catch let error as NSError {
+        // folder already exists return true
+        if error.code == 17 || error.code == 516 {
+            //LogD(folder + " already exists at " + locationUrl.absoluteString + " , ignoring")
+            return true
+        }
+        LogE(folder + " couldn't be created at " + locationUrl.absoluteString)
+        LogE(error.description)
+        return false
+    }
 }
