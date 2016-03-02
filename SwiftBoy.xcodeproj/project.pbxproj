@@ -27,6 +27,7 @@
 		90E8EF171C7E094700140EF5 /* MBC3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E8EF161C7E094700140EF5 /* MBC3.swift */; };
 		90E8EF1A1C87460800140EF5 /* FileIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E8EF191C87460800140EF5 /* FileIO.swift */; };
 		90E8EF1C1C874B4200140EF5 /* RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E8EF1B1C874B4200140EF5 /* RTC.swift */; };
+		90E8EF201C87524E00140EF5 /* MBC5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E8EF1F1C87524E00140EF5 /* MBC5.swift */; };
 		90FAF2A81BBEBF07009612D3 /* GameBoyCPURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */; };
 		90FAF2AA1BC4798E009612D3 /* EmulatorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */; };
 		90FAF2AC1BC5D747009612D3 /* IMemoryBankController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FAF2AB1BC5D747009612D3 /* IMemoryBankController.swift */; };
@@ -67,6 +68,7 @@
 		90E8EF161C7E094700140EF5 /* MBC3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MBC3.swift; sourceTree = "<group>"; };
 		90E8EF191C87460800140EF5 /* FileIO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileIO.swift; sourceTree = "<group>"; };
 		90E8EF1B1C874B4200140EF5 /* RTC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTC.swift; sourceTree = "<group>"; };
+		90E8EF1F1C87524E00140EF5 /* MBC5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MBC5.swift; sourceTree = "<group>"; };
 		90FAF2A71BBEBF07009612D3 /* GameBoyCPURegisters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoyCPURegisters.swift; sourceTree = "<group>"; };
 		90FAF2A91BC4798E009612D3 /* EmulatorLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmulatorLogger.swift; sourceTree = "<group>"; };
 		90FAF2AB1BC5D747009612D3 /* IMemoryBankController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMemoryBankController.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				90E8EF141C7DFF8D00140EF5 /* MBC1.swift */,
 				90E8EF161C7E094700140EF5 /* MBC3.swift */,
 				90E8EF1B1C874B4200140EF5 /* RTC.swift */,
+				90E8EF1F1C87524E00140EF5 /* MBC5.swift */,
 			);
 			name = "Memory Bank Controllers";
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				90E8EF1A1C87460800140EF5 /* FileIO.swift in Sources */,
 				90BD7FF01BA40BD000C79443 /* GameBoyDevice.swift in Sources */,
 				90E8EF151C7DFF8D00140EF5 /* MBC1.swift in Sources */,
+				90E8EF201C87524E00140EF5 /* MBC5.swift in Sources */,
 				906444821BB6C4A400FFC821 /* DebugViewController.swift in Sources */,
 				90E8EF1C1C874B4200140EF5 /* RTC.swift in Sources */,
 				90E8EF171C7E094700140EF5 /* MBC3.swift in Sources */,

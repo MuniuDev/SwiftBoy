@@ -43,10 +43,14 @@ class MBC3 : IMemoryBankController {
         currentRamBank = 0
         ramEnabled = false
         rtcEnabled = false
-        
+
         rtc = RTC()
         latchIncoming = false
         
+        // if uses RTC restore previous value from disk
+        if type == 0x0F || type == 0x10 {
+            rtc.restoreRTC(cartridgeName)
+        }
         loadRAM()
     }
     
@@ -65,8 +69,7 @@ class MBC3 : IMemoryBankController {
                 }
             }
         default:
-            LogE("Invalid read in MBC3!")
-            exit(-1)
+            return 0xFF
         }
         return 0xFF
     }
@@ -97,8 +100,8 @@ class MBC3 : IMemoryBankController {
                 }
             }
         default:
-            LogE("Invalid write in MBC3!")
-            exit(-1)
+            // ignore invalid writes
+            return
         }
     }
     
