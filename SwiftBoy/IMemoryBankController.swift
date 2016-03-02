@@ -136,20 +136,3 @@ func getCartridgeName(nameData: [UInt8]) -> String {
     }
     return name
 }
-
-func createFolderAt(folder: String, location: NSSearchPathDirectory ) -> Bool {
-    guard let locationUrl = NSFileManager().URLsForDirectory(location, inDomains: .UserDomainMask).first else { return false }
-    do {
-        try NSFileManager().createDirectoryAtURL(locationUrl.URLByAppendingPathComponent(folder), withIntermediateDirectories: false, attributes: nil)
-        return true
-    } catch let error as NSError {
-        // folder already exists return true
-        if error.code == 17 || error.code == 516 {
-            //LogD(folder + " already exists at " + locationUrl.absoluteString + " , ignoring")
-            return true
-        }
-        LogE(folder + " couldn't be created at " + locationUrl.absoluteString)
-        LogE(error.description)
-        return false
-    }
-}

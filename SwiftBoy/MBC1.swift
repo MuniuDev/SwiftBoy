@@ -67,6 +67,8 @@ class MBC1 : IMemoryBankController {
     func write(address address: UInt16, value: UInt8) {
         switch Int(address) {
         case 0x0000...0x1FFF: // if value = 0x0A enable RAM else disable RAM
+            // save ram when ram gets disabled
+            if ramEnabled && value & 0x0F != 0x0A { saveRAM() }
             ramEnabled = (value & 0x0F == 0x0A)
         case 0x2000...0x3FFF: // value in range 0x01...0x1F selects lower 5-bits of ROM bank, 0x00 is translated to 0x01
             currentRomBank = (currentRomBank & 0x60) | (value & 0x1F)
@@ -83,7 +85,6 @@ class MBC1 : IMemoryBankController {
         case 0xA000...0xBFFF:
             if ramSize != 0 && ramEnabled {
                 ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))] = value
-                saveRAM() // temporary
             }
         default:
             LogE("Invalid write in MBC1!")
@@ -95,42 +96,16 @@ class MBC1 : IMemoryBankController {
         // make sure it's battery backed up
         if ramSize != 0 && type == 0x03
             && createFolderAt("SwiftBoySaves", location: .DocumentDirectory) {
-            guard
-                let documentsURL = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
-            else {
-                LogE("Failed to resolve path while saving RAM.")
-                return
-            }
-            let fileURL = documentsURL.URLByAppendingPathComponent("SwiftBoySaves")
-                .URLByAppendingPathComponent(cartridgeName)
-                .URLByAppendingPathExtension(".sav")
-            let data = NSData(bytes: ram, length: ram.count)
-            data.writeToURL(fileURL, atomically: true)
+            if saveBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .DocumentDirectory, buffer: ram)
+            { LogD("Succeded to save " + cartridgeName + ".sav save file!") }
         }
     }
     
     func loadRAM() {
         // make sure it's battery backed up
         if ramSize != 0 && type == 0x03 {
-            guard
-            let documentsURL = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
-                else {
-                    LogD("Failed to find " + cartridgeName + ".sav save file!")
-                    return
-            }
-
-            let fileURL = documentsURL.URLByAppendingPathComponent("SwiftBoySaves")
-                .URLByAppendingPathComponent(cartridgeName)
-                .URLByAppendingPathExtension(".sav")
-            
-            guard
-            let ramData = NSData(contentsOfURL: fileURL)
-                else {
-                    LogD("Failed to load " + cartridgeName + ".sav save file!")
-                    return
-            }
-            ramData.getBytes(&ram, length: ramData.length)
-            LogD("Succeded to load " + cartridgeName + ".sav save file!")
+            if loadBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .DocumentDirectory, buffer: &ram)
+            { LogD("Succeded to load " + cartridgeName + ".sav save file!") }
         }
     }
     
