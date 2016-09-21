@@ -38,29 +38,29 @@ class GameBoyRegisters {
     var SP : UInt16 = 0
     
     
-    static func get16(regH: UInt8, _ regL: UInt8) -> UInt16 { return UInt16(regH) << 8 + UInt16(regL)}
+    static func get16(_ regH: UInt8, _ regL: UInt8) -> UInt16 { return UInt16(regH) << 8 + UInt16(regL)}
     func getAF() -> UInt16 { return UInt16(A) << 8 + UInt16(F) }
     func getBC() -> UInt16 { return UInt16(B) << 8 + UInt16(C) }
     func getDE() -> UInt16 { return UInt16(D) << 8 + UInt16(E) }
     func getHL() -> UInt16 { return UInt16(H) << 8 + UInt16(L) }
     
-    static func set16(inout regH: UInt8, inout _ regL: UInt8, value: UInt16) {
+    static func set16(_ regH: inout UInt8, _ regL: inout UInt8, value: UInt16) {
         regH = UInt8(value >> 8)
         regL = UInt8(value & 0xFF)
     }
-    func setAF(value: UInt16) {
+    func setAF(_ value: UInt16) {
         A = UInt8(value >> 8)
         F = UInt8(value & 0xFF)
     }
-    func setBC(value: UInt16) {
+    func setBC(_ value: UInt16) {
         B = UInt8(value >> 8)
         C = UInt8(value & 0xFF)
     }
-    func setDE(value: UInt16) {
+    func setDE(_ value: UInt16) {
         D = UInt8(value >> 8)
         E = UInt8(value & 0xFF)
     }
-    func setHL(value: UInt16) {
+    func setHL(_ value: UInt16) {
         H = UInt8(value >> 8)
         L = UInt8(value & 0xFF)
     }

@@ -52,15 +52,15 @@ class GameBoyPPU {
     
     init(memory mem: GameBoyRAM) {
         memory = mem
-        frameBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
-        colorIDBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
+        frameBuffer = [UInt8](repeating: UInt8(0), count: 160*144)
+        colorIDBuffer = [UInt8](repeating: UInt8(0), count: 160*144)
         clock = 0
         screen = nil
         setMode(MODE_HBLANK)
         setLine(0)
     }
   
-    func setScreen(screen: ProtoEmulatorScreen) {
+    func setScreen(_ screen: ProtoEmulatorScreen) {
       self.screen = screen
     }
     
@@ -106,10 +106,10 @@ class GameBoyPPU {
                 for i in 0..<160 {
                     frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
                     colorIDBuffer[frame_offset + i] = getPixelColorID(fromLine: colorLine, andColumn: x);
-                    ++x
+                    x += 1
                     if x == 8 {
                         x = 0
-                        ++tile_addr_offset
+                        tile_addr_offset += 1
                         tile_addr_offset %= 32
                         tile_id = UInt8(memory.read(address: tile_addr + tile_addr_offset)) &+ UInt8(tile_id_offset)
                         colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
@@ -120,7 +120,7 @@ class GameBoyPPU {
             let wy = memory.read(address: GameBoyRAM.WY)
             // is Window display on?
             if lcdc & 0x01 != 0 && lcdc & 0x20 != 0 && ly >= wy {   // draw Window
-                
+                //FIXME Sprites are rendered to high???
                 let wx = memory.read(address: GameBoyRAM.WX)
                 let start_y = UInt16(ly &- wy)/8
                 let line_y_off = (UInt16(ly &- wy))%8 * 2
@@ -138,10 +138,10 @@ class GameBoyPPU {
                 for i in start..<160 {
                     frameBuffer[frame_offset + i] = palette[Int(getPixelColor(fromLine: colorLine, andColumn: x, withPalette: bgp))]     // get RGB value from palette
                     colorIDBuffer[frame_offset + i] = getPixelColorID(fromLine: colorLine, andColumn: x);
-                    ++x
+                    x += 1
                     if x == 8 {
                         x = 0
-                        ++tile_addr
+                        tile_addr += 1
                         tile_id = UInt8(memory.read(address: tile_addr)) &+ UInt8(tile_id_offset)
                         colorLine = memory.read16(address: bg_chr + UInt16(tile_id)*CHR_SIZE + line_y_off)
                     }
@@ -165,7 +165,8 @@ class GameBoyPPU {
                     
                     if spr.y <= ly && spr.y &+ 8 > ly {
                         if spriteHeight == UInt8(16) {spr.num = spr.num & 0xFE}
-                        sprites.insert(spr, atIndex: spriteCount++)
+                        sprites.insert(spr, at: spriteCount)
+                        spriteCount+=1
                         if spriteCount >= 10 { break }
                         continue;
                     }
@@ -174,7 +175,8 @@ class GameBoyPPU {
                     if spriteHeight == UInt8(16) && spr.y &+ 8 <= ly && spr.y &+ 16 > ly {
                         spr.y = spr.y &+ 8
                         spr.num = spr.num | 0x01
-                        sprites.insert(spr, atIndex: spriteCount++)
+                        sprites.insert(spr, at: spriteCount)
+                        spriteCount+=1
                         if spriteCount >= 10 { break }
                     }
                 }
@@ -196,12 +198,7 @@ class GameBoyPPU {
                     let spr_palette = memory.read(address: spr.attrib & 0x10 != 0 ? GameBoyRAM.OBP1 : GameBoyRAM.OBP0)
                     var colorLine = UInt16(0)
                     if spr.attrib & 0x40 != 0 { //check y flip
-                        if spriteHeight == UInt8(16) {
-                            // toggle the last bit of the sprite number if in 8x16 mode
-                            colorLine = memory.read16(address: CHR_0 + UInt16(spr.num & 0xFE | ~spr.num & 0x01 )*CHR_SIZE + 14 - line_y_off)
-                        } else {
-                            colorLine = memory.read16(address: CHR_0 + UInt16(spr.num)*CHR_SIZE + 14 - line_y_off)
-                        }
+                        colorLine = memory.read16(address: CHR_0 + UInt16(spr.num)*CHR_SIZE + 14 - line_y_off)
                     } else {
                         colorLine = memory.read16(address: CHR_0 + UInt16(spr.num)*CHR_SIZE + line_y_off)
                     }
@@ -226,7 +223,7 @@ class GameBoyPPU {
         return frameBuffer
     }
     
-    func tic(deltaClock: UInt) -> Int {
+    func tic(_ deltaClock: UInt) -> Int {
         clock = clock &+ deltaClock
         
         let ly = memory.read(address: GameBoyRAM.LY)
@@ -276,16 +273,16 @@ class GameBoyPPU {
     
     func reset() {
         clock = 0
-        frameBuffer = [UInt8](count: 160*144, repeatedValue: UInt8(0))
+        frameBuffer = [UInt8](repeating: UInt8(0), count: 160*144)
         setMode(MODE_HBLANK)
         setLine(0)
     }
     
     
     func getLine() -> UInt8 { return memory.read(address: GameBoyRAM.LY) }
-    func setLine(line: UInt8) { memory.write(address: GameBoyRAM.LY, value: line) }
+    func setLine(_ line: UInt8) { memory.write(address: GameBoyRAM.LY, value: line) }
     func getMode() -> UInt8 { return memory.read(address: GameBoyRAM.STAT) & 0x03 }
-    func setMode(mode: UInt8) {
+    func setMode(_ mode: UInt8) {
         var reg = memory.read(address: GameBoyRAM.STAT)
         reg = reg & 0xFC + mode & 0x03
         memory.write(address: GameBoyRAM.STAT, value: reg)

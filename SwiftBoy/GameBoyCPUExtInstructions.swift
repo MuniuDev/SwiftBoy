@@ -287,7 +287,7 @@ func generateExtOpCodeTable() -> [OpCode] {
 
 // extended instructions
 // rotate left, push to carry
-func RLC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
+func RLC_r(_ cpu: GameBoyCPU, reg: inout UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x80) >> 7
     reg = (reg << 1) + carry
     cpu.registers.F = 0
@@ -296,7 +296,7 @@ func RLC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
-func RLC_aHL(cpu: GameBoyCPU) {
+func RLC_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = (val & 0x80) >> 7
     val = (val << 1) + carry
@@ -309,7 +309,7 @@ func RLC_aHL(cpu: GameBoyCPU) {
 }
 
 // 9-bit rotate left using carry
-func RL_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
+func RL_r(_ cpu: GameBoyCPU, reg: inout UInt8, clock: UInt8 = 2) {
     let carry = reg & 0x80
     reg = (reg << 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x01 }
@@ -319,7 +319,7 @@ func RL_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
-func RL_aHL(cpu: GameBoyCPU) {
+func RL_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = val & 0x80
     val = (val << 1)
@@ -333,7 +333,7 @@ func RL_aHL(cpu: GameBoyCPU) {
 }
 
 // rotate right, push to carry
-func RRC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
+func RRC_r(_ cpu: GameBoyCPU, reg: inout UInt8, clock: UInt8 = 2) {
     let carry = (reg & 0x01) << 7
     reg = (reg >> 1) + carry
     cpu.registers.F = 0
@@ -342,7 +342,7 @@ func RRC_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
-func RRC_aHL(cpu: GameBoyCPU) {
+func RRC_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = (val & 0x01) << 7
     val = (val >> 1) + carry
@@ -355,7 +355,7 @@ func RRC_aHL(cpu: GameBoyCPU) {
 }
 
 // 9-bit rotate right using carry
-func RR_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
+func RR_r(_ cpu: GameBoyCPU, reg: inout UInt8, clock: UInt8 = 2) {
     let carry = reg & 0x01
     reg = (reg >> 1)
     if cpu.registers.F & GameBoyRegisters.F_CARRY > 0 { reg += 0x80 }
@@ -365,7 +365,7 @@ func RR_r(cpu: GameBoyCPU, inout reg: UInt8, clock: UInt8 = 2) {
     cpu.updateClock(clock)
     cpu.registers.PC+=2
 }
-func RR_aHL(cpu: GameBoyCPU) {
+func RR_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = val & 0x01
     val = (val >> 1)
@@ -379,7 +379,7 @@ func RR_aHL(cpu: GameBoyCPU) {
 }
 
 // shift left, push 0
-func SLA_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func SLA_r(_ cpu: GameBoyCPU, reg: inout UInt8) {
     let carry = reg & 0x80
     reg = (reg << 1)
     cpu.registers.F = 0
@@ -388,7 +388,7 @@ func SLA_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func SLA_aHL(cpu: GameBoyCPU) {
+func SLA_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = val & 0x80
     val = (val << 1)
@@ -401,7 +401,7 @@ func SLA_aHL(cpu: GameBoyCPU) {
 }
 
 // shift right, push sign
-func SRA_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func SRA_r(_ cpu: GameBoyCPU, reg: inout UInt8) {
     let carry = reg & 0x01
     reg = (reg >> 1) + (reg & 0x80)
     cpu.registers.F = 0
@@ -410,7 +410,7 @@ func SRA_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func SRA_aHL(cpu: GameBoyCPU) {
+func SRA_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = val & 0x01
     val = (val >> 1)  + (val & 0x80)
@@ -423,7 +423,7 @@ func SRA_aHL(cpu: GameBoyCPU) {
 }
 
 // shif right, push 0
-func SRL_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func SRL_r(_ cpu: GameBoyCPU, reg: inout UInt8) {
     let carry = reg & 0x01
     reg = (reg >> 1)
     cpu.registers.F = 0
@@ -432,7 +432,7 @@ func SRL_r(cpu: GameBoyCPU, inout reg: UInt8) {
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func SRL_aHL(cpu: GameBoyCPU) {
+func SRL_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     let carry = val & 0x01
     val = (val >> 1)
@@ -445,14 +445,14 @@ func SRL_aHL(cpu: GameBoyCPU) {
 }
 
 // swap higher and lower nybbles
-func SWAP_r(cpu: GameBoyCPU, inout reg: UInt8) {
+func SWAP_r(_ cpu: GameBoyCPU, reg: inout UInt8) {
     reg = (reg << 4) + (reg >> 4)
     cpu.registers.F = 0
     if(reg == 0) { cpu.registers.F |= GameBoyRegisters.F_ZERO }
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func SWAP_aHL(cpu: GameBoyCPU) {
+func SWAP_aHL(_ cpu: GameBoyCPU) {
     var val = cpu.memory.read(address: cpu.registers.getHL())
     val = (val << 4) + (val >> 4)
     cpu.memory.write(address: cpu.registers.getHL(), value: val)
@@ -463,7 +463,7 @@ func SWAP_aHL(cpu: GameBoyCPU) {
 }
 
 // check bit of given number
-func BIT_b_r(cpu: GameBoyCPU, bit: UInt8, reg: UInt8) {
+func BIT_b_r(_ cpu: GameBoyCPU, bit: UInt8, reg: UInt8) {
     let mask = UInt8(0x01 << bit)
     cpu.registers.F &= GameBoyRegisters.F_CARRY
     cpu.registers.F |= GameBoyRegisters.F_HALF_CARRY
@@ -471,7 +471,7 @@ func BIT_b_r(cpu: GameBoyCPU, bit: UInt8, reg: UInt8) {
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func BIT_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
+func BIT_b_aHL(_ cpu: GameBoyCPU, bit: UInt8) {
     let mask = UInt8(0x01 << bit)
     let val = cpu.memory.read(address: cpu.registers.getHL())
     cpu.registers.F &= GameBoyRegisters.F_CARRY
@@ -482,13 +482,13 @@ func BIT_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
 }
 
 // set bit of given number
-func SET_b_r(cpu: GameBoyCPU, bit: UInt8, inout reg: UInt8) {
+func SET_b_r(_ cpu: GameBoyCPU, bit: UInt8, reg: inout UInt8) {
     let mask = UInt8(0x01 << bit)
     reg = reg | mask
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func SET_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
+func SET_b_aHL(_ cpu: GameBoyCPU, bit: UInt8) {
     let mask = UInt8(0x01 << bit)
     var val = cpu.memory.read(address: cpu.registers.getHL())
     val = val | mask
@@ -498,13 +498,13 @@ func SET_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
 }
 
 // reset bit of given number
-func RES_b_r(cpu: GameBoyCPU, bit: UInt8, inout reg: UInt8) {
+func RES_b_r(_ cpu: GameBoyCPU, bit: UInt8, reg: inout UInt8) {
     let mask = UInt8(0x01 << bit)
     reg = reg & ~mask
     cpu.updateClock(2)
     cpu.registers.PC+=2
 }
-func RES_b_aHL(cpu: GameBoyCPU, bit: UInt8) {
+func RES_b_aHL(_ cpu: GameBoyCPU, bit: UInt8) {
     let mask = UInt8(0x01 << bit)
     var val = cpu.memory.read(address: cpu.registers.getHL())
     val = val & ~mask

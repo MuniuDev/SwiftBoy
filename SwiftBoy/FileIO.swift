@@ -8,10 +8,11 @@
 
 import Foundation
 
-func createFolderAt(folder: String, location: NSSearchPathDirectory ) -> Bool {
-    guard let locationUrl = NSFileManager().URLsForDirectory(location, inDomains: .UserDomainMask).first else { return false }
+// Function for creating folder at specified location
+func createFolderAt(_ folder: String, location: FileManager.SearchPathDirectory ) -> Bool {
+    guard let locationUrl = FileManager().urls(for: location, in: .userDomainMask).first else { return false }
     do {
-        try NSFileManager().createDirectoryAtURL(locationUrl.URLByAppendingPathComponent(folder), withIntermediateDirectories: false, attributes: nil)
+        try FileManager().createDirectory(at: locationUrl.appendingPathComponent(folder), withIntermediateDirectories: false, attributes: nil)
         return true
     } catch let error as NSError {
         // folder already exists return true
@@ -25,34 +26,36 @@ func createFolderAt(folder: String, location: NSSearchPathDirectory ) -> Bool {
     }
 }
 
-func saveBinaryFile(name: String, location: NSSearchPathDirectory, buffer: [UInt8]) -> Bool {
+// Function for saving to binary file at specified location
+func saveBinaryFile(_ name: String, location: FileManager.SearchPathDirectory, buffer: [UInt8]) -> Bool {
     guard
-        let locationURL = NSFileManager().URLsForDirectory(location, inDomains: .UserDomainMask).first
+        let locationURL = FileManager().urls(for: location, in: .userDomainMask).first
         else {
             LogE("Failed to resolve path while saving file.")
             return false
     }
-    let fileURL = locationURL.URLByAppendingPathComponent(name)
-    let data = NSData(bytes: buffer, length: buffer.count)
-    return data.writeToURL(fileURL, atomically: true)
+    let fileURL = locationURL.appendingPathComponent(name)
+    let data = Data(bytes: UnsafePointer<UInt8>(buffer), count: buffer.count)
+    return ((try? data.write(to: fileURL, options: [.atomic])) != nil)
 }
 
-func loadBinaryFile(name: String, location: NSSearchPathDirectory, inout buffer: [UInt8]) -> Bool {
+// Function for loading from binary file at specified location
+func loadBinaryFile(_ name: String, location: FileManager.SearchPathDirectory, buffer: inout [UInt8]) -> Bool {
     guard
-        let locationURL = NSFileManager().URLsForDirectory(location, inDomains: .UserDomainMask).first
+        let locationURL = FileManager().urls(for: location, in: .userDomainMask).first
         else {
             LogE("Failed to find " + name + " file!")
             return false
     }
     
-    let fileURL = locationURL.URLByAppendingPathComponent(name)
+    let fileURL = locationURL.appendingPathComponent(name)
     
     guard
-        let ramData = NSData(contentsOfURL: fileURL)
+        let ramData = try? Data(contentsOf: fileURL)
         else {
             LogD("Failed to load " + name + " file!")
             return false
     }
-    ramData.getBytes(&buffer, length: ramData.length)
+    (ramData as NSData).getBytes(&buffer, length: ramData.count)
     return true
 }

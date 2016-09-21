@@ -10,7 +10,7 @@ import Foundation
 import Dispatch
 
 protocol ProtoEmulatorScreen {
-  func copyBuffer(screenBuffer: [UInt8])
+  func copyBuffer(_ screenBuffer: [UInt8])
 }
 
 class GameBoyDevice {
@@ -21,7 +21,7 @@ class GameBoyDevice {
     let ppu: GameBoyPPU
     
     var running: Bool
-    var queue: dispatch_queue_t
+    var queue: DispatchQueue
     var bp: UInt16
     
     // CPU base clock in Hz
@@ -38,18 +38,18 @@ class GameBoyDevice {
         self.joypad.registerRAM(memory)
         self.cpu = GameBoyCPU(memory: memory)
         self.ppu = GameBoyPPU(memory: memory)
-        self.queue = dispatch_queue_create("GameBoyLoop", DISPATCH_QUEUE_SERIAL)
+        self.queue = DispatchQueue(label: "GameBoyLoop", attributes: [])
         self.running = false
         self.bp = 0xFFFF
       
         fastBootStrap()
     }
   
-    func setScreen(screen: ProtoEmulatorScreen) {
+    func setScreen(_ screen: ProtoEmulatorScreen) {
         self.ppu.setScreen(screen)
     }
   
-    func loadRom(name: NSURL) -> Bool {
+    func loadRom(_ name: URL) -> Bool {
         guard
             let mbc = loadRomMBC(name)
         else {
@@ -64,7 +64,7 @@ class GameBoyDevice {
         fastBootStrap()
     }
     
-    func setBP(point: UInt16) {
+    func setBP(_ point: UInt16) {
         bp = point
     }
   
@@ -77,7 +77,7 @@ class GameBoyDevice {
   
     func tic() {
         
-        let start = NSDate().timeIntervalSince1970
+        let start = Date().timeIntervalSince1970
       
         var count: Int = 0
         while count < ticLoopCount {
@@ -89,11 +89,11 @@ class GameBoyDevice {
             if cpu.registers.PC == bp { running = false }
         }
         
-        let elapsed = NSDate().timeIntervalSince1970 - start
+        let elapsed = Date().timeIntervalSince1970 - start
         
         if running {
-            let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * (ticTime * Double(count) - elapsed)))
-            dispatch_after(time, queue, tic)
+            let time = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * (ticTime * Double(count) - elapsed))) / Double(NSEC_PER_SEC)
+            queue.asyncAfter(deadline: time, execute: tic)
         }
     }
     
@@ -132,14 +132,14 @@ class GameBoyDevice {
     
     func start() {
         running = true
-        dispatch_async(queue) {
+        queue.async {
             self.tic()
         }
     }
     
     func reset() {
         running = false
-        dispatch_barrier_sync(queue, {});
+        queue.sync(flags: .barrier, execute: {});
         memory.clear()
         cpu.reset()
         ppu.reset()

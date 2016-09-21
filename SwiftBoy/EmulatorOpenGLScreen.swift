@@ -19,7 +19,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
   var textureData: [GLubyte]
   
   required init?(coder aDecoder: NSCoder) {
-    textureData = [GLubyte](count: Int(texSize*texSize)*4, repeatedValue: GLubyte(255))
+    textureData = [GLubyte](repeating: GLubyte(255), count: Int(texSize*texSize)*4)
     super.init(coder: aDecoder)
   }
   
@@ -49,7 +49,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
     //TODO viewport reshaping
   }
   
-  override func drawRect(dirtyRect: NSRect) {
+  override func draw(_ dirtyRect: NSRect) {
     glClearColor(0, 0, 0, 0);
     glClear(UInt32(GL_COLOR_BUFFER_BIT))
     
@@ -72,9 +72,9 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
     glFlush();
   }
   
-  func copyBuffer(screenBuffer: [UInt8]) {
-    for var j = 0; j < screenHeight; ++j {
-      for var i = 0; i < screenWidth; ++i {
+  func copyBuffer(_ screenBuffer: [UInt8]) {
+    for j in 0 ..< screenHeight {
+      for i in 0 ..< screenWidth {
         let hue = 255 - screenBuffer[j*screenWidth+i]
         textureData[(j*Int(texSize)+i)*4] = GLubyte(hue)
         textureData[(j*Int(texSize)+i)*4+1] = GLubyte(hue)

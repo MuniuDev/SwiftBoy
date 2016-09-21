@@ -8,21 +8,20 @@
 
 import Foundation
 
+// This protocol defines API for any MBC that is used in SwiftBoy
 protocol IMemoryBankController {
-    func write(address address: UInt16, value: UInt8)
-    func read(address address: UInt16) -> UInt8
-    func getDMAData(address address: UInt16, size: UInt16) -> [UInt8]
+    func write(address: UInt16, value: UInt8)
+    func read(address: UInt16) -> UInt8
+    func getDMAData(address: UInt16, size: UInt16) -> [UInt8]
     func reset()
     func saveRAM()
     func loadRAM()
 }
 
 extension IMemoryBankController {
-    //func write(address address: UInt16, value: UInt8) {}
     func reset() {}
     func saveRAM() {}
     func loadRAM() {}
-    //func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {return [UInt8]()}
 }
 
 // Cartridge types:
@@ -55,17 +54,17 @@ extension IMemoryBankController {
 // 0xFE - HuC3
 // 0xFF - HuC1 + RAM + Battery
 
-func loadRomMBC(name: NSURL) -> IMemoryBankController? {
+// Function for loading rom images. It returns propper MBC controller populated with rom data
+func loadRomMBC(_ name: URL) -> IMemoryBankController? {
   let romPath = name;
     guard
-        //let romPath = NSBundle.mainBundle().pathForResource(name, ofType: ".gb", inDirectory: "roms"),
-        let romData = NSData(contentsOfURL: romPath)
+        let romData = try? Data(contentsOf: romPath)
         else {
             LogE("Failed to load " + name.absoluteString + ".gb rom!")
             exit(-1)
     }
-    var rom = [UInt8](count: romData.length, repeatedValue: 0)
-    romData.getBytes(&rom, length: romData.length)
+    var rom = [UInt8](repeating: 0, count: romData.count)
+    (romData as NSData).getBytes(&rom, length: romData.count)
     LogI("Rom " + name.absoluteString + ".gb load success.")
     LogD("Rom type: 0x" + String(format:"%02X", rom[0x0147]))
     switch rom[0x0147] {
@@ -83,7 +82,8 @@ func loadRomMBC(name: NSURL) -> IMemoryBankController? {
     }
 }
 
-func getROMBankCount(romSizeRegiserVal: UInt8 ) -> Int {
+// Function for calculating rom bank count based on rom header data
+func getROMBankCount(_ romSizeRegiserVal: UInt8 ) -> Int {
     if romSizeRegiserVal > 0x08 {
         LogE("Too big rom size, possibly broken rom image.")
         return -1
@@ -91,7 +91,8 @@ func getROMBankCount(romSizeRegiserVal: UInt8 ) -> Int {
     return Int(2 << romSizeRegiserVal)
 }
 
-func getRAMBankCount(ramSizeRegiserVal: UInt8 ) -> Int {
+// Function for calculating ram bank count based on rom header data
+func getRAMBankCount(_ ramSizeRegiserVal: UInt8 ) -> Int {
     var count = -1
     switch ramSizeRegiserVal {
     case 0x00: count = 0
@@ -106,7 +107,8 @@ func getRAMBankCount(ramSizeRegiserVal: UInt8 ) -> Int {
     return count
 }
 
-func getROMTotalSize(romSizeRegiserVal: UInt8 ) -> Int {
+// Function for calculating rom total size based on rom header data
+func getROMTotalSize(_ romSizeRegiserVal: UInt8 ) -> Int {
     if romSizeRegiserVal > 0x08 {
         LogE("Too big rom size, possibly broken rom image.")
         return -1
@@ -114,7 +116,8 @@ func getROMTotalSize(romSizeRegiserVal: UInt8 ) -> Int {
     return getROMBankCount(romSizeRegiserVal) * 16 * 1024
 }
 
-func getRAMTotalSize(ramSizeRegiserVal: UInt8 ) -> Int {
+// Function for calculating brom total size based on rom header data
+func getRAMTotalSize(_ ramSizeRegiserVal: UInt8 ) -> Int {
     var count = Int(0)
     switch ramSizeRegiserVal {
     case 0x00: count = 0
@@ -130,7 +133,8 @@ func getRAMTotalSize(ramSizeRegiserVal: UInt8 ) -> Int {
     return count*1024
 }
 
-func getCartridgeName(nameData: [UInt8]) -> String {
+// Function for extracting cartridge name based on rom header data
+func getCartridgeName(_ nameData: [UInt8]) -> String {
     var name = String()
     for byte in nameData {
         if byte == 0 { break; }

@@ -78,31 +78,31 @@ class GameBoyRAM {
     let joypad: GameBoyJoypad
     
     init(joypad: GameBoyJoypad) {
-        self.memory = [UInt8](count: 65536, repeatedValue: UInt8(0))
-        self.bios = [UInt8](count: biosSize, repeatedValue: UInt8(0))
+        self.memory = [UInt8](repeating: UInt8(0), count: 65536)
+        self.bios = [UInt8](repeating: UInt8(0), count: biosSize)
         self.joypad = joypad
         fastBiosMode = true;
         inBios = false
     }
     
-    func loadBios(bios: [UInt8]) {
+    func loadBios(_ bios: [UInt8]) {
         self.bios[0..<biosSize] = bios[0..<biosSize]
         fastBiosMode = false;
         inBios = true
     }
     
-    func loadRom(mbc: IMemoryBankController) {
+    func loadRom(_ mbc: IMemoryBankController) {
         self.mbc = mbc
     }
     
     func clear() {
         mbc?.reset()
-        for var i = biosSize; i<memory.count; ++i {
+        for i in biosSize ..< memory.count {
             memory[i] = UInt8(0)
         }
     }
     
-    func DMATransfer(dma: UInt8) {
+    func DMATransfer(_ dma: UInt8) {
         let addr = UInt16(dma) << 8
         
         // TODO implement DMA transfer from the MBC
@@ -120,9 +120,9 @@ class GameBoyRAM {
         
     }
     
-    func requestInterrupt(interrupt: UInt8) { memory[Int(GameBoyRAM.IF)] |= interrupt }
+    func requestInterrupt(_ interrupt: UInt8) { memory[Int(GameBoyRAM.IF)] |= interrupt }
     
-    func write(address address: UInt16, value: UInt8) {
+    func write(address: UInt16, value: UInt8) {
         switch Int(address) {
         case 0...0x00FF where inBios:
             bios[Int(address)] = value;
@@ -150,7 +150,7 @@ class GameBoyRAM {
         }
     }
     
-    func read(address address: UInt16) -> UInt8 {
+    func read(address: UInt16) -> UInt8 {
         switch Int(address) {
         case 0...0x00FF where inBios:
             return bios[Int(address)];
@@ -171,13 +171,13 @@ class GameBoyRAM {
         }
     }
     
-    func write16(address address: UInt16, value: UInt16) {
+    func write16(address: UInt16, value: UInt16) {
         //little endian
         write(address: address, value: UInt8(value & 0xFF)) // write lower byte
         write(address: address+1, value: UInt8(value >> 8)) // write higher byte
     }
     
-    func read16(address address: UInt16) -> UInt16 {
+    func read16(address: UInt16) -> UInt16 {
         //little endian
         var ret: UInt16;
         ret = UInt16(read(address: address));   // write lower byte

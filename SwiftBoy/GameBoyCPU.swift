@@ -35,7 +35,7 @@ class GameBoyCPU {
             
             if opCode.instruction != nil {
                 //LogD("Called: \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + ". PC= 0x" + String(format:"%04X",registers.PC))
-                opCode.instruction!(cpu: self)
+                opCode.instruction!(self)
             } else {
                 LogE("ERROR: Unimplemented instruction \"" + opCode.name + "\" of code: 0x" + String(format:"%02X", opCodeVal) + " found in PC=" + String(format:"%04X", registers.PC))
                 exit(-1)
@@ -103,7 +103,7 @@ class GameBoyCPU {
         }
     }
     
-    func updateClock(cycles: UInt8) {
+    func updateClock(_ cycles: UInt8) {
         timer.updateTimer(cycles)
     }
     

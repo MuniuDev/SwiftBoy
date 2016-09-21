@@ -21,17 +21,17 @@ class EmulatorViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
-    device = (NSApplication.sharedApplication().delegate as! AppDelegate).device
+    device = (NSApplication.shared().delegate as! AppDelegate).device
     device?.setScreen(emuScreen)
   }
   
-  override var representedObject: AnyObject? {
+  /*override var representedObject: AnyObject? {
     didSet {
       // Update the view, if already loaded.
     }
-  }
+  }*/
   
-  override func keyDown(theEvent: NSEvent) {
+  override func keyDown(with theEvent: NSEvent) {
     switch theEvent.keyCode {
     case 126:
       device?.joypad.pressButton(GameBoyJoypad.BTN_UP)
@@ -50,11 +50,11 @@ class EmulatorViewController: NSViewController {
     case 49:
       device?.joypad.pressButton(GameBoyJoypad.BTN_SELECT)
     default:
-      super.keyDown(theEvent)
+      super.keyDown(with: theEvent)
     }
   }
   
-  override func keyUp(theEvent: NSEvent) {
+  override func keyUp(with theEvent: NSEvent) {
     switch theEvent.keyCode {
     case 126:
       device?.joypad.releaseButton(GameBoyJoypad.BTN_UP)
@@ -73,7 +73,7 @@ class EmulatorViewController: NSViewController {
     case 49:
       device?.joypad.releaseButton(GameBoyJoypad.BTN_SELECT)
     default:
-      super.keyUp(theEvent)
+      super.keyUp(with: theEvent)
     }
   }
   

@@ -8,6 +8,7 @@
 
 import Foundation
 
+// This class represents MBC1 cartridge controller.
 class MBC1 : IMemoryBankController {
     var rom: [UInt8]
     var ram: [UInt8]
@@ -31,13 +32,13 @@ class MBC1 : IMemoryBankController {
         romSize = rom[0x0148]
         ramSize = rom[0x0149]
         romBankCount = getROMBankCount(romSize)
-        romByteCount = getROMTotalSize(romSize) //Int(0x8000) << Int(romSize)
-        ramByteCount = getRAMTotalSize(ramSize) //ramSize == 0 ? 0 : Int(0x2000) << Int(ramSize-1)
+        romByteCount = getROMTotalSize(romSize)
+        ramByteCount = getRAMTotalSize(ramSize)
         cartridgeName = getCartridgeName(Array<UInt8>(rom[0x0134...0x0143]))
-        LogD(cartridgeName)
-        self.rom = [UInt8](count: romByteCount, repeatedValue: UInt8(0))
+        
+        self.rom = [UInt8](repeating: UInt8(0), count: romByteCount)
         self.rom[0..<rom.count] = rom[0..<rom.count]
-        self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
+        self.ram = [UInt8](repeating: UInt8(0), count: ramByteCount)
         
         currentRomBank = 1
         currentRamBank = 0
@@ -47,7 +48,7 @@ class MBC1 : IMemoryBankController {
         loadRAM()
     }
     
-    func read(address address: UInt16) -> UInt8 {
+    func read(address: UInt16) -> UInt8 {
         switch Int(address) {
         case 0x0000...0x3FFF:
             return rom[Int(address)]
@@ -58,12 +59,13 @@ class MBC1 : IMemoryBankController {
                 return ram[Int(address - 0xA000 + 0x2000*UInt16(currentRamBank))]
             }
         default:
+            // ignore invalid reads
             return 0xFF
         }
         return 0xFF
     }
     
-    func write(address address: UInt16, value: UInt8) {
+    func write(address: UInt16, value: UInt8) {
         switch Int(address) {
         case 0x0000...0x1FFF: // if value = 0x0A enable RAM else disable RAM
             // save ram when ram gets disabled
@@ -94,8 +96,8 @@ class MBC1 : IMemoryBankController {
     func saveRAM() {
         // make sure it's battery backed up
         if ramSize != 0 && type == 0x03
-            && createFolderAt("SwiftBoySaves", location: .DocumentDirectory) {
-            if saveBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .DocumentDirectory, buffer: ram)
+            && createFolderAt("SwiftBoySaves", location: .documentDirectory) {
+            if saveBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .documentDirectory, buffer: ram)
             { LogD("Succeded to save " + cartridgeName + ".sav save file!") }
         }
     }
@@ -103,19 +105,19 @@ class MBC1 : IMemoryBankController {
     func loadRAM() {
         // make sure it's battery backed up
         if ramSize != 0 && type == 0x03 {
-            if loadBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .DocumentDirectory, buffer: &ram)
+            if loadBinaryFile("SwiftBoySaves/" + cartridgeName + ".sav", location: .documentDirectory, buffer: &ram)
             { LogD("Succeded to load " + cartridgeName + ".sav save file!") }
         }
     }
     
-    func getDMAData(address address: UInt16, size: UInt16) -> [UInt8] {
-        var ret = [UInt8](count: Int(size), repeatedValue: UInt8(0))
+    func getDMAData(address: UInt16, size: UInt16) -> [UInt8] {
+        var ret = [UInt8](repeating: UInt8(0), count: Int(size))
         ret[0..<Int(size)] = ram[ Int(address - 0xA000)..<Int(address - 0xA000 + size)]
         return ret
     }
     
     func reset() {
-        self.ram = [UInt8](count: ramByteCount, repeatedValue: UInt8(0))
+        self.ram = [UInt8](repeating: UInt8(0), count: ramByteCount)
         currentRomBank = 1
         currentRamBank = 0
         ramEnabled = false

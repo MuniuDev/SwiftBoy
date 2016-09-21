@@ -40,7 +40,7 @@ class GameBoyTimer {
         memory.write(address: GameBoyRAM.TAC, value: 0)
     }
     
-    func updateTimer(cycles: UInt8) {
+    func updateTimer(_ cycles: UInt8) {
         mCounter = mCounter &+ UInt(cycles)
         baseCounter += UInt(cycles)
         

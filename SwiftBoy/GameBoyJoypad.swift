@@ -27,11 +27,11 @@ class GameBoyJoypad {
         state = 0xFF
     }
     
-    func registerRAM(ram: GameBoyRAM) {
+    func registerRAM(_ ram: GameBoyRAM) {
         memory = ram
     }
     
-    func getKeyValue(mask: UInt8) -> UInt8 {
+    func getKeyValue(_ mask: UInt8) -> UInt8 {
         switch mask & 0x30 {
         case 0x10:
             return 0xD0 | (state & 0x0F)
@@ -42,14 +42,14 @@ class GameBoyJoypad {
         }
     }
     
-    func pressButton(flag: UInt8) {
+    func pressButton(_ flag: UInt8) {
         if(state & flag != 0) {
             state &= ~flag
             memory?.requestInterrupt(GameBoyRAM.I_P10P13)
         }
     }
     
-    func releaseButton(flag: UInt8) {
+    func releaseButton(_ flag: UInt8) {
         state |= flag
     }
 }

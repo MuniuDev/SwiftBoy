@@ -18,29 +18,29 @@ class RTC {
     
     var baseTimePoint: Int = 0
     
-    func restoreRTC(cartridgeName: String) {
+    func restoreRTC(_ cartridgeName: String) {
         // load saved rtc file, if not present create new one
-        if createFolderAt("SwiftBoySaves", location: .DocumentDirectory) {
-            var buffer = [UInt8](count: 4, repeatedValue: 0)
-            if loadBinaryFile("SwiftBoySaves/" + cartridgeName + ".rtc", location: .DocumentDirectory, buffer: &buffer) {
+        if createFolderAt("SwiftBoySaves", location: .documentDirectory) {
+            var buffer = [UInt8](repeating: 0, count: 4)
+            if loadBinaryFile("SwiftBoySaves/" + cartridgeName + ".rtc", location: .documentDirectory, buffer: &buffer) {
                 LogD("Succeded to load " + cartridgeName + ".rtc file!")
                 baseTimePoint = Int(buffer[0]) << 24 | Int(buffer[1]) << 16 | Int(buffer[2]) << 8 | Int(buffer[3])
                 LogD("BTC = " + String(baseTimePoint))
             } else {
-                baseTimePoint = Int(NSDate().timeIntervalSince1970)
+                baseTimePoint = Int(Date().timeIntervalSince1970)
                 LogD("BTC = " + String(baseTimePoint))
                 buffer[0] = UInt8((baseTimePoint & 0xFF000000) >> 24)
                 buffer[1] = UInt8((baseTimePoint & 0x00FF0000) >> 16)
                 buffer[2] = UInt8((baseTimePoint & 0x0000FF00) >> 8)
                 buffer[3] = UInt8(baseTimePoint & 0x000000FF)
-                if saveBinaryFile("SwiftBoySaves/" + cartridgeName + ".rtc", location: .DocumentDirectory, buffer: buffer)
+                if saveBinaryFile("SwiftBoySaves/" + cartridgeName + ".rtc", location: .documentDirectory, buffer: buffer)
                 { LogD("Succeded to save " + cartridgeName + ".rtc file!") }
             }
         }
     }
     
     func latch() {
-        let date = Int(NSDate().timeIntervalSince1970) - baseTimePoint
+        let date = Int(Date().timeIntervalSince1970) - baseTimePoint
         LogD(String(date))
         sec = UInt8(date % 60)
         min = UInt8((date/60) % 60)
@@ -51,7 +51,7 @@ class RTC {
         if days >= 512 { dayHigh |= 0x80 }
     }
     
-    func read(bank: UInt8) -> UInt8 {
+    func read(_ bank: UInt8) -> UInt8 {
         switch bank {
         case 0x08: return sec
         case 0x09: return min
@@ -64,7 +64,7 @@ class RTC {
         }
     }
     
-    func write(bank: UInt8, value: UInt8) {
+    func write(_ bank: UInt8, value: UInt8) {
         switch bank {
         case 0x08: sec = value
         case 0x09: min = value

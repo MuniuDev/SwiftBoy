@@ -27,21 +27,21 @@ class DebugViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view. 
-      device = (NSApplication.sharedApplication().delegate as! AppDelegate).device
+      device = (NSApplication.shared().delegate as! AppDelegate).device
       updateInfo()
     }
 
-    override var representedObject: AnyObject? {
+    /*override var representedObject: AnyObject? {
         didSet {
         // Update the view, if already loaded.
         }
-    }
+    }*/
     
-    @IBAction func step(sender: AnyObject) {
+    @IBAction func step(_ sender: AnyObject) {
         device?.stepTic()
     }
 
-    @IBAction func run(sender: AnyObject) {
+    @IBAction func run(_ sender: AnyObject) {
         if device?.running == false {
             device?.start()
         } else {
@@ -49,7 +49,7 @@ class DebugViewController: NSViewController {
         }
     }
     
-    @IBAction func updateBP(sender: AnyObject) {
+    @IBAction func updateBP(_ sender: AnyObject) {
         let bp = UInt16(strtoul(breakpointValue.stringValue,nil,16))
         device?.setBP(bp)
         LogI("Updated BreakPoint with val = " + String(format:"%04X",bp))
@@ -70,12 +70,12 @@ class DebugViewController: NSViewController {
         let PC = device!.cpu.registers.PC
         valuePC.stringValue = "0x" + String(format:"%04X",PC)
       
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * 0.1))
-        dispatch_after(time, dispatch_get_main_queue(), updateInfo)
+        let time = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * 0.1)) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: time, execute: updateInfo)
     }
   
   
-  override func keyDown(theEvent: NSEvent) {
+  override func keyDown(with theEvent: NSEvent) {
     switch theEvent.keyCode {
     case 126:
       device?.joypad.pressButton(GameBoyJoypad.BTN_UP)
@@ -94,11 +94,11 @@ class DebugViewController: NSViewController {
     case 49:
       device?.joypad.pressButton(GameBoyJoypad.BTN_SELECT)
     default:
-      super.keyDown(theEvent)
+      super.keyDown(with: theEvent)
     }
   }
   
-  override func keyUp(theEvent: NSEvent) {
+  override func keyUp(with theEvent: NSEvent) {
     switch theEvent.keyCode {
     case 126:
       device?.joypad.releaseButton(GameBoyJoypad.BTN_UP)
@@ -117,7 +117,7 @@ class DebugViewController: NSViewController {
     case 49:
       device?.joypad.releaseButton(GameBoyJoypad.BTN_SELECT)
     default:
-      super.keyUp(theEvent)
+      super.keyUp(with: theEvent)
     }
   }
     
