@@ -21,7 +21,7 @@ class EmulatorViewController: NSViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
-    device = (NSApplication.shared().delegate as! AppDelegate).device
+    device = (NSApplication.shared.delegate as! AppDelegate).device
     device?.setScreen(emuScreen)
   }
   

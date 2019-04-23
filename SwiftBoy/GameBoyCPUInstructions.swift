@@ -474,7 +474,7 @@ func LD_ann_SP(_ cpu: GameBoyCPU) {
 // load to HL the sum of SP and 8-bit U2 imediate
 func LDHL_SP_e(_ cpu: GameBoyCPU) {
     let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
-    let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
+    let val = UInt16(truncatingIfNeeded: Int(cpu.registers.SP) + Int(tmp))
     cpu.registers.setHL(val)
     cpu.registers.F = 0
     // half carry if overflow from 3rd to 4th bit
@@ -848,7 +848,7 @@ func SBC_A_aHL(_ cpu: GameBoyCPU) {
 
 func ADD_SP_e(_ cpu: GameBoyCPU) {
     let tmp = Int8(bitPattern: cpu.memory.read(address: cpu.registers.PC+1))
-    let val = UInt16(truncatingBitPattern: Int(cpu.registers.SP) + Int(tmp))
+    let val = UInt16(truncatingIfNeeded: Int(cpu.registers.SP) + Int(tmp))
     cpu.registers.F = 0
     // half carry if overflow from 3rd to 4th bit
     // carry if overflow from 7th to 8th bit
@@ -919,7 +919,7 @@ func JP_aHL(_ cpu: GameBoyCPU) {
 func JR_e(_ cpu: GameBoyCPU) {
     let tmp = cpu.memory.read(address: cpu.registers.PC+1)
     let val = Int(Int8(bitPattern: tmp))
-    cpu.registers.PC = UInt16(truncatingBitPattern: Int(cpu.registers.PC) + val)
+    cpu.registers.PC = UInt16(truncatingIfNeeded: Int(cpu.registers.PC) + val)
     cpu.registers.PC+=2
     cpu.updateClock(3)
 }
