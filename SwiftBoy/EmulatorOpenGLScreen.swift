@@ -73,7 +73,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
   }
   
   func copyBuffer(_ screenBuffer: [UInt8]) {
-    DispatchQueue.main.async {
+    
         for j in 0 ..< self.screenHeight {
           for i in 0 ..< self.screenWidth {
             let hue = 255 - screenBuffer[j*self.screenWidth+i]
@@ -83,7 +83,7 @@ class EmulatorOpenGLScreen: NSOpenGLView, ProtoEmulatorScreen {
             self.textureData[(j*Int(self.texSize)+i)*4+3] = 255;
           }
         }
-        
+        DispatchQueue.main.async {
         self.needsDisplay = true
       }
     }
